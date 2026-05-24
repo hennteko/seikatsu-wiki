@@ -1,0 +1,15 @@
+# MkDocs ビルド出力（公開はGitHub Actionsが行うのでコミット不要）
+site/
+_preview/
+preview/
+_verify/
+
+# Python
+__pycache__/
+*.pyc
+
+# エディタ / OS
+.~lock.*
+.DS_Store
+Thumbs.db
+.idea/

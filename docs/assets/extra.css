@@ -1,0 +1,90 @@
+/* ===== 生活鯖 WIKI カスタムスタイル ===== */
+
+:root {
+  --pl-color: #2e5fa3;
+  --pl-bg: #e7f0fb;
+  --op-color: #c0504d;
+  --op-bg: #fdeae8;
+}
+
+/* ---- 対象者バナー（ページ最上部） ---- */
+.audience-banner {
+  border-radius: 8px;
+  padding: 0.85rem 1.1rem;
+  margin: 0 0 1.4rem 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-left: 6px solid;
+  line-height: 1.5;
+}
+.audience-banner.player {
+  background: linear-gradient(90deg, var(--pl-bg), #f4f9ff);
+  border-color: var(--pl-color);
+  color: #1c3d6b;
+}
+.audience-banner.op {
+  background: linear-gradient(90deg, var(--op-bg), #fff5f4);
+  border-color: var(--op-color);
+  color: #7a2b29;
+}
+[data-md-color-scheme="slate"] .audience-banner.player {
+  background: rgba(46, 95, 163, 0.20);
+  color: #d3e3f8;
+}
+[data-md-color-scheme="slate"] .audience-banner.op {
+  background: rgba(192, 80, 77, 0.20);
+  color: #f4d2cf;
+}
+
+/* ---- 見出しのアクセント ---- */
+h1.page-player {
+  border-bottom: 3px solid var(--pl-color);
+  padding-bottom: 0.2rem;
+}
+h1.page-op {
+  border-bottom: 3px solid var(--op-color);
+  padding-bottom: 0.2rem;
+}
+
+/* ---- ステータスバッジ ---- */
+.badge {
+  display: inline-block;
+  padding: 0.12rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  vertical-align: middle;
+}
+.badge.dev    { background: #e08e2f; }
+.badge.done   { background: #3c9d4e; }
+.badge.plan   { background: #8e8e8e; }
+.badge.pl     { background: var(--pl-color); }
+.badge.op     { background: var(--op-color); }
+
+/* ---- クイック情報カード ---- */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0 1.4rem 0;
+}
+.quick-card {
+  background: var(--md-code-bg-color);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+  text-align: center;
+}
+.quick-card .label {
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.quick-card .value {
+  font-size: 1.0rem;
+  font-weight: 700;
+}
+
+/* ---- ペア切り替えリンク ---- */
+.md-button { margin: 0.2rem 0.3rem 0.2rem 0; }
