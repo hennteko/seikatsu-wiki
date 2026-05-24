@@ -98,6 +98,8 @@ nav:
           - items/enchantplus/index.md
           - 👤 プレイヤー向け: items/enchantplus/player.md
           - 🛠️ OP・運営向け: items/enchantplus/op.md
+  - 整地・地形改変:
+      - WorldEdit: terrain/worldedit.md
   - ユーティリティ・基盤:
       - Multiverse-Core: utility/multiverse-core.md
       - Multiverse-Inventories: utility/multiverse-inventories.md
