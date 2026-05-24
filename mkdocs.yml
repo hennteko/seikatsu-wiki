@@ -98,3 +98,7 @@ nav:
           - items/enchantplus/index.md
           - 👤 プレイヤー向け: items/enchantplus/player.md
           - 🛠️ OP・運営向け: items/enchantplus/op.md
+  - ユーティリティ・基盤:
+      - Multiverse-Core: utility/multiverse-core.md
+      - Multiverse-Inventories: utility/multiverse-inventories.md
+      - Multiverse-Portals: utility/multiverse-portals.md

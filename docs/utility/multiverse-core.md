@@ -1,0 +1,100 @@
+<div class="audience-banner op">🛠️ OP・運営向けページ — Multiverse-Core は管理者（OP）専用のワールド管理プラグインです。</div>
+
+# Multiverse-Core ― OP・運営ガイド { .page-op }
+
+<span class="badge done">公開プラグイン</span>
+
+1つのサーバーで複数のワールドを作成・管理できる、マルチワールドの基盤プラグインです。生活鯖の各ミニゲーム用ワールドの土台になります。Multiverse-Inventories / Multiverse-Portals などのアドオンを使う前提プラグインでもあります。
+
+## 基本情報
+
+| 項目 | 値 |
+|---|---|
+| プラグイン名 | Multiverse-Core |
+| バージョン | 5.5.3 |
+| 種別 | 公開プラグイン（mvplugins.org 製） |
+| メインコマンド | `/mv` |
+| 依存 | なし（Inventories・Portals 等アドオンの前提） |
+| 設定ファイル | `plugins/Multiverse-Core/config.yml` ／ `worlds.yml` |
+| 公式サイト | https://mvplugins.org |
+
+!!! warning "MV5 は MV4 から大きく変更されています"
+    Multiverse 5系（MV5）はコマンド体系・設定が刷新されています。古い MV4 向けの解説サイトの手順をそのまま流用しないでください。
+
+## 導入手順
+
+1. [mvplugins.org](https://mvplugins.org) または Modrinth / SpigotMC から Multiverse-Core 5.5.3 を入手する。
+2. jar を `plugins/` フォルダに配置する。
+3. サーバーを再起動すると、既存のメインワールドが自動でMultiverseに取り込まれる。
+4. 設定変更後は `/mv reload` で再読み込みする。
+
+## コマンド一覧
+
+メインコマンドは `/mv` です。引数なしで `/mv` を実行するとヘルプが開きます。
+
+### ワールドの作成・管理
+
+| コマンド | 説明 |
+|---|---|
+| `/mv create <名前> <環境>` | 新しいワールドを作成。環境は `NORMAL` / `NETHER` / `END`。`-s <シード>`・`-g <ジェネレーター>`・`-t <タイプ>` 等のオプションあり |
+| `/mv import <名前> <環境>` | 既存のワールドフォルダをMultiverseに取り込む |
+| `/mv clone <元> <新名>` | ワールドを複製する |
+| `/mv regen <名前>` | ワールドを再生成する（建築物は消える）。`--seed` で新シード |
+| `/mv delete <名前>` | ワールドを完全に削除する（`/mv confirm` で確定） |
+| `/mv remove <名前>` | Multiverseの管理対象から外す（ワールドファイルは残る） |
+| `/mv unload <名前>` | ワールドをメモリからアンロードする |
+| `/mv list` | ワールド一覧を表示 |
+| `/mv info [名前]` | ワールドの詳細情報を表示 |
+| `/mv who [名前]` | 各ワールドにいるプレイヤーを表示 |
+
+### ワールドの設定
+
+| コマンド | 説明 |
+|---|---|
+| `/mv modify set <プロパティ> <値> [ワールド]` | ワールドのプロパティを変更（pvp・difficulty・gamemode 等） |
+| `/mv modify add/remove <プロパティ> <値> [ワールド]` | リスト型プロパティに追加・削除 |
+| `/mv gamerule <ルール> <値> [ワールド]` | ワールド単位でゲームルールを設定 |
+| `/mv gamerules [ワールド]` | ゲームルール一覧を表示 |
+| `/mv setspawn` | 現在地をそのワールドのスポーン地点に設定 |
+| `/mv anchor` | アンカー（名前付きテレポート地点）を管理 |
+
+### 移動・システム
+
+| コマンド | 説明 |
+|---|---|
+| `/mv tp [プレイヤー] <行き先>` | ワールド・地点へテレポート |
+| `/mv spawn [プレイヤー]` | 現在のワールドのスポーンへテレポート |
+| `/mv coordinates` | 現在の座標・ワールド情報を表示 |
+| `/mv reload` | Multiverse系の設定を再読み込み |
+| `/mv confirm` | 削除など、確認が必要な操作を確定する |
+| `/mv purge` | ワールドから指定のエンティティを除去 |
+
+!!! tip "引数の詳細はゲーム内ヘルプが最も正確です"
+    各コマンドの細かいオプション・引数は、ゲーム内で `/mv` と入力すると表示されるヘルプが最新かつ正確です。本ページは概要把握用としてご利用ください。
+
+## 権限ノード
+
+Multiverse-Core は管理者専用プラグインのため、**OP はすべてのコマンドを既定で使用できます**。プレイヤーに権限を与える必要は通常ありません。
+
+スタッフへ一部のコマンドだけ委譲したい場合は、権限管理プラグインで権限ノード（`multiverse.core.<機能>` 形式、全許可は `multiverse.core.*`）を付与します。正確なノード一覧は公式の[Permissions List](https://mvplugins.org/core/reference/permissions-list/)を参照してください。
+
+## 設定ファイル
+
+| ファイル | 内容 |
+|---|---|
+| `config.yml` | 全体設定（テレポート挙動・ゲームモード強制・初回スポーン挙動など） |
+| `worlds.yml` | 各ワールドのプロパティ。コマンドで管理されるため、**サーバー稼働中の手動編集は避ける** |
+
+## 注意点・トラブルシューティング
+
+??? failure "ワールドを削除・再生成してしまった"
+    `/mv delete` と `/mv regen` は元に戻せません。実行前に対象ワールド名をよく確認し、`/mv confirm` の前に一呼吸おいてください。重要なワールドは事前にバックアップを。
+
+??? failure "アドオン（Inventories / Portals）が動かない"
+    アドオンは Multiverse-Core を必須とします。Core のバージョンが古いとアドオンが起動しないことがあります。Core・アドオンともに 5系で揃えてください。
+
+## 公式リンク
+
+- 公式ドキュメント： https://mvplugins.org
+- コマンド解説： https://mvplugins.org/core/fundamentals/commands-usage/
+- 権限一覧： https://mvplugins.org/core/reference/permissions-list/
