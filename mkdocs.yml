@@ -88,6 +88,34 @@ nav:
           - casino/casino-plugin/index.md
           - 👤 プレイヤー向け: casino/casino-plugin/player.md
           - 🛠️ OP・運営向け: casino/casino-plugin/op.md
+      - ポーカー:
+          - casino/poker/index.md
+          - 👤 プレイヤー向け: casino/poker/player.md
+          - 🛠️ OP・運営向け: casino/poker/op.md
+      - スロット:
+          - casino/slot/index.md
+          - 👤 プレイヤー向け: casino/slot/player.md
+          - 🛠️ OP・運営向け: casino/slot/op.md
+      - 宝くじ:
+          - casino/lottery/index.md
+          - 👤 プレイヤー向け: casino/lottery/player.md
+          - 🛠️ OP・運営向け: casino/lottery/op.md
+      - チンチロ:
+          - casino/tintiro/index.md
+          - 👤 プレイヤー向け: casino/tintiro/player.md
+          - 🛠️ OP・運営向け: casino/tintiro/op.md
+      - ブラックジャック:
+          - casino/blackjack/index.md
+          - 👤 プレイヤー向け: casino/blackjack/player.md
+          - 🛠️ OP・運営向け: casino/blackjack/op.md
+      - 競馬:
+          - casino/horseracing/index.md
+          - 👤 プレイヤー向け: casino/horseracing/player.md
+          - 🛠️ OP・運営向け: casino/horseracing/op.md
+      - クイズ:
+          - casino/quiz/index.md
+          - 👤 プレイヤー向け: casino/quiz/player.md
+          - 🛠️ OP・運営向け: casino/quiz/op.md
   - 経済・ランキング:
       - EmeraldBank:
           - economy/emeraldbank/index.md
