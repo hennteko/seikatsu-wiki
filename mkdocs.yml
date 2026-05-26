@@ -209,6 +209,19 @@ nav:
           - mobs/bossplugin/index.md
           - 👤 プレイヤー向け: mobs/bossplugin/player.md
           - 🛠️ OP・運営向け: mobs/bossplugin/op.md
+  - 移動・乗り物・テレポート:
+      - Spawn: transport/spawn.md
+      - Playercompass: transport/playercompass.md
+      - PortalVisualizer: transport/portalvisualizer.md
+      - CustomRailway:
+          - transport/customrailway/index.md
+          - 👤 プレイヤー向け: transport/customrailway/player.md
+          - 🛠️ OP・運営向け: transport/customrailway/op.md
+      - CustomVehicles:
+          - transport/customvehicles/index.md
+          - 👤 プレイヤー向け: transport/customvehicles/player.md
+          - 🛠️ OP・運営向け: transport/customvehicles/op.md
+      - Netherfortress: transport/netherfortress.md
   - ユーティリティ・基盤:
       - Multiverse-Core: utility/multiverse-core.md
       - Multiverse-Inventories: utility/multiverse-inventories.md
