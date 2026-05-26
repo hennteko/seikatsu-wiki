@@ -70,10 +70,54 @@ nav:
           - minigames/minecraft-moba/index.md
           - 👤 プレイヤー向け: minigames/minecraft-moba/player.md
           - 🛠️ OP・運営向け: minigames/minecraft-moba/op.md
+      - 1vs1:
+          - minigames/1vs1/index.md
+          - 👤 プレイヤー向け: minigames/1vs1/player.md
+          - 🛠️ OP・運営向け: minigames/1vs1/op.md
+      - Tntran（TNT Run）:
+          - minigames/tntran/index.md
+          - 👤 プレイヤー向け: minigames/tntran/player.md
+          - 🛠️ OP・運営向け: minigames/tntran/op.md
+      - SplatoonPlugin（スプラトゥーン）:
+          - minigames/splatoon/index.md
+          - 👤 プレイヤー向け: minigames/splatoon/player.md
+          - 🛠️ OP・運営向け: minigames/splatoon/op.md
+      - DorokeiGame（ドロケイ）:
+          - minigames/dorokei/index.md
+          - 👤 プレイヤー向け: minigames/dorokei/player.md
+          - 🛠️ OP・運営向け: minigames/dorokei/op.md
+      - Battleroyale（バトルロイヤル）:
+          - minigames/battleroyale/index.md
+          - 👤 プレイヤー向け: minigames/battleroyale/player.md
+          - 🛠️ OP・運営向け: minigames/battleroyale/op.md
       - Zinro（人狼）:
           - minigames/zinro/index.md
           - 👤 プレイヤー向け: minigames/zinro/player.md
           - 🛠️ OP・運営向け: minigames/zinro/op.md
+      - Zankipvp（残機制PvP）:
+          - minigames/zankipvp/index.md
+          - 👤 プレイヤー向け: minigames/zankipvp/player.md
+          - 🛠️ OP・運営向け: minigames/zankipvp/op.md
+      - Yukigassen（雪合戦）:
+          - minigames/yukigassen/index.md
+          - 👤 プレイヤー向け: minigames/yukigassen/player.md
+          - 🛠️ OP・運営向け: minigames/yukigassen/op.md
+      - Yukioni（雪鬼）:
+          - minigames/yukioni/index.md
+          - 👤 プレイヤー向け: minigames/yukioni/player.md
+          - 🛠️ OP・運営向け: minigames/yukioni/op.md
+      - TwoDTreasure（2D宝探し）:
+          - minigames/twodtreasure/index.md
+          - 👤 プレイヤー向け: minigames/twodtreasure/player.md
+          - 🛠️ OP・運営向け: minigames/twodtreasure/op.md
+      - Yukicraft（雪クラフト）:
+          - minigames/yukicraft/index.md
+          - 👤 プレイヤー向け: minigames/yukicraft/player.md
+          - 🛠️ OP・運営向け: minigames/yukicraft/op.md
+      - FishingPointBattle（釣りポイントバトル）:
+          - minigames/fishingpointbattle/index.md
+          - 👤 プレイヤー向け: minigames/fishingpointbattle/player.md
+          - 🛠️ OP・運営向け: minigames/fishingpointbattle/op.md
   - レース・タイムアタック:
       - BoatGP（マリカー）:
           - race/boatgp/index.md
@@ -83,6 +127,10 @@ nav:
           - race/kartrace/index.md
           - 👤 プレイヤー向け: race/kartrace/player.md
           - 🛠️ OP・運営向け: race/kartrace/op.md
+      - AsureTimer:
+          - race/asuretimer/index.md
+          - 👤 プレイヤー向け: race/asuretimer/player.md
+          - 🛠️ OP・運営向け: race/asuretimer/op.md
   - カジノ・ギャンブル:
       - CasinoPlugin:
           - casino/casino-plugin/index.md
@@ -121,6 +169,10 @@ nav:
           - economy/emeraldbank/index.md
           - 👤 プレイヤー向け: economy/emeraldbank/player.md
           - 🛠️ OP・運営向け: economy/emeraldbank/op.md
+      - Ranking:
+          - economy/ranking/index.md
+          - 👤 プレイヤー向け: economy/ranking/player.md
+          - 🛠️ OP・運営向け: economy/ranking/op.md
   - エンチャント・アイテム:
       - EnchantPlus:
           - items/enchantplus/index.md

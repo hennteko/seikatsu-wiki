@@ -56,6 +56,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `kart.stuck-ticks` | 60 | スタックと判定するまでの継続tick数 |
 | `kart.off-track-reset` | true | コース外・危険路面・落下・スタック時にチェックポイントへ復帰させるか |
 | `kart.void-y` | 0 | このY座標を下回ったら落下とみなし復帰 |
+| `kart.corner-speed` | 0.72 | 操舵中（パドル左右入力中）の速度倍率。小さいほどコーナーで減速して曲がりが詰まる（推奨 0.6〜0.85） |
 
 ### ワールド・HUD・報酬
 
@@ -170,7 +171,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/race start` | `boatgp.admin` | 自分が参加中のレースを強制開始する |
-| `/race stop` | `boatgp.admin` | 自分が参加中のレースを強制中止する |
+| `/race stop` | `boatgp.admin` または OP | 自分が参加中のレースを強制中止する（OP は権限ノードなしでも実行可） |
 | `/race reload` | `boatgp.admin` | config.yml・items.yml・surfaces.yml・サーキットを再読み込み |
 | `/race admin ...` | `boatgp.admin` | サーキットの作成・編集（前述。`additembox` を含む） |
 | `/race join [サーキット名]` | `boatgp.play` | レースに参加する |

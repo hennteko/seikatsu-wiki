@@ -1,0 +1,114 @@
+<div class="audience-banner op">🛠️ OP・運営向けページ — 運営スタッフ向けの導入・設定情報です。遊び方は <a href="player.html">👤 プレイヤー向けページ</a> をご覧ください。</div>
+
+# Yukigassen ― OP・運営ガイド { .page-op #yukigassen-op }
+
+Yukigassen の導入・地点のセットアップ・config・権限・管理コマンドをまとめます。
+
+## 基本情報
+
+| 項目 | 値 |
+|---|---|
+| プラグイン名 | Yukigassen |
+| バージョン | 1.0 |
+| api-version | 26.1.2 |
+| メインコマンド | `/yukigassen <subcommand>` |
+| 依存プラグイン | なし |
+| 設定ファイル | `plugins/Yukigassen/config.yml` |
+
+## 導入手順
+
+1. ビルドした `Yukigassen` の jar をサーバーの `plugins/` フォルダに配置する。
+2. サーバーを起動すると `plugins/Yukigassen/config.yml` が自動生成される。
+3. 後述の手順で各種地点を設定する。
+4. プレイヤーが集まったら `/yukigassen start` でゲームを開始する。
+
+## config.yml 設定項目
+
+設定ファイルは以下のキーで構成されます。地点（`locations`）はセットアップコマンドで自動的に書き込まれるため、手動編集は不要です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `default-lives` | 3 | プレイヤーの初期残機数 |
+| `locations.spawn` | 未設定 | 初期リスポーン地点（途中抜け時の戻り先） |
+| `locations.lobby` | 未設定 | ロビー地点（受付エリア・ゲーム終了後の戻り先） |
+| `locations.spawnred` | 未設定 | 赤チームのスポーン地点（ゲーム中のリスポーン先） |
+| `locations.spawnblue` | 未設定 | 青チームのスポーン地点（ゲーム中のリスポーン先） |
+| `locations.area.pos1` | 未設定 | ゲームエリアの角1 |
+| `locations.area.pos2` | 未設定 | ゲームエリアの角2 |
+
+!!! note "残機設定について"
+    `config.yml` の `default-lives` はプラグイン起動時の既定残機です。ゲームごとに変更したい場合は `/yukigassen zanki <数>` を使ってください（こちらは config.yml には保存されません）。
+
+## セットアップ手順
+
+専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
+
+```text
+/yukigassen setup spawn         # 初期リスポーン地点（途中抜け時の戻り先）
+/yukigassen setup lobby         # 受付ロビー地点
+/yukigassen setup spawnred      # 赤チームのスポーン地点
+/yukigassen setup spawnblue     # 青チームのスポーン地点
+/yukigassen setup area pos1     # ゲームエリアの角1
+/yukigassen setup area pos2     # ゲームエリアの角2
+```
+
+!!! tip "ゲーム開始の必須条件"
+    `/yukigassen start` には **赤チームと青チームのスポーン地点が両方とも設定済み** であることが必要です。`spawnred` と `spawnblue` を必ず設定してください。エリア（`area`）が未設定の場合はエリア外移動の制限がかからない（マップ全体が有効）扱いになります。
+
+### 参加用看板の設置
+
+`[Yukigassen]` 看板をロビーに設置すると、プレイヤーが看板クリックで参加・退出できます。
+
+- 1行目に `[Yukigassen]`、2行目に `join`（参加）または `leave`（退出）と入力します。
+- 設置すると1行目が `[Yukigassen]`、2行目が「参加」「退出」へ自動で色付けされます。
+- 看板の設置には `yukigassen.admin` 権限が必要です。
+
+## 管理コマンド
+
+| コマンド | 権限 | 説明 |
+|---|---|---|
+| `/yukigassen join [player]` | `yukigassen.user` | 雪合戦に参加する（対象指定可） |
+| `/yukigassen leave [player]` | `yukigassen.user` | 雪合戦から離脱する（対象指定可） |
+| `/yukigassen start` | `yukigassen.admin` | ゲームを開始する |
+| `/yukigassen stop` | `yukigassen.admin` | ゲームを強制停止する |
+| `/yukigassen zanki <数>` | `yukigassen.admin` | 初期残機数を設定する |
+| `/yukigassen teamjoinred [player]` | `yukigassen.admin` | プレイヤーを赤チームに参加させる |
+| `/yukigassen teamjoinblue [player]` | `yukigassen.admin` | プレイヤーを青チームに参加させる |
+| `/yukigassen setup <type> [pos]` | `yukigassen.admin` | 各種地点を設定する（前述） |
+
+!!! note "対象（player）指定について"
+    `join` / `leave` / `teamjoinred` / `teamjoinblue` は、引数でターゲットセレクタ（プレイヤー名や `@a` など）を指定できます。省略した場合は実行者自身が対象になります。`teamjoinred` / `teamjoinblue` で割り振ったチームは、ゲーム開始時のランダム振り分けより優先されます。
+
+## 運営の流れ
+
+1. プレイヤーがコマンドまたはロビー看板から参加し、人数が集まるのを待つ。
+2. 必要に応じて `/yukigassen zanki <数>` で残機を調整する。
+3. `/yukigassen start` でゲームを開始する（赤・青スポーン設定が前提）。
+4. 相手チーム全滅で自動的に勝敗が決まり、全員がロビーへ戻る。
+5. 異常時は `/yukigassen stop` で強制停止できる。
+
+## 権限ノード
+
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `yukigassen.user` | 全員 | 参加・離脱などユーザー用コマンド |
+| `yukigassen.admin` | OP | ゲーム管理・セットアップ・看板設置 |
+
+## トラブルシューティング
+
+??? failure "`/yukigassen start` でゲームが開始できない"
+    赤・青チームのスポーン地点が未設定の可能性があります。`/yukigassen setup spawnred` と `/yukigassen setup spawnblue` を実行してください。また、参加者が1人もいない場合も開始できません。
+
+??? failure "プレイヤーがエリア外に弾かれない"
+    `locations.area.pos1` / `pos2` が未設定だと、エリア判定が常に有効（マップ全体OK）になります。`/yukigassen setup area pos1` と `pos2` でエリアの2点を設定してください。
+
+??? failure "参加看板が機能しない"
+    看板の1行目が `[Yukigassen]`、2行目が `join` または `leave` になっているか確認してください。看板の設置・編集には `yukigassen.admin` 権限が必要です。
+
+??? failure "ゲーム終了後にプレイヤーがロビーに戻らない"
+    `locations.lobby` が未設定の可能性があります。`/yukigassen setup lobby` でロビー地点を設定してください。
+
+---
+
+[← 👤 プレイヤー向けページへ](player.md){ .md-button }
+[← Yukigassen 概要へ](index.md){ .md-button }
