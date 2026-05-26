@@ -178,9 +178,46 @@ nav:
           - items/enchantplus/index.md
           - 👤 プレイヤー向け: items/enchantplus/player.md
           - 🛠️ OP・運営向け: items/enchantplus/op.md
+      - CustomEnchants:
+          - items/customenchants/index.md
+          - 👤 プレイヤー向け: items/customenchants/player.md
+          - 🛠️ OP・運営向け: items/customenchants/op.md
+      - Effectsaidan: items/effectsaidan.md
+      - Uncraft2:
+          - items/uncraft/index.md
+          - 👤 プレイヤー向け: items/uncraft/player.md
+          - 🛠️ OP・運営向け: items/uncraft/op.md
   - 整地・地形改変:
       - WorldEdit: terrain/worldedit.md
+      - BedrockReplacer: terrain/bedrockreplacer.md
+      - Seitiassist: terrain/seitiassist.md
+      - CaveEraser: terrain/caveeraser.md
+  - 村人・モブ:
+      - VillagerBall:
+          - mobs/villagerball/index.md
+          - 👤 プレイヤー向け: mobs/villagerball/player.md
+          - 🛠️ OP・運営向け: mobs/villagerball/op.md
+      - Monsterball:
+          - mobs/monsterball/index.md
+          - 👤 プレイヤー向け: mobs/monsterball/player.md
+          - 🛠️ OP・運営向け: mobs/monsterball/op.md
+      - CustomVillagerTrade:
+          - mobs/customvillagertrade/index.md
+          - 👤 プレイヤー向け: mobs/customvillagertrade/player.md
+          - 🛠️ OP・運営向け: mobs/customvillagertrade/op.md
+      - BossPlugin:
+          - mobs/bossplugin/index.md
+          - 👤 プレイヤー向け: mobs/bossplugin/player.md
+          - 🛠️ OP・運営向け: mobs/bossplugin/op.md
   - ユーティリティ・基盤:
       - Multiverse-Core: utility/multiverse-core.md
       - Multiverse-Inventories: utility/multiverse-inventories.md
       - Multiverse-Portals: utility/multiverse-portals.md
+      - GlobalStorage2:
+          - utility/globalstorage/index.md
+          - 👤 プレイヤー向け: utility/globalstorage/player.md
+          - 🛠️ OP・運営向け: utility/globalstorage/op.md
+      - Tutorial2:
+          - utility/tutorial/index.md
+          - 👤 プレイヤー向け: utility/tutorial/player.md
+          - 🛠️ OP・運営向け: utility/tutorial/op.md
