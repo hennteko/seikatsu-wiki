@@ -174,14 +174,10 @@ nav:
           - 👤 プレイヤー向け: economy/ranking/player.md
           - 🛠️ OP・運営向け: economy/ranking/op.md
   - エンチャント・アイテム:
-      - EnchantPlus:
-          - items/enchantplus/index.md
-          - 👤 プレイヤー向け: items/enchantplus/player.md
-          - 🛠️ OP・運営向け: items/enchantplus/op.md
-      - CustomEnchants:
-          - items/customenchants/index.md
-          - 👤 プレイヤー向け: items/customenchants/player.md
-          - 🛠️ OP・運営向け: items/customenchants/op.md
+      - EnchantPack（統合）:
+          - items/enchantpack/index.md
+          - 👤 プレイヤー向け: items/enchantpack/player.md
+          - 🛠️ OP・運営向け: items/enchantpack/op.md
       - Effectsaidan: items/effectsaidan.md
       - Uncraft2:
           - items/uncraft/index.md
@@ -189,18 +185,12 @@ nav:
           - 🛠️ OP・運営向け: items/uncraft/op.md
   - 整地・地形改変:
       - WorldEdit: terrain/worldedit.md
-      - BedrockReplacer: terrain/bedrockreplacer.md
-      - Seitiassist: terrain/seitiassist.md
-      - CaveEraser: terrain/caveeraser.md
+      - TerrainTools（統合）: terrain/terraintools.md
   - 村人・モブ:
-      - VillagerBall:
-          - mobs/villagerball/index.md
-          - 👤 プレイヤー向け: mobs/villagerball/player.md
-          - 🛠️ OP・運営向け: mobs/villagerball/op.md
-      - Monsterball:
-          - mobs/monsterball/index.md
-          - 👤 プレイヤー向け: mobs/monsterball/player.md
-          - 🛠️ OP・運営向け: mobs/monsterball/op.md
+      - MobBall（統合）:
+          - mobs/mobball/index.md
+          - 👤 プレイヤー向け: mobs/mobball/player.md
+          - 🛠️ OP・運営向け: mobs/mobball/op.md
       - CustomVillagerTrade:
           - mobs/customvillagertrade/index.md
           - 👤 プレイヤー向け: mobs/customvillagertrade/player.md
@@ -210,9 +200,10 @@ nav:
           - 👤 プレイヤー向け: mobs/bossplugin/player.md
           - 🛠️ OP・運営向け: mobs/bossplugin/op.md
   - 移動・乗り物・テレポート:
-      - Spawn: transport/spawn.md
-      - Playercompass: transport/playercompass.md
-      - PortalVisualizer: transport/portalvisualizer.md
+      - TravelTools（統合）:
+          - transport/traveltools/index.md
+          - 👤 プレイヤー向け: transport/traveltools/player.md
+          - 🛠️ OP・運営向け: transport/traveltools/op.md
       - CustomRailway:
           - transport/customrailway/index.md
           - 👤 プレイヤー向け: transport/customrailway/player.md
@@ -221,7 +212,6 @@ nav:
           - transport/customvehicles/index.md
           - 👤 プレイヤー向け: transport/customvehicles/player.md
           - 🛠️ OP・運営向け: transport/customvehicles/op.md
-      - Netherfortress: transport/netherfortress.md
   - ユーティリティ・基盤:
       - Multiverse-Core: utility/multiverse-core.md
       - Multiverse-Inventories: utility/multiverse-inventories.md
