@@ -92,10 +92,10 @@ slot モジュールには専用の管理コマンドはありません。利用
 | 権限 | 既定 | 用途 |
 |---|---|---|
 | `slot.use` | 全員 | スロットを利用できる（`/slot` コマンドの実行権限） |
-| `slot.remote` / `slot2.remote` | ― | `/slot remote` でスロット起動ロッドを入手できる |
+| `slot.remote` | OP | `/slot remote` でスロット起動ロッド（ブレイズロッド）を入手できる |
 
-!!! warning "remote 権限は plugin.yml 未宣言"
-    `/slot remote` は内部で `slot.remote` または `slot2.remote` の権限を確認しますが、これらのノードは **plugin.yml に宣言されていません**。宣言のない権限ノードは既定値が「OPのみ許可」として扱われます。一般プレイヤーに起動ロッドを配りたい場合は、権限プラグイン（LuckPerms 等）で `slot.remote` を明示的に付与してください。`slot.use` は plugin.yml で `default: true`（全員）として宣言済みです。
+!!! note "remote 権限の互換"
+    `/slot remote` は内部で `slot.remote` または旧 `slot2.remote` のどちらか一方を持っていれば許可される実装です。plugin.yml に宣言されているのは `slot.remote`（`default: op`）のみで、旧プラグイン由来の `slot2.remote` は宣言されていません。一般プレイヤーに起動ロッドを配りたい場合は、権限プラグイン（LuckPerms 等）で `slot.remote` を明示的に付与してください。
 
 ## トラブルシューティング
 
@@ -109,7 +109,7 @@ slot モジュールには専用の管理コマンドはありません。利用
     `slot.use` は plugin.yml で既定「全員」ですが、権限プラグインで上書きされている可能性があります。また、口座残高がマイナス（借金）のプレイヤーはスロットを利用できない仕様です。
 
 ??? failure "`/slot remote` が「権限がありません」になる"
-    `/slot remote` は `slot.remote` / `slot2.remote` 権限を要求しますが、これらは plugin.yml に未宣言で既定 OP 扱いです。一般プレイヤーに使わせる場合は権限プラグインで `slot.remote` を付与してください。
+    `/slot remote` は `slot.remote`（または旧 `slot2.remote`）を要求します。`slot.remote` は plugin.yml 上 `default: op` のため、一般プレイヤーに使わせる場合は権限プラグインで `slot.remote` を付与してください。
 
 ??? failure "配当や出現率を調整したい"
     `modules/slot.yml` の `symbols.<シンボル>` の `normal_weight`・`kakuhen_weight`・`multiplier` を編集し、サーバーを再起動してください。リール速度は `reel.spin_speed`、目押しの滑り具合は `reel.slip_frames`、確変回転数は `kakuhen.diamond_turns` で調整します。

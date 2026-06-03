@@ -139,11 +139,10 @@ EFFECT_COSTS:
 
 | ノード | 既定 | 効果 |
 |---|---|---|
-| `effectsaidan.command.use` | OP | `/aidan` の使用権限（plugin.yml 上の宣言） |
-| `op` | — | `/aidan` コマンド自体の `permission` として設定 |
+| `effectsaidan.command.use` | OP | `/aidan` 各サブコマンドの使用権限（実装側で `sender.hasPermission(...)` を判定） |
 
-!!! warning "実装上は `sender.isOp()` で判定しています"
-    `AidanCommand` の実装では権限ノードではなく **OP 判定（`sender.isOp()`）** を直接行っているため、権限管理プラグインで `effectsaidan.command.use` を非OPプレイヤーへ付与してもコマンドは通りません。コマンドを使えるのは **OP のみ** と考えてください。
+!!! note "コマンドそのものの `permission: op`"
+    `plugin.yml` で `aidan` コマンドの `permission` には `op` 文字列が指定されています（Bukkit の一般的な権限ノードではなく、`PluginCommand#testPermissionSilent` で OP のみ通過する扱い）。実装側のサブコマンド判定は `effectsaidan.command.use` を見るため、権限プラグインで非OPに `effectsaidan.command.use` を付与しただけでは `/aidan` 自体が弾かれます。コマンドを一般プレイヤーに開放したい場合は、権限プラグイン側で `effectsaidan.command.use` を付与しつつ、`plugin.yml` の `aidan` コマンドの `permission: op` を見直す必要があります。
 
 ## トラブルシューティング
 

@@ -120,17 +120,13 @@ BossPluginの導入・召喚コマンド・各ボスのconfig・権限・トラ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `bossplugin.summon` | op | `/bossspawn` の使用許可（`plugin.yml` の `permission`） |
-| `bossplugin.spawn` | （未宣言） | コマンド実装の **内部チェックで要求** されるノード（後述の不具合参照） |
-
-!!! danger "重要：権限ノードに不整合あり"
-    `plugin.yml` 上のコマンド権限は `bossplugin.summon`（既定 op）ですが、`BossSpawnCommand.java` 内の `hasPermission` チェックは **`bossplugin.spawn`** を見ています。`plugin.yml` には `bossplugin.spawn` の宣言が無いため、 **OP以外には正しく権限が付与されません**。OPなら `bossplugin.*` で両方trueになるので動作しますが、非OPユーザーに権限を渡したい場合は `bossplugin.spawn` を別途LuckPerms等で付与してください。
+| `bossplugin.spawn` | op | `/bossspawn` の使用許可。`plugin.yml` の `permission` と `BossSpawnCommand` 内の `hasPermission` チェックが同名で揃っています。 |
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/bossspawn <type> [hp]` | `bossplugin.summon` / `bossplugin.spawn` | ボス召喚（実行者の現在地） |
+| `/bossspawn <type> [hp]` | `bossplugin.spawn` | ボス召喚（実行者の現在地） |
 
 !!! warning "リロード／停止／削除コマンドは未実装"
     現在の実装には `/boss kill` や `/bossplugin reload` のような管理コマンドはありません。召喚中のボスを安全に取り除く正規手段は **サーバー停止（`onDisable` がトリガ）** か、エンティティを直接Kill（プラグインがdeath eventを受けて後処理を行う）するしかありません。
@@ -138,7 +134,7 @@ BossPluginの導入・召喚コマンド・各ボスのconfig・権限・トラ�
 ## トラブルシューティング
 
 ??? failure "`/bossspawn` を非OPに渡したのに「権限がありません」と言われる"
-    既知の不具合です。`plugin.yml` の権限と実コードのチェックノードが食い違っており、**`bossplugin.spawn`** を別途付与しないと非OPでは弾かれます。OP権限であれば動作します。
+    `plugin.yml` の `permission: bossplugin.spawn` と `BossSpawnCommand` 内の `hasPermission("bossplugin.spawn")` は同一ノードを参照しています。OP は既定で通り、非OP に渡す場合は LuckPerms 等で `bossplugin.spawn` を直接付与してください。
 
 ??? failure "ボスを倒したのにアイテムが何も出ない"
     仕様です。`BossListener.onBossDeath` で `event.getDrops().clear()` を実行し、ドロップは経験値150のみに固定しています。報酬を変えるにはソース改修が必要です。

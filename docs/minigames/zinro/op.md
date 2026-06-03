@@ -16,7 +16,7 @@ Zinro（Minecraft人狼プラグイン）の導入・初期設定・config・権
 | 設定ファイル | `plugins/Zinro/config.yml` |
 
 !!! note "対応環境"
-    Spigot / Paper 1.21.x で動作します。プラグインが赤色で読み込まれない場合は、サーバーのJavaバージョンを確認してください（新しめのJavaが必要です）。
+    Paper 1.26.x（api-version `26.1.2`）で動作します。プラグインが赤色で読み込まれない場合は、サーバーのJavaバージョンを確認してください（Paper 26.1 系は Java 25 が必要です）。
 
 ## 導入手順
 

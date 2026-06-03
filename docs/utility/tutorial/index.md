@@ -18,4 +18,4 @@
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
 - **プレイヤー向け** … チュートリアルの始め方、21ステップの流れ、コマンド、再開・再配布の方法、よくある質問。
-- **OP・運営向け** … 導入手順、`userdata.yml` の扱い、管理コマンド（`/tutorial skip`）、権限（OP判定）、トラブルシューティング。
+- **OP・運営向け** … 導入手順、`userdata.yml` の扱い、管理コマンド（`/tutorial skip` / `/tutorial paper`）、権限（`tutorial.admin`、既定 op）、トラブルシューティング。

@@ -102,7 +102,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `zankipvp.all` | false | `zankipvp.user` + `zankipvp.admin` をまとめた親権限 |
 
 !!! warning "実装と権限の対応について"
-    実際のコマンド処理で権限チェックされるのは `zankipvp.admin` のみです。`setup`・`start`・`stop`・`zanki`・`maxplayers`・`status`・`reload` のすべてが `zankipvp.admin` を要求します。一般プレイヤー専用のコマンドは無いため、`zankipvp.user` は実装コード上では参照されていません（参加・退出は看板で行います）。
+    プレイヤーが `/zankipvp` を実行する際にはまず `zankipvp.user` が必要で、各サブコマンドの実行可否はさらに `zankipvp.admin` でチェックされます（`setup`・`start`・`stop`・`zanki`・`maxplayers`・`status`・`reload` のすべてが `zankipvp.admin` 必須）。一般プレイヤーに参加・退出用のコマンドは用意されていないため、`zankipvp.user` だけを持つプレイヤーが実行できるのはヘルプ表示のみです（参加・退出は看板で行います）。`start`・`stop` はコマンドブロック／コンソールからも実行可能で、それらの場合は権限チェックを通過します。
 
 ## ゲームの運営
 

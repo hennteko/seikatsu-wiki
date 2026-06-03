@@ -97,8 +97,8 @@ modules:
 | `/poker stop` | `poker.admin.control` | 進行中のゲームを強制終了 |
 | `/poker status` | なし | 設定状況・待機人数・ゲーム状態を表示 |
 | `/poker money` | なし | 現在のポット額を表示 |
-| `/poker join [プレイヤー名]` | なし | プレイヤーを待機リストに追加（後方互換コマンド） |
-| `/poker leave [プレイヤー名]` | なし | プレイヤーを待機リスト／ゲームから離脱させる（後方互換コマンド） |
+| `/poker join [プレイヤー名]` | `poker.admin.control` または OP | プレイヤーを待機リストに追加（プレイヤーは `[Poker]` 看板から参加） |
+| `/poker leave [プレイヤー名]` | `poker.admin.control` または OP | プレイヤーを待機リスト／ゲームから離脱させる |
 | `/poker debug hand <カード7枚>` | `poker.admin.debug` | 7枚のカードで役判定をテスト（例: `SA SK SQ SJ ST H2 D3`） |
 
 !!! note "start / stop はコンソールからも実行可能"

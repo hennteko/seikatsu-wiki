@@ -88,13 +88,13 @@
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/blackjack start` | `blackjack.start` | 待機中のゲームを開始する。ロビーに1人以上必要 |
-| `/blackjack stop` | `blackjack.stop` | 進行中のゲームを強制終了する |
-| `/blackjack setup spawn` | `blackjack.setup` | 現在地を spawn 地点に設定する |
-| `/blackjack setup lobby` | `blackjack.setup` | 現在地を lobby 地点に設定する |
-| `/blackjack join [プレイヤー名]` | 全員 | ロビーに参加する（プレイヤー名指定で他人を参加させられる） |
-| `/blackjack leave [プレイヤー名]` | 全員 | ロビーから退出する（プレイヤー名指定で他人を退出させられる） |
-| `/blackjack bet <金額>` | 全員 | ロビー参加者全員のベット額を設定する |
+| `/blackjack start` | OP または `blackjack.start` | 待機中のゲームを開始する。ロビーに1人以上必要 |
+| `/blackjack stop` | OP または `blackjack.stop` | 進行中のゲームを強制終了する |
+| `/blackjack setup spawn` | OP または `blackjack.setup` | 現在地を spawn 地点に設定する |
+| `/blackjack setup lobby` | OP または `blackjack.setup` | 現在地を lobby 地点に設定する |
+| `/blackjack join [プレイヤー名]` | OP（`blackjack.start`/`stop`/`setup` のいずれか） | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
+| `/blackjack leave [プレイヤー名]` | OP（同上） | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
+| `/blackjack bet <金額>` | OP（同上） | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
 
 !!! note "ゲーム開始時の挙動"
     `/blackjack start` を実行すると、ロビー参加者ごとに「ベット額が設定されているか」「口座残高が足りているか」を確認します。未設定・残高不足のプレイヤーは自動的にロビーから外され、有効な参加者の賭け金がポット（サーバー口座）へ集められてゲームが始まります。有効な参加者が0人の場合はゲームが中止されます。
@@ -109,8 +109,8 @@
 | `blackjack.stop` | op | ブラックジャックを強制終了する |
 | `blackjack.setup` | op | ブラックジャックの地点設定・看板作成を行う |
 
-!!! note "join / leave / bet に権限は不要"
-    `/blackjack join` `/blackjack leave` `/blackjack bet` は権限ノードを持たず、全プレイヤーが実行できます（プレイヤー向けの参加コマンド）。`start` / `stop` / `setup` のみ OP 専用です。なお内部的には旧 BlackJack2 互換のため `blackjack2.start` などの権限も認められますが、運用上は `blackjack.*` を使ってください。
+!!! note "/blackjack は原則 OP 専用"
+    `/blackjack` 系のサブコマンド（`join` / `leave` / `bet` / `start` / `stop` / `setup`）は、すべて `blackjack.start` / `blackjack.stop` / `blackjack.setup` のいずれか、もしくは OP 権限を持っていないと実行できません。プレイヤーは `[BlackJack]` 看板（`lobby` / `leave` / `bet`）を経由して参加・退出・ベットを行います。
 
 ## トラブルシューティング
 

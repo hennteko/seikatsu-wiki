@@ -96,21 +96,33 @@ mvn clean package
 
 ### 各モジュール由来のコマンド一覧
 
-| コマンド | エイリアス | 由来モジュール | 説明 |
-|---|---|---|---|
-| `/spawn` | ― | spawn | 現在ワールドのスポーン地点へテレポート（プレイヤー専用） |
-| `/compass <player>` | `/pc` / `/playercompass` | compass | 指定プレイヤーを追跡する「追跡コンパス」を発行 |
-| `/compasslist` | `/pclist` | compass | オンラインプレイヤー一覧（クリックで `/compass` 実行） |
-| `/compassreset` | `/pcreset` | compass | 手に持っている追跡コンパスをリセット |
-| `/portalvisualizer <toggle\|on\|off\|reload\|info>` | `/pv` | portalvis | ポータル可視化の設定 |
+各モジュールのコマンドは `plugin.yml` 上の `permission` が **`traveltools.admin`（既定 op）** に統一されています。プレイヤーは `[Spawn]` / `[Compass]` / `[PortalVis]` 看板から各機能を利用します。
+
+| コマンド | エイリアス | 由来モジュール | 必要権限 | 説明 |
+|---|---|---|---|---|
+| `/spawn` | ― | spawn | `traveltools.admin` | 現在ワールドのスポーン地点へテレポート（プレイヤー専用） |
+| `/compass <player>` | `/pc` / `/playercompass` | compass | `traveltools.admin` | 指定プレイヤーを追跡する「追跡コンパス」を発行 |
+| `/compasslist` | `/pclist` | compass | `traveltools.admin` | オンラインプレイヤー一覧（クリックで `/compass` 実行） |
+| `/compassreset` | `/pcreset` | compass | `traveltools.admin` | 手に持っている追跡コンパスをリセット |
+| `/portalvisualizer <toggle\|on\|off\|reload\|info>` | `/pv` | portalvis | `traveltools.admin`（コマンド本体）<br>`reload` / `info` は内部で `portalvisualizer.admin` も確認 | ポータル可視化の設定 |
+
+### プレイヤー向け看板リスナー
+
+| 看板1行目 | 対応モジュール | 動作 |
+|---|---|---|
+| `[Spawn]` | spawn | 右クリックで現在ワールドのスポーン地点へテレポート |
+| `[Compass]` | compass | 右クリックでオンラインプレイヤー頭一覧 GUI を開き、選択で追跡コンパスを配布 |
+| `[PortalVis]` | portalvis | 右クリックで自分のポータル可視化を ON/OFF（`portalvisualizer.use` を確認） |
+
+看板の **設置自体には権限不要**。1行目を該当タグで書くとリスナーが整形して色付き見出しになります。
 
 ## 権限ノード
 
 | 区分 | ノード | 既定 | 内容 |
 |---|---|---|---|
-| **新規** | `traveltools.admin` | op | `/travel modules` / `/travel reload` の実行 |
-| **旧 PortalVisualizer 維持** | `portalvisualizer.use` | true（全員） | 自分の可視化 ON/OFF（`/pv toggle` `/pv on` `/pv off`） |
-| **旧 PortalVisualizer 維持** | `portalvisualizer.admin` | op | `/pv reload` / `/pv info` の実行 |
+| **新規** | `traveltools.admin` | op | `/travel modules` / `/travel reload`、および `/spawn` / `/compass*` / `/portalvisualizer` の **全コマンド実行**（plugin.yml で全モジュールのコマンド permission が `traveltools.admin` に統一） |
+| **旧 PortalVisualizer 維持** | `portalvisualizer.use` | true（全員） | `[PortalVis]` 看板から個人の可視化 ON/OFF 切替（看板リスナー内で確認） |
+| **旧 PortalVisualizer 維持** | `portalvisualizer.admin` | op | `/pv reload` / `/pv info` の内部追加チェック |
 
 !!! tip "LuckPerms 設定は無修正でOK"
     旧 `portalvisualizer.use` / `portalvisualizer.admin` の権限ノード名はそのまま維持しています。既存サーバーの LuckPerms 設定は **書き換えずにそのまま** 使えます。Spawn / Playercompass / Netherfortress は元から権限ノードを持たないため、こちらも追加設定不要です。

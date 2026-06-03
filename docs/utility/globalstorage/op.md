@@ -88,26 +88,25 @@ ng-worlds:
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `gs.use` | 全員（`true`） | GS スティックでの倉庫オープン、`/gs give`、`/gs tensou` |
-| `gs.admin` | OP | `/gs open`、`/gs save`、`/gs ngworld`、`/gs okworld`、`/gs setchest`、`/gs removechest`、`/gs listchests` |
+| `gs.admin` | OP | `/gs` の **全サブコマンド**（`give` / `open` / `sort` / `save` / `ngworld` / `okworld` / `setchest` / `removechest` / `listchests` / `tensou`）に必要 |
 
-!!! note "plugin.yml の記述との差分"
-    `plugin.yml` の `gs.admin` の説明には「`open, save, ngworld`」とだけ記載されていますが、実装上は **`setchest` / `removechest` / `listchests` / `okworld`** も `gs.admin` を要求します。一方で `sort` は権限チェックが行われず、誰でも実行できます（GUI からのソートと同等）。
+!!! info "コマンドはすべて OP 限定 / GS スティックは権限不要"
+    `plugin.yml` に定義されている権限ノードは `gs.admin`（既定 op）の1つだけで、`onCommand` 内のすべてのサブコマンドが `gs.admin` を要求します。一方、**GS スティックの右クリックは権限チェックを行わない** ため、OP が `/gs give` で配布したスティックは一般プレイヤーが普通に右クリックで倉庫を開けます（NG ワールドでは弾かれます）。
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/gs give [プレイヤー名]` | `gs.use` | GS スティックを配布（省略時は自分） |
+| `/gs give [プレイヤー名]` | `gs.admin` | GS スティックを配布（省略時は自分） |
 | `/gs open` | `gs.admin` | 倉庫 GUI を強制的に開く（NG ワールド判定をバイパス） |
-| `/gs sort` | なし | 倉庫アイテムをアルファベット順にソート（開いている全プレイヤーの GUI を再描画） |
+| `/gs sort` | `gs.admin` | 倉庫アイテムをアルファベット順にソート（開いている全プレイヤーの GUI を再描画） |
 | `/gs save` | `gs.admin` | 倉庫・自動収納チェスト・自動転送フィルターを手動で **非同期保存** |
 | `/gs ngworld <ワールド名>` | `gs.admin` | 指定ワールドを NG リストに追加（GS スティックを禁止） |
 | `/gs okworld <ワールド名>` | `gs.admin` | 指定ワールドを NG リストから削除 |
 | `/gs setchest` | `gs.admin` | 次に右クリックしたチェストを自動収納チェストとして登録 |
 | `/gs removechest` | `gs.admin` | 次に右クリックしたチェストの自動収納登録を解除 |
 | `/gs listchests` | `gs.admin` | 登録されている自動収納チェスト一覧をチャット表示 |
-| `/gs tensou` | `gs.use` | 自動転送フィルター設定 GUI を開く（プレイヤー用） |
+| `/gs tensou` | `gs.admin` | 自動転送フィルター設定 GUI を開く |
 
 !!! note "タブ補完"
     `/gs give` のあとはオンラインプレイヤー名、`/gs ngworld` / `/gs okworld` のあとはサーバーのワールド名が補完されます。

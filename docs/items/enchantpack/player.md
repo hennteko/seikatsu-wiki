@@ -40,11 +40,14 @@ EnchantPack は **2つの独立したエンチャント系モジュール** を�
 
 カスタム金床GUIは次の3つの方法で開けます。
 
-| 方法 | 操作 |
-|---|---|
-| コマンド | `/enchantplus`（`/eanvil` でも可） |
-| 金床を右クリック | 設置された金床ブロックを右クリック |
-| ポータブル金床 | 専用アイテムを手に持って右クリック（管理者から付与） |
+| 方法 | 操作 | 一般プレイヤーへの公開 |
+|---|---|---|
+| コマンド | `/enchantplus`（`/eanvil` でも可） | **OPのみ**（権限 `enchantplus.command.gui` 既定で OP） |
+| 金床を右クリック | 設置された金床ブロックを右クリック | 全員可（`enchantplus.gui.use` 既定で `true`） |
+| ポータブル金床 | 専用アイテムを手に持って右クリック（管理者から付与） | 全員可（同上） |
+
+!!! tip "プレイヤーは金床の右クリックでOK"
+    `/enchantplus` 系コマンドは原則 OP 専用です。一般プレイヤーは設置された **金床ブロックを右クリック** すればカスタム金床GUIが開きます（スニーク中はバニラ金床になります）。
 
 GUI 内の操作:
 
@@ -134,15 +137,17 @@ CustomEnchants は **バニラの金床** を使います。専用 GUI はあり
 !!! note "効果の合算"
     CustomEnchants の効果は **部位ごとのレベルが合算** されて計算されます（例: ヘルメット II ＋ ブーツ III = 合計 V）。EnchantPlus の効果合算ルールとは別管理です。
 
-## プレイヤー用コマンド
+## プレイヤー用コマンド（参考）
 
-| コマンド | エイリアス | モジュール | 説明 |
-|---|---|---|---|
-| `/enchantplus` | `/eanvil` | EnchantPlus | カスタム金床GUIを開く |
-| `/enchant list` | `/customenchant list` | EnchantPlus | 独自エンチャントの一覧を表示する |
-| `/enchant help` | `/customenchant help` | EnchantPlus | コマンドのヘルプを表示する |
-| `/customenchants list` | `/cenchants list` | CustomEnchants | 6種類のエンチャント状態を表示 |
-| `/customenchants help` | `/cenchants help` | CustomEnchants | コマンドヘルプを表示 |
+以下のコマンドは plugin.yml で OP 限定（`default: op`）に設定されているため、**一般プレイヤーは通常使用できません**。プレイヤー向けの利用導線は「金床右クリック」「エンチャント商人／村人との取引」です。
+
+| コマンド | エイリアス | モジュール | 公開範囲 | 説明 |
+|---|---|---|---|---|
+| `/enchantplus` | `/eanvil` | EnchantPlus | OPのみ | カスタム金床GUIをコマンドから開く |
+| `/enchant list` | `/customenchant list` | EnchantPlus | OPのみ | 独自エンチャントの一覧を表示する |
+| `/enchant help` | `/customenchant help` | EnchantPlus | OPのみ | コマンドのヘルプを表示する |
+| `/customenchants list` | `/cenchants list` | CustomEnchants | OPのみ | 6種類のエンチャント状態を表示 |
+| `/customenchants help` | `/cenchants help` | CustomEnchants | OPのみ | コマンドヘルプを表示 |
 
 !!! warning "`/ce` エイリアスは廃止されています"
     旧 CustomEnchants の `/ce` エイリアスは、同サーバーの **CaveEraser** プラグインと衝突するため、統合に伴って削除されました。CustomEnchants 側は `/customenchants` または `/cenchants` を使ってください。

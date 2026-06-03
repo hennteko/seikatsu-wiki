@@ -97,8 +97,9 @@ modules:
 |---|---|---|
 | `lobby` | ロビー看板 | クリックしたプレイヤーをロビー地点へテレポート |
 | `leave` | 離脱看板 | クリックしたプレイヤーをスポーン地点へテレポート |
+| `getitem` | 馬券販売看板 | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
 
-看板の作成には `horseracing.admin` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。
+看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。
 
 ## 管理コマンド
 
@@ -111,24 +112,25 @@ modules:
 | `/horseracing setlocation <番号>` | `horseracing.admin` | チェックポイントを現在地に設定（プレイヤー専用） |
 | `/horseracing setspeed <倍率>` | `horseracing.admin` | コース全体の速度倍率を設定 |
 | `/horseracing setup <spawn\|lobby>` | `horseracing.admin` | スポーン地点／ロビー地点を現在地に設定（プレイヤー専用） |
-| `/horseracing getbetitem [対象]` | 全員（対象指定は `horseracing.admin`） | 競馬ベット券を入手。プレイヤー名を指定すると配布（管理者権限が必要） |
-| `/horseracing givebetitem <対象> [枚数]` | `horseracing.admin` | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
-| `/horseracing bet [対象]` | `horseracing.bet` | ベット画面を開く。プレイヤー名を指定可能（コマンドブロック対応） |
+| `/horseracing getbetitem [対象]` | OP（対象指定時は `horseracing.admin` または `horseracing.giveitem`） | 競馬ベット券を入手。プレイヤー名を指定すると配布 |
+| `/horseracing givebetitem <対象> [枚数]` | OP（`horseracing.admin` または `horseracing.giveitem`） | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
+| `/horseracing bet [対象]` | OP（`horseracing.admin`） | ベット画面を開く。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックして開く |
 
 !!! note "レース進行と緊急停止"
     レースの基本フローは「`start`（ベット期間開始）→ `start`（発走）→ 自動でゴール・配当」です。途中でやめたいときは `/horseracing stop` を使うと、馬が撤去され、購入済みの馬券の賭け金が全プレイヤーへ全額返金されます。CasinoPlugin の無効化時にも自動で緊急停止が走ります。
 
 ## 権限ノード
 
-CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノードは次の2つです。
+CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノードは次の3つです。
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `horseracing.admin` | OP | 競馬の管理コマンド全権限（start / stop / sethorse / sethousepoint / setlocation / setspeed / setup / givebetitem / 看板作成 など） |
-| `horseracing.bet` | 全員 | プレイヤーが競馬にベットできる |
+| `horseracing.admin` | OP | 競馬の管理コマンド全権限（start / stop / sethorse / sethousepoint / setlocation / setspeed / setup / givebetitem / bet など） |
+| `horseracing.bet` | OP | `/horseracing bet` の実行権限。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックしてベット画面を開く |
+| `horseracing.sign.create` | OP | `[HorseRacing]` 看板（lobby / leave / getitem）の設置権限 |
 
 !!! note "細分化された権限ノードについて"
-    内部実装上、管理コマンドには `horseracing.config.horse`・`horseracing.config.point`・`horseracing.config.speed`・`horseracing.config.stop`・`horseracing.setup`・`horseracing.giveitem`・`horseracing.sign.create` といった、機能ごとに分かれた権限ノードも用意されています。これらは plugin.yml には明示宣言されていないため、特定の管理機能だけを一部スタッフに委譲したい場合は、権限プラグイン（LuckPerms 等）で個別に付与してください。`horseracing.admin` を持っていれば、これら個別ノードがなくてもすべての管理機能を使えます。
+    内部実装上、管理コマンドには `horseracing.config.horse` / `horseracing.config.point` / `horseracing.config.speed` / `horseracing.config.stop` / `horseracing.setup` / `horseracing.giveitem` といった、機能ごとに分かれた権限ノードも参照されています。これらは plugin.yml には明示宣言されていないため、特定の管理機能だけを一部スタッフに委譲したい場合は、権限プラグイン（LuckPerms 等）で個別に付与してください。`horseracing.admin` を持っていれば、これら個別ノードがなくてもすべての管理機能を使えます。
 
 ## トラブルシューティング
 
@@ -151,7 +153,7 @@ CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノード�
     `horse.yml` の `betting.virtual_bet_amount` を大きくするとオッズの変動が緩やかになり、`betting.takeout_rate` で控除率を調整できます。馬の実力差は `horse_stats` の各 min / max で調整します。設定変更後はサーバーの再起動で反映してください。
 
 ??? failure "ベットを受け付けない"
-    ベットできるのは `/horseracing start` でベット期間を開始してから、発走（2回目の `start`）までの間だけです。レース中・停止中はベット画面を開けません。プレイヤーに `horseracing.bet` 権限があるかも確認してください。
+    ベットできるのは `/horseracing start` でベット期間を開始してから、発走（2回目の `start`）までの間だけです。レース中・停止中はベット画面を開けません。プレイヤーはコマンドではなく `[HorseRacing] getitem` 看板から馬券アイテムを受け取り、右クリックでベット画面を開く流れです。
 
 ---
 

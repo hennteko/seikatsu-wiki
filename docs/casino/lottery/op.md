@@ -109,14 +109,14 @@ prizes:
 
 ## 権限ノード
 
-宝くじには **plugin.yml に宣言された専用の権限ノードはありません**。`/kuzi`（券の購入）と抽選券の右クリック使用は、サーバーに入っていれば全員が利用できます。
+`/kuzi`（券の購入）と抽選券の右クリック使用は、サーバーに入っていれば全員が利用できます。reload のみ専用の権限が割り当てられています。
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kuzi.reload` | （plugin.yml に未宣言） | `/kuzi reload` の実行可否。OP は権限なしでも実行可能 |
+| `kuzi.reload` | OP | `/kuzi reload` の実行可否 |
 
 !!! note "kuzi.reload について"
-    `kuzi.reload` はソース上で参照されている権限名ですが、plugin.yml の `permissions:` には宣言がありません。OP は権限の有無に関わらず `/kuzi reload` を実行できます。一般プレイヤーにも reload を許可したい場合は、LuckPerms 等の権限プラグインで `kuzi.reload` を付与してください。
+    `kuzi.reload` は plugin.yml で `default: op` として宣言されています。OP は権限の有無に関わらず `/kuzi reload` を実行できます。一般プレイヤーにも reload を許可したい場合は、LuckPerms 等の権限プラグインで `kuzi.reload` を付与してください。
 
 ## トラブルシューティング
 

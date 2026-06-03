@@ -10,12 +10,11 @@
 </div>
 
 !!! note "このプラグインについて"
-    CustomRailway は **駅・列車** を扱う独立プラグインです（plugin.yml 上は依存なし）。プレイヤーは `customrailway.station.create`・`customrailway.train.connect`（どちらも既定 true）で **駅作成・列車連結** が可能です。路線（`route`）機能は現バージョンのコマンド処理には未実装で、駅は内部的に「接続路線」リストを持てる構造のみ用意されています。
+    CustomRailway は **駅・列車** を扱う独立プラグインです（plugin.yml 上は依存なし）。`/railway` コマンドは **OP 限定**（`customrailway.admin`）で、プレイヤーは `[Railway]` / `[Station]` 看板から駅一覧 GUI を開きます。トロッコ連結（鎖）・切り離し（ハサミ）は `customrailway.train.connect`（既定 true）で誰でも可能です。路線（`route`）機能は現バージョンでは「今後のアップデートで実装予定」のスタブのみで、駅は内部的に「接続路線」リストを持てる構造だけが用意されています。
 
 ## ページを選ぶ
 
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … 駅の作成・削除・GUI、トロッコ連結／切り離し、速度制御ブロック、`/railway` コマンド、FAQ。
-- **OP・運営向け** … 導入手順、`config.yml`、管理コマンド、権限ノード、トラブルシュート、ソースとの差異。
+- **プレイヤー向け** … `[Railway]` / `[Station]` 看板からの駅一覧 GUI、トロッコ連結／切り離し、速度。

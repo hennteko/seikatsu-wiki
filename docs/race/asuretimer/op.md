@@ -144,8 +144,15 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 | `asuretimer.admin` | OP | コマンド全般・看板の作成・管理 |
 | `asuretimer.play` | 全員 | スタート看板からアスレ／ドロッパーをプレイする |
 
-!!! warning "コマンド全体の権限ノードに注意"
-    plugin.yml では `/asure` コマンド全体に `permission: asuretimer.admin` が設定されています。実装側では `setup` / `reload` / `course` / 他プレイヤーの `stats` 閲覧は個別に `asuretimer.admin` をチェックしますが、`ranking` と自分の `stats` 閲覧はコード内で権限チェックを行っていません。それでも plugin.yml のコマンド権限が有効な環境では、`/asure ranking` や `/asure stats`（自分の統計）自体が `asuretimer.admin` 必須となり、一般プレイヤーが叩けません。一般プレイヤーにも使わせたい場合は、権限プラグイン側で `asuretimer.admin` 配下のサブコマンドのみ制限する設定にするか、ランキングは看板での運用に統一してください。
+!!! note "サブコマンドごとの権限ガード"
+    `/asure` コマンド自体には plugin.yml で `permission` が指定されていないため、コマンド自体は誰でも叩けます。サブコマンドごとに以下のチェックが入ります。
+
+    - `setup` / `reload` / `course` … `asuretimer.admin` を実装側でチェック
+    - `stats <他プレイヤー>` … `asuretimer.admin` を実装側でチェック
+    - `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
+    - `ranking` … 権限チェックなし（誰でも実行可）
+
+    そのため一般プレイヤーは `/asure ranking` や `/asure stats` を実行できます。アクションバー / 看板 / GUI と併用する運用で問題ありません。
 
 ## トラブルシューティング
 

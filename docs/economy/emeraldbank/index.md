@@ -5,12 +5,12 @@
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">💰 経済・ランキング</span></div>
   <div class="quick-card"><span class="label">主な機能</span><span class="value">預入・引出・送金</span></div>
-  <div class="quick-card"><span class="label">便利アイテム</span><span class="value">ウォレット / 通帳</span></div>
-  <div class="quick-card"><span class="label">バージョン</span><span class="value">2.0.2</span></div>
+  <div class="quick-card"><span class="label">便利アイテム</span><span class="value">ウォレット / 通帳 / ATM看板</span></div>
+  <div class="quick-card"><span class="label">稼働形態</span><span class="value">CasinoPlugin 内包モジュール</span></div>
 </div>
 
 !!! info "サーバーでの稼働形態について"
-    EmeraldBank は単体プラグインとしても存在しますが、生活鯖で実際に稼働しているのは統合版 **CasinoPlugin に内包された銀行モジュール** です。サーバー経済の通貨（エメラルド残高）を一元管理する基盤として動作し、他のプラグインもこの口座データを参照します。挙動は本ページで説明する EmeraldBank の仕様に準じます。
+    EmeraldBank は統合版 **CasinoPlugin に内包された銀行モジュール（`bank`）** として動作します。サーバー経済の通貨（エメラルド残高）を一元管理する基盤であり、他モジュール（Poker / Slot / BlackJack / Tintiro / HorseRacing / Lottery / Quiz / Kart）は内部 API `EmeraldAPI` を通してこの口座データを参照します。
 
 ## ページを選ぶ
 

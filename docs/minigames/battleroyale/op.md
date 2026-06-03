@@ -117,16 +117,15 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 
 ## 権限ノード
 
-plugin.yml には `permissions` ブロックが定義されていません。コマンドのうちプレイヤー向けの `join` / `leave` / `team` は誰でも実行できます。
-
-セットアップ・管理系のコマンド（`setup` / `setchest` / `setitem` / `settime` / `setarea` / `setmax` / `setteam` / `start` / `stop` / `reset` / `status`）は、ソースコード上で **`battleroyale.admin`** 権限を判定しています。
+plugin.yml には次の2つの権限が定義されています。コード上でも、管理系コマンドは `battleroyale.admin` でチェックされています。
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `battleroyale.admin` | OP | セットアップ・管理コマンドすべて |
+| `battleroyale.admin` | OP | `setup` / `setchest` / `setitem` / `settime` / `setarea` / `setmax` / `setteam` / `start` / `stop` / `reset` / `status` |
+| `battleroyale.play` | 全員 | プレイヤー参加用ノード（plugin.yml で定義済み） |
 
-!!! warning "権限ノードについての注意"
-    `battleroyale.admin` は plugin.yml に登録されていないため、既定値が明示されていません。通常はOP権限を持つプレイヤーがそのまま管理コマンドを使えますが、LuckPerms などの権限管理プラグインで非OPに付与したい場合は `battleroyale.admin` を明示的に割り当ててください。専用のセットアップが不要であれば、管理コマンドの実行はOPに限定して運用してください。
+!!! note "プレイヤー用コマンドの権限チェック"
+    `/btr join` / `leave` / `team` はソース上で `hasPermission()` 判定を行っていません。`battleroyale.play` は plugin.yml に「参加する権限」として登録されていますが、実際の参加コマンドは権限チェックなしで動作します。制限したい場合はサーバーの権限管理プラグインで `battleroyale` コマンド自体の実行可否を調整してください。
 
 ## トラブルシューティング
 

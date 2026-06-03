@@ -9,39 +9,39 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | CasinoPlugin |
-| バージョン | 1.0.0 |
 | api-version | 26.1.2 |
 | メインクラス | `jp.casinoplugin.CasinoPlugin` |
 | softdepend（任意連携） | WorldGuard（カート用）、Citizens（クイズの NPC 用） |
-| 設定ファイル | `plugins/CasinoPlugin/config.yml` ＋ `plugins/CasinoPlugin/modules/<name>.yml` |
+| 共通設定 | `plugins/CasinoPlugin/config.yml`（全体設定とモジュール有効フラグ） |
+| データ | `plugins/CasinoPlugin/accounts.yml`、各モジュール用ファイル |
 
 !!! info "CasinoPlugin の構成"
     CasinoPlugin は **銀行（bank）＋8ゲームの計9モジュール** を1つのjarに統合したプラグインです。`ModuleRegistry` が `config.yml` の `modules.<id>.enabled` を見て、有効なモジュールだけを起動します。あるモジュールが起動に失敗しても他のモジュールは動き続ける設計です。
 
 ## 導入手順
 
-1. ビルドした `CasinoPlugin-1.0.0.jar` をサーバーの `plugins/` フォルダに配置する。
+1. ビルドした `CasinoPlugin-*.jar` をサーバーの `plugins/` フォルダに配置する。
 2. 必要に応じて `WorldGuard`・`Citizens` を導入する（softdepend。無くても本体は起動しますが、カートの一部機能・クイズの NPC 機能が使えません）。
-3. サーバーを起動すると `plugins/CasinoPlugin/config.yml` と `plugins/CasinoPlugin/modules/*.yml` が自動生成される。
+3. サーバーを起動すると `plugins/CasinoPlugin/config.yml` ほか、各モジュールが必要とするデータファイル（`accounts.yml` などモジュールごとに異なる）が自動生成される。
 4. `config.yml` の `modules:` ブロックで、使いたいモジュールだけを `enabled: true` にする。
-5. 各ゲームの個別設定（座標・配当・確率など）は `modules/<name>.yml` を編集する（詳細は各ゲームの個別ページ参照）。
+5. 各ゲームの個別設定（座標・配当・確率など）は、それぞれのモジュールが管理する yml ファイルで編集する（詳細は各ゲームの個別ページ参照）。
 
 !!! warning "bank モジュールは必須"
     `bank` モジュールはエメラルドの口座機能（共通通貨）を提供し、他のすべてのゲームがこれに依存します。`modules.bank.enabled` は **通常 true 固定** で運用してください。false にすると他ゲームの賭け金処理が動きません。
 
 ## 含まれるモジュール一覧
 
-| モジュール ID | 内容 | 個別設定ファイル |
+| モジュール ID | 内容 | 主なデータ／設定ファイル |
 |---|---|---|
-| `bank` | エメラルド銀行（経済基盤・共通通貨） | `modules/` 配下に個別ファイルなし（`config.yml` 管理） |
-| `kart` | カートレース（マリオカート風） | `modules/kart.yml` |
-| `poker` | ポーカー（テキサスホールデム） | `modules/poker.yml` |
-| `slot` | スロットマシン | `modules/slot.yml` |
-| `lottery` | 宝くじ | `modules/lottery.yml` |
-| `tintiro` | チンチロ（サイコロ賭博） | `modules/tintiro.yml` |
-| `blackjack` | ブラックジャック | `modules/blackjack.yml` |
-| `horse` | 競馬（7種類の馬券） | `modules/horse.yml` |
-| `quiz` | クイズ（デイリー＋100階タワー） | `modules/quiz.yml` ほか `quiz/` 配下 |
+| `bank` | エメラルド銀行（経済基盤・共通通貨） | `accounts.yml`（残高） |
+| `kart` | カートレース（マリオカート風） | モジュール内部で複数の yml を生成 |
+| `poker` | ポーカー（テキサスホールデム） | `poker/` 配下 |
+| `slot` | スロットマシン | `slot/` 配下 |
+| `lottery` | 宝くじ | `lottery/` 配下 |
+| `tintiro` | チンチロ（サイコロ賭博） | `tintiro/` 配下 |
+| `blackjack` | ブラックジャック | `blackjack/` 配下 |
+| `horse` | 競馬（7種類の馬券） | `horse/` 配下 |
+| `quiz` | クイズ（デイリー＋タワー） | `quiz/` 配下 |
 
 !!! note "各ゲームの詳細は個別ページへ"
     上記モジュールの個別設定（座標設定・配当率・確率調整など）は、このページでは深掘りしません。各ゲームの個別ページにまとめられています。
@@ -77,6 +77,9 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 |---|---|---|
 | `kartrace.play` | 全員 | レースに参加できる |
 | `kartrace.garage` | 全員 | ガレージを開ける |
+| `kartrace.shop` | 全員 | カートショップを利用できる |
+| `kartrace.admin` | OP | KartRace の管理コマンド全般 |
+| `kartrace.sign.create` | OP | 参加・退出看板を設置できる |
 
 ### ポーカー（poker）
 
@@ -92,6 +95,13 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | 権限 | 既定 | 用途 |
 |---|---|---|
 | `slot.use` | 全員 | スロットを利用できる |
+| `slot.remote` | OP | リモートスロットアイテムを取得できる |
+
+### 宝くじ（lottery）
+
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `kuzi.reload` | OP | 宝くじ機能のリロード権限 |
 
 ### ブラックジャック（blackjack）
 
@@ -99,14 +109,27 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 |---|---|---|
 | `blackjack.start` | OP | ブラックジャックを開始する |
 | `blackjack.stop` | OP | ブラックジャックを強制終了する |
-| `blackjack.setup` | OP | ブラックジャックの地点を設定する |
+| `blackjack.setup` | OP | 看板・地点の設定 |
+
+!!! note "プレイヤーは看板から参加"
+    `/blackjack` コマンドは原則 OP 専用です。プレイヤーは `[BlackJack]` 看板を経由して参加します。
+
+### チンチロ（tintiro）
+
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `tintiro.admin` | OP | チンチロの管理コマンド全権限 |
+
+!!! note "プレイヤーは看板から参加"
+    `/tintiro` コマンドは原則 OP 専用です。プレイヤーは `[チンチロ]` 看板（lobby/leave/金額/open）から参加します。
 
 ### 競馬（horse）
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
 | `horseracing.admin` | OP | 競馬の管理コマンド全権限 |
-| `horseracing.bet` | 全員 | プレイヤーが競馬にベットできる |
+| `horseracing.bet` | OP | `/horseracing bet` の実行権限（プレイヤーは getitem 看板で取得した馬券アイテムからベット） |
+| `horseracing.sign.create` | OP | 馬券販売所/結果掲示看板の設置 |
 
 ### クイズ（quiz）
 
@@ -122,7 +145,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `quiz.admin.sign` | false | ランキング看板の管理 |
 
 !!! warning "クイズの権限は既定 false"
-    `quiz.*` 系の権限は **既定値が false** です。プレイヤーにクイズを遊ばせたい場合は、権限プラグイン（LuckPerms 等）で `quiz.use` を付与してください。宝くじ（lottery）・チンチロ（tintiro）には plugin.yml 上の専用権限ノードがありません。
+    `quiz.*` 系の権限は **既定値が false** です。プレイヤーにクイズを遊ばせたい場合は、権限プラグイン（LuckPerms 等）で `quiz.use` を付与してください。
 
 ## コマンド一覧
 

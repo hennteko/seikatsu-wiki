@@ -149,17 +149,17 @@ EnchantPack は新たに統合管理コマンド `/enchantpack`（エイリア�
 
 ### enchantplus モジュール由来
 
-| コマンド | エイリアス | 必要権限 | 説明 |
+| コマンド | エイリアス | コマンド自体の権限（plugin.yml） | 説明 |
 |---|---|---|---|
-| `/enchantplus` | `/eanvil` | `enchantplus.gui.use` | カスタム金床GUIを開く |
-| `/enchant <list\|give\|portableanvil\|reload\|help>` | `/customenchant` | サブコマンドごと | エンチャント本給付・ポータブル金床・リロード等 |
-| `/enchantvillager` | `/evillager`, `/enchantmerchant` | `enchantplus.villager.summon` | 実行位置にエンチャント商人を召喚 |
+| `/enchantplus` | `/eanvil` | `enchantplus.command.gui`（default: op） | カスタム金床GUIをコマンドから開く（プレイヤーは金床右クリックで代替） |
+| `/enchant <list\|give\|portableanvil\|reload\|help>` | `/customenchant` | `enchantplus.command.use`（default: op） | エンチャント本給付・ポータブル金床・リロード等（サブコマンドごとに追加権限あり。`portableanvil` は `portable` でも可） |
+| `/enchantvillager` | `/evillager`, `/enchantmerchant` | `enchantplus.villager.summon`（default: op） | 実行位置にエンチャント商人を召喚 |
 
 ### customenchants モジュール由来
 
-| コマンド | エイリアス | 必要権限 | 説明 |
+| コマンド | エイリアス | コマンド自体の権限（plugin.yml） | 説明 |
 |---|---|---|---|
-| `/customenchants <list\|give\|reload\|help>` | `/cenchants` | `customenchants.admin`（list/help は不要） | カスタムエンチャント本付与・リロード等 |
+| `/customenchants <list\|give\|reload\|help>` | `/cenchants` | `customenchants.admin`（default: op） | カスタムエンチャント本付与・リロード等（list/help はサブコマンド側で権限を問いません） |
 
 !!! warning "`/ce` エイリアスは削除済み"
     旧 CustomEnchants の `/ce` エイリアスは **CaveEraser** と衝突するため、EnchantPack 統合時に削除されました。CustomEnchants 系のショートカットは `/cenchants` のみとなります。

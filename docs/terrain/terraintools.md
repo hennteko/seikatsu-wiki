@@ -66,10 +66,10 @@
 - **範囲削除の杖（wand / clean）** ― 木の斧で 2 点を選び、ダイヤモンドをコストに直方体を一括削除。
 - **範囲採掘ツルハシ（pickaxe）** ― ダイヤツルハシで 1x1 ～ 7x7 の範囲採掘（右クリックでモード切替）。
 - **超大範囲ツルハシ（megapickaxe）** ― ネザライトツルハシで 9x9 ～ 21x21 の超大範囲採掘（イベント報酬用）。
-- **流体凝固アイテム（fluid）** ― 青氷／パック氷をオフハンドに持って採掘すると、周囲の水・溶岩を経験値消費で丸石・黒曜石に変換。
-- **スマート・ゴミ箱（trash）** ― 拾った瞬間に指定マテリアルを消去し、代わりに経験値を獲得（**唯一プレイヤーが既定で利用可能**）。
+- **流体凝固アイテム（fluid）** ― パック氷（既定 `PACKED_ICE`）をオフハンドに持って採掘すると、周囲の水・溶岩を経験値消費で丸石・黒曜石に変換。
+- **スマート・ゴミ箱（trash）** ― 拾った瞬間に指定マテリアルを消去し、代わりに経験値を獲得。
 
-岩盤はすべての破壊系機能から自動的に除外されます。
+岩盤はすべての破壊系機能から自動的に除外されます。`/sa` 配下のコマンドはすべて OP 専用ですが、配布済みの杖・ツルハシ・フィルタ等は一般プレイヤーでも操作できます。
 
 ### cave モジュール（旧 CaveEraser）
 
@@ -78,7 +78,7 @@
 - **scan** で水中洞窟を検出 → **list / info** で確認 → **fill / auto** で埋立。
 - **chunkfill** は洞窟検出をスキップし、現在のチャンクを中心に半径指定で `WATER` / `LAVA` / `AIR` / `CAVE_AIR` を一括変換（粗整地用）。
 - CasinoPlugin の **EmeraldAPI** が利用可能な場合、エメラルドを引き落としてからの実行となる（未導入時はコスト判定をスキップ）。
-- 全権限が **`default: false`** のため、OP でも権限管理プラグインでの明示付与が必要。
+- 全権限が **`default: op`** のため、OP は標準でフル操作可能。一般プレイヤーに開放する場合は権限管理プラグインで個別付与してください。
 
 ## 設定ファイル
 
@@ -172,14 +172,16 @@ TerrainTools 本体の管理用コマンドです。`terraintools.admin` 権限�
 
 ### seiti モジュール（旧 Seitiassist）
 
+`/sa` 自体の実行に `seitiassist.use`（既定 op）が必要です。
+
 | コマンド | 説明 | 権限 |
 |---|---|---|
 | `/sa wand [player]` | 範囲消去の杖（木の斧）を入手 | `seitiassist.command.wand` |
-| `/sa clean` | 杖で選択した直方体を削除（ダイヤ消費） | `seitiassist.command.clean` |
+| `/sa clean` | 杖で選択した直方体を削除（ダイヤ消費、プレイヤー専用） | `seitiassist.command.clean` |
 | `/sa pickaxe [player]` | 範囲採掘ツルハシ（ダイヤ製、1〜7x7） | `seitiassist.command.pickaxe` |
 | `/sa megapickaxe [player]` ／ `mpickaxe` ／ `mp` | メガツルハシ（ネザライト製、9〜21x21） | `seitiassist.command.megapickaxe` |
-| `/sa fluid [player]` | 流体凝固アイテムを入手 | `seitiassist.command.fluid` |
-| `/sa trash` | ゴミ箱フィルタ GUI を開く（プレイヤー専用） | `seitiassist.command.trash`（**default: true**） |
+| `/sa fluid [player]` | 流体凝固アイテム（パック氷）を入手 | `seitiassist.command.fluid` |
+| `/sa trash` | ゴミ箱フィルタ GUI を開く（プレイヤー専用） | `seitiassist.command.trash` |
 | `/sa reload` | seiti モジュールの設定を再読み込み | `seitiassist.admin` |
 
 ### cave モジュール（旧 CaveEraser）
@@ -217,28 +219,29 @@ TerrainTools 本体の管理用コマンドです。`terraintools.admin` 権限�
 
 | ノード | 既定 | 説明 |
 |---|---|---|
-| `seitiassist.command.wand` | `op` | `/sa wand` |
-| `seitiassist.command.clean` | `op` | `/sa clean` |
-| `seitiassist.command.pickaxe` | `op` | `/sa pickaxe` |
+| `seitiassist.use` | `op` | `/sa` コマンド自体の実行権限（OP 専用） |
+| `seitiassist.command.wand` | `op` | `/sa wand`（OP 配布用） |
+| `seitiassist.command.clean` | `op` | `/sa clean`（OP デバッグ用。一般プレイヤーは杖シフト＋右クリックで代替） |
+| `seitiassist.command.pickaxe` | `op` | `/sa pickaxe`（OP 配布用） |
 | `seitiassist.command.megapickaxe` | `op` | `/sa megapickaxe`（イベント報酬用） |
-| `seitiassist.command.fluid` | `op` | `/sa fluid` |
-| `seitiassist.command.trash` | **`true`** | `/sa trash`（全プレイヤー利用可） |
+| `seitiassist.command.fluid` | `op` | `/sa fluid`（OP 配布用） |
+| `seitiassist.command.trash` | `op` | `/sa trash`（OP メンテ用。一般プレイヤーは `[ゴミ箱]` 看板で代替） |
 | `seitiassist.admin` | `op` | `/sa reload` 等の管理者権限 |
 
 ### cave モジュール（既存維持）
 
 | ノード | 既定 | 説明 |
 |---|---|---|
-| `caveeraser.use` | `false` | `list` / `info`（基本操作） |
-| `caveeraser.scan` | `false` | `scan` |
-| `caveeraser.fill` | `false` | `fill` |
-| `caveeraser.auto` | `false` | `auto` |
-| `caveeraser.chunkfill` | `false` | `chunkfill` |
-| `caveeraser.reload` | `false` | `reload` |
-| `caveeraser.*` | `false` | 上記すべて（子ノード一括付与） |
+| `caveeraser.use` | `op` | `list` / `info`（基本操作） |
+| `caveeraser.scan` | `op` | `scan` |
+| `caveeraser.fill` | `op` | `fill` |
+| `caveeraser.auto` | `op` | `auto` |
+| `caveeraser.chunkfill` | `op` | `chunkfill` |
+| `caveeraser.reload` | `op` | `reload` |
+| `caveeraser.*` | `op` | 上記すべて（子ノード一括付与） |
 
-!!! danger "cave モジュールは全権限が default false"
-    地形を不可逆に書き換えるため、OP であっても **権限管理プラグインで明示的に付与しなければ動作しません**。特に `caveeraser.chunkfill` は影響範囲が大きいので、限定運用を推奨します。
+!!! danger "cave モジュールは地形を不可逆に書き換えます"
+    特に `caveeraser.chunkfill` は影響範囲が大きく、誤実行による被害も大きくなります。OP 以外への開放は権限管理プラグインで限定運用を推奨します。
 
 ## 既存サーバーからの移行
 

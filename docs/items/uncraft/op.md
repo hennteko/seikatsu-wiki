@@ -31,7 +31,7 @@ Uncraft2 の導入・コマンド・権限・配布アイテム「アンクラ�
     アンクラフトステーション専用アイテム機能が有効になりました。
     ```
 
-3. 既定で `uncraft.use` は **全プレイヤーに有効**、`uncraft.give` は **OPのみ**。必要に応じて LuckPerms 等で調整する。
+3. 既定で `uncraft.use` は **OPのみ**、`uncraft.give` も **OPのみ**。一般プレイヤーには `/giveuncraft` で配布した **アンクラフトステーション（作業台アイテム）** を右クリックさせる運用が標準（右クリック側は `uncraft.use` を要求しない）。
 4. 運営で「アンクラフトステーション」を配布したい場合は `/giveuncraft` を使用する（後述）。
 
 !!! warning "対応するレシピ種別"
@@ -45,7 +45,7 @@ Uncraft2 の導入・コマンド・権限・配布アイテム「アンクラ�
 |---|---|
 | 用途 | アンクラフトGUIを開く |
 | 実行可能 | プレイヤーのみ（コンソール不可） |
-| permission | `uncraft.use`（default: `true`） |
+| permission | `uncraft.use`（default: `op`） |
 | permission-message | `§cこのコマンドを使用する権限がありません。` |
 
 GUIは1段9スロットの `Inventory`（タイトル：白＋太字「アンクラフトステーション」）で、`UncraftGuiHolder` という独自 InventoryHolder で識別されます。
@@ -61,8 +61,8 @@ GUIは1段9スロットの `Inventory`（タイトル：白＋太字「アンク
 | 数量範囲 | `1`〜`64`（範囲外は拒否） |
 | タブ補完 | 第1引数：オンラインプレイヤー名 / 第2引数：`1`,`8`,`16`,`32`,`64` のヒント |
 
-!!! note "実装上の権限二重チェック"
-    `/giveuncraft` のコマンドハンドラ内では `sender.hasPermission("uncraft.give") || sender.isOp()` で再度チェックされています。plugin.yml で `uncraft.give` を剥奪しても **OPであれば実行可能** です。完全に封じたい場合は OP権限ごと外すか、権限プラグインで明示的に否定（`-uncraft.give`）してください。
+!!! note "実装上の権限チェック"
+    `/giveuncraft` のコマンドハンドラ内では `sender.hasPermission("uncraft.give")` 単体で再チェックされ、満たさない場合は赤字でエラーメッセージを返します（OPは plugin.yml の `default: op` で自動的に権限を持つため通過します）。権限プラグインで明示的に否定（`-uncraft.give`）するか、OP権限を外してください。
 
 ## アンクラフトステーション専用アイテム
 
@@ -112,7 +112,7 @@ GUIは1段9スロットの `Inventory`（タイトル：白＋太字「アンク
 
 | 権限ノード | 既定値 | 説明 |
 |---|---|---|
-| `uncraft.use` | `true` | `/uncraft` でGUIを開ける（全員に有効） |
+| `uncraft.use` | `op` | `/uncraft` でGUIを開ける（プレイヤーは専用アイテム右クリックで代替） |
 | `uncraft.give` | `op` | `/giveuncraft` でアンクラフトステーションを配布できる |
 | `uncraft.*` | `op` | 上記すべて（children: `uncraft.use`, `uncraft.give`） |
 

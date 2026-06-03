@@ -16,8 +16,8 @@ CustomRailway の導入・`config.yml`・権限・管理コマンド・トラブ
 | 設定ファイル | `plugins/CustomRailway/config.yml` |
 | 駅データ | `plugins/CustomRailway/stations.yml`（自動生成・自動更新） |
 
-!!! note "コマンドの宣言と実装のずれ"
-    `plugin.yml` の `usage` は `/railway [station|route|train|help]` ですが、`RailwayCommand` に実装されているサブコマンドは **`station` / `train` / `list` / `info` / `reload` / `help`** です。`route` サブコマンドは実装されていません（駅オブジェクトには `connectedRoutes` リストの構造のみ存在）。
+!!! note "コマンド一覧"
+    `plugin.yml` の `usage` は `/railway <station|train|help>` です。`RailwayCommand` に実装されているサブコマンドは **`station` / `train` / `list` / `info` / `reload` / `help`** の 6 つです（駅オブジェクトには `connectedRoutes` リストの構造のみ存在し、これを操作するコマンドは未提供）。
 
 ## 導入手順
 
@@ -91,14 +91,6 @@ CustomRailway の導入・`config.yml`・権限・管理コマンド・トラブ
 !!! note "設定変更後は `/railway reload`"
     `/railway reload` を実行すると `config.yml` と `stations.yml` の両方が再読み込みされます（`customrailway.admin` が必要）。
 
-## 路線の作成について
-
-`plugin.yml` 上では `customrailway.route.create`（default: op）という権限ノードが定義されています。ただし **現バージョンの `RailwayCommand` には `route` サブコマンドが実装されておらず、路線を作成・編集するコマンドは存在しません**。
-
-- 駅クラス `Station` は `connectedRoutes : List<String>` を保持しており、`addRoute(name)`／`removeRoute(name)` の API はあります。
-- `/railway station info` および駅詳細GUIでは「接続路線」が表示される構造になっています（未設定時は `なし`）。
-- 路線を運用する場合は、将来バージョンでのコマンド追加またはサーバー側で別途データ投入する必要があります（標準のプレイヤー操作では設定不可）。
-
 ## 管理コマンド
 
 | コマンド | 必要権限 | 説明 |
@@ -113,23 +105,24 @@ CustomRailway の導入・`config.yml`・権限・管理コマンド・トラブ
 
 ## 権限ノード
 
-`plugin.yml` で定義されている権限は次の4つです。
+`plugin.yml` で定義されている権限は次の3つです。
 
 | 権限ノード | 既定 | 説明 |
 |---|---|---|
-| `customrailway.admin` | op | 管理者権限（`/railway reload`・`/railway station tp` ・他人の駅の削除に必要） |
-| `customrailway.station.create` | true | 駅を作成する権限（`/railway station create`） |
-| `customrailway.train.connect` | true | 列車を連結／切り離す権限（鎖・ハサミでの操作） |
-| `customrailway.route.create` | op | 路線を作成する権限（**現バージョンでは参照箇所なし**） |
+| `customrailway.admin` | op | 管理者権限（`/railway` コマンド本体・`/railway reload`・`/railway station tp` ・他人の駅の削除に必要）。子ノードとして `customrailway.station.create` を含む |
+| `customrailway.station.create` | op | 駅を作成する権限（`/railway station create`）。OP 限定 |
+| `customrailway.train.connect` | true（全員） | 列車を連結／切り離す権限（鎖・ハサミでの操作） |
+
+!!! info "コマンドは OP 限定"
+    `/railway` コマンド自体に `permission: customrailway.admin` が設定されているため、すべてのサブコマンド（`station create` / `gui` / `train info` 等）は OP のみが直接実行できます。プレイヤーは `[Railway]` / `[Station]` 看板や、運営が配布した GUI から駅を利用します。
 
 !!! example "LuckPerms 設定例"
     ```bash
     # 管理者
     /lp group admin permission set customrailway.admin true
 
-    # 一般プレイヤーは default で station.create / train.connect が true
-    # 制限したい場合は明示的に false を設定
-    /lp group default permission set customrailway.station.create false
+    # 一般プレイヤーへの連結権限制限（既定 true）
+    /lp group default permission set customrailway.train.connect false
     ```
 
 ## トラブルシューティング
@@ -163,7 +156,7 @@ CustomRailway の導入・`config.yml`・権限・管理コマンド・トラブ
 !!! warning "未実装・想定外の挙動に注意"
     現バージョンには **コメント／設定上は存在するが未実装** の機能があります。運営アナウンス時は誤解を避けるため明示してください。
 
-- **`route` サブコマンド** … `plugin.yml` の `usage` に `route` の記載があり、`customrailway.route.create` 権限も定義されているが、コマンドハンドラには未実装。
+- **`route` サブコマンド** … `RailwayCommand` 上では「§eこの機能は今後のアップデートで実装予定です」と返すスタブのみで、路線データを操作する処理はありません。駅オブジェクトに `connectedRoutes: List<String>` のフィールドだけが存在します。
 - **駅作成コスト** … `station.creation-cost`（既定 1000）はコメント上 EmeraldBank 連携想定だが、`StationManager#createStation` 内では参照されていない（消費処理なし）。
 - **自動運転（autopilot）** … `autopilot.enabled` などの設定はあるが、`TrainCart#setAutoPilot` を呼ぶロジックや関連コマンドは未提供。
 - **駅到着パーティクル** … `particles.arrival` は設定可能だが、駅到着イベントの実装は現状確認できない（連結時 `HEART`、切り離し／速度変更時 `CLOUD` は使用箇所あり）。

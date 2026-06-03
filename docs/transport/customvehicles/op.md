@@ -16,6 +16,9 @@ CustomVehicles の導入・config・サブコマンド・権限・CasinoPlugin �
 | 設定ファイル | `plugins/CustomVehicles/config.yml` |
 | データベース | SQLite（`plugins/CustomVehicles/vehicles.db`） |
 
+!!! note "プレイヤー向け看板リスナー"
+    `[Vehicle]` 看板（1行目）を設置すると、リスナーが整形し右クリックでカタログGUIが開きます（プレイヤー向けの代替操作）。看板の設置自体には権限不要です。
+
 !!! info "CasinoPlugin は softdepend（任意）"
     `plugin.yml` で `softdepend: [CasinoPlugin]` が指定されています。CasinoPlugin が **無くてもプラグインは起動** しますが、車両の購入・アップグレード・カラー変更・ブースト/ジャンプ時の燃料消費といった **エメラルド決済機能はすべて動作しません**（残高は常に 0 として扱われ、購入や決済は失敗します）。本プラグインを実運用する場合は CasinoPlugin の導入を推奨します。
 
@@ -119,10 +122,6 @@ CustomVehicles の導入・config・サブコマンド・権限・CasinoPlugin �
 - カラー変更: 50E（12色）。
 - 修理: `(100 − 現耐久) × repair.cost_per_durability` E。
 
-### `/vehicle repair`
-
-- **未実装**。実行すると「修理機能は実装中です」とだけ表示されます（Phase 2 予定）。修理はアップグレードGUIの修理ボタンから行ってください。
-
 ### `/vehicle info [車両ID]`
 
 - IDなし: 使用法案内のみ。
@@ -133,10 +132,6 @@ CustomVehicles の導入・config・サブコマンド・権限・CasinoPlugin �
 - `confirm` 無し: 警告メッセージと、`confirm` 付きの再実行コマンドを表示。
 - `confirm` あり: SQLite から該当車両レコードを削除します（取り消し不可）。
 
-### `/vehicle give <プレイヤー> <車種>` ※管理者
-
-- **未実装**。`customvehicles.give` 権限はあり、タブ補完（プレイヤー名・`sports_car`/`suv`/`van`）も動作しますが、実行すると「車両付与機能は実装中です」と表示されます（Phase 2 予定）。
-
 ### `/vehicle reload` ※管理者
 
 - **権限**: `customvehicles.reload`（既定 OP）
@@ -146,14 +141,14 @@ CustomVehicles の導入・config・サブコマンド・権限・CasinoPlugin �
 
 | 権限 | 既定 | 内容 |
 |---|---|---|
-| `customvehicles.use` | true（全員） | `/vehicle` の基本コマンド使用権（コマンドの `permission`） |
-| `customvehicles.admin` | op | 管理者権限（子: `use`/`catalog`/`give`/`reload` を内包） |
-| `customvehicles.catalog` | op | カタログアイテムの取得（`/vehicle catalog`） |
-| `customvehicles.give` | op | 他プレイヤーへの車両付与（未実装） |
+| `customvehicles.use` | true（全員） | 看板／カタログアイテム経由の GUI 操作（リスナー内チェック） |
+| `customvehicles.admin` | op | `/vehicle` コマンド本体の使用権。子として `use` / `catalog` / `give` / `reload` を内包 |
+| `customvehicles.catalog` | op | `/vehicle catalog`（カタログアイテム配布） |
+| `customvehicles.give` | op | （現状コマンドは未実装。権限ノードのみ定義） |
 | `customvehicles.reload` | op | `/vehicle reload` |
 
-!!! note "コマンド本体の権限"
-    `/vehicle` コマンド自体に `permission: customvehicles.use` が設定されています。既定で全員 true ですが、特定ロール限定にしたい場合は権限プラグインで `customvehicles.use` を false にしてから対象ロールに付与してください。`permission-message` は「§cこのコマンドを使用する権限がありません」です。
+!!! info "コマンドは OP 限定 / プレイヤーは看板・カタログ"
+    `/vehicle` コマンド自体に `permission: customvehicles.admin`（既定 op）が設定されています。プレイヤーは `[Vehicle]` 看板または OP が配布したカタログアイテムから購入・召喚・カスタマイズを行います。`permission-message` は「§cこのコマンドを使用する権限がありません (プレイヤーは [Vehicle] 看板またはカタログアイテムを使用してください)」です。
 
 ## CasinoPlugin 連携（EmeraldAPI）
 
@@ -198,9 +193,6 @@ boolean EmeraldAPI.isReady ()
 ??? failure "`/vehicle upgrade` で別の車両を強化したい"
     現状 `/vehicle upgrade` は所持車両の先頭1台のみが対象です（コード上 `TODO: 複数車両がある場合は選択GUIを表示`）。対応するまでは、対象でない車両を `/vehicle delete <ID> confirm` で整理してから実行するか、ソース側の改修で対応してください。
 
-??? failure "`/vehicle repair`・`/vehicle give` が動かない"
-    どちらも **未実装** です（Phase 2 予定。`TODO: Phase 2で実装` がコード上にあります）。修理はアップグレードGUIの修理ボタンを、車両付与は購入GUI経由を案内してください。
-
 ??? failure "`config.yml` を変更しても挙動が変わらない"
     多くの設定は `/vehicle reload` で反映されますが、**車両価格（500/800/1200）と各車種の座席数・カスタム上限はコードにハードコード** されています。これらは設定変更では変わらず、ソース改修が必要です。
 
@@ -210,7 +202,7 @@ boolean EmeraldAPI.isReady ()
 ## 実装状況メモ
 
 - 実装済み: カタログ→購入GUI→SQLite登録→召喚→運転→ブースト/ジャンプ→アップグレード/カラー/修理（GUI）→削除→情報表示。
-- 未実装: `/vehicle repair`・`/vehicle give`、`/vehicle upgrade` の複数車両選択GUI。
+- `/vehicle upgrade` は所持車両の先頭1台のみが対象（複数車両選択GUIは未実装、ソース上 `TODO`）。
 - 価格・座席数・カスタム上限など一部パラメータは現状コード固定。`config.yml` の `prices`・`fuel.consumption_rate`・`boost.speed_multiplier`／`boost.duration`／`jump.height` のうち、ブースト継続時間は **「3 + ブーストLv」秒** で計算され、`boost.duration` の値は使われていません。
 
 ---

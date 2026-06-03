@@ -117,8 +117,7 @@ KartRace の導入・コース設定・config・権限・管理コマンドを�
 | `kartrace.play` | 全員 | レースに参加できる |
 | `kartrace.garage` | 全員 | ガレージを開ける |
 | `kartrace.shop` | 全員 | ショップを開ける |
-| `kartrace.forcestart` | OP | レースを強制開始できる |
-| `kartrace.admin` | OP | 管理コマンド（`/kartadmin`）を使用できる |
+| `kartrace.admin` | OP | 管理コマンド（`/kartadmin`）を使用できる。`forcestart` / `forcestop` などすべてこの権限で判定 |
 | `kartrace.sign.create` | OP | レース看板を作成できる |
 
 ## 管理コマンド

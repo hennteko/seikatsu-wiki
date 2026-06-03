@@ -16,6 +16,7 @@ Tutorial2 の導入手順、データファイル（`userdata.yml`）、管理�
 | 依存プラグイン | なし（`/gs give` のステップは GlobalStorage 系プラグインの存在を前提） |
 | データファイル | `plugins/Tutorial2/userdata.yml` |
 | config.yml | **生成・参照されません**（プラグイン側に設定項目はありません） |
+| 権限 | `tutorial.admin`（既定 op）― `/tutorial paper` / `/tutorial skip` に必要 |
 
 !!! info "起動時の動作"
     `onEnable` で `TutorialManager` が初期化され、`userdata.yml` を読み込みます。`/tutorial` コマンドの登録と、進行判定用のイベントリスナー（参加・右クリック・ワールド変更・コマンド実行・破壊・拾得・かまど抽出・クラフト）が登録されます。停止時 (`onDisable`) には `userdata.yml` を保存します。
@@ -83,9 +84,9 @@ Tutorial2 の導入手順、データファイル（`userdata.yml`）、管理�
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/tutorial open` | 全員 | 配布された紙の代わりに使用。最初のステップならルールブックを配布、それ以外は現在の目標を再表示 |
-| `/tutorial paper` | 全員 | 「チュートリアル開始」の紙を再発行（再配布用） |
+| `/tutorial paper` | `tutorial.admin`（op） | 「チュートリアル開始」の紙を再発行（OP の再配布用） |
 | `/tutorial password <pass>` | 全員 | 最終ステップでパスワードを照合（正解で完了、エメラルド10付与） |
-| `/tutorial skip [プレイヤー名]` | **OP のみ** | 対象プレイヤーのステップを **1段階だけ** 進める（報酬なし）。プレイヤー名省略時は自分が対象 |
+| `/tutorial skip [プレイヤー名]` | `tutorial.admin`（op） | 対象プレイヤーのステップを **1段階だけ** 進める（報酬なし）。プレイヤー名省略時は自分が対象 |
 
 !!! note "`/tutorial skip` の挙動"
     `skipStep` は現在ステップから内部マップで定義された **次のステップへ 1 段階のみ進めます**（一気に完了させる機能はありません）。報酬・ボーナス（エメラルド／パン64個）は付与されず、対象プレイヤーには `[スキップ] 管理コマンドによりステップをスキップしました。` のメッセージと、新しい目標が表示されます。鉄装備一式のように内部ステップが連続している区間では、複数回実行が必要です。
@@ -95,13 +96,19 @@ Tutorial2 の導入手順、データファイル（`userdata.yml`）、管理�
 
 ## 権限ノード
 
-!!! danger "permissions ブロックは未定義（OP判定）"
-    plugin.yml に **`permissions` ブロックが存在しません**。プラグインが管理者操作用に独自に判定しているのは **`Player#isOp()` のみ** です。具体的には以下の通りです。
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `tutorial.admin` | op | `/tutorial paper`（紙の再配布）と `/tutorial skip [プレイヤー名]`（ステップ強制進行）に必要 |
 
-    - `/tutorial skip [プレイヤー名]` — 実行可能なのは **OP のみ**。非OPが実行すると「このコマンドを実行する権限がありません。」と表示されます。
-    - `/tutorial open` / `/tutorial paper` / `/tutorial password` — 権限チェックはなく、全プレイヤーが実行可能です。
+| サブコマンド | 必要権限 |
+|---|---|
+| `/tutorial open` | 不要（全プレイヤー） |
+| `/tutorial password <pass>` | 不要（全プレイヤー） |
+| `/tutorial paper` | `tutorial.admin`（既定 op） |
+| `/tutorial skip [プレイヤー名]` | `tutorial.admin`（既定 op） |
 
-    LuckPerms 等の権限プラグインで個別ノードによる制御はできません（プラグインが権限ノードを定義していないため）。`skip` を運営に開放したい場合は、対象プレイヤーに OP 権限を付与する必要があります。
+!!! note "LuckPerms 等で個別付与可能"
+    `tutorial.admin` は plugin.yml で正規に宣言されているため、LuckPerms 等の権限プラグインで OP 以外にも個別付与できます。`open` / `password` はプレイヤー向けの正規操作として権限不要で開放されています。
 
 ## トラブルシューティング
 
@@ -134,7 +141,7 @@ Tutorial2 の導入手順、データファイル（`userdata.yml`）、管理�
     パスワードは `TutorialCommand` クラス内の `private final String PASSWORD = \"20240526\";` で固定されています。config による変更はできません。変更したい場合はソースを書き換えて再ビルドしてください。
 
 ??? failure "OP プレイヤーに `/tutorial skip` の補完が出ない"
-    TAB補完は `sender.isOp()` で判定しているため、OPでない場合 `skip` 候補は出ません。OP権限を付与してください。LuckPerms 等の権限ノードでの制御はできません（プラグインが権限ノードを定義していないため）。
+    TAB 補完は `sender.hasPermission("tutorial.admin")` で判定しているため、`tutorial.admin` 権限を持っていない場合 `skip` 候補は出ません。OP 権限または LuckPerms 等で `tutorial.admin` を付与してください。
 
 ??? failure "ステップ完了の報酬（エメラルド）が出ない"
     報酬はインベントリに余裕がある場合のみ通常通り渡されます。満杯の場合は **足元にドロップ** され、対象プレイヤーには「インベントリがいっぱいのため、アイテムを足元に落としました。」と表示されます。チャット履歴を確認してください。

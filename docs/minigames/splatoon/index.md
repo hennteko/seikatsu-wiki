@@ -6,7 +6,7 @@ Minecraft上でスプラトゥーンを再現した **ナワバリバトル風�
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2〜8人（2チーム対戦・config で変更可）</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">3分（180秒・config で変更可）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Spigot/Paper 1.21.x</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! note "ゲームの特徴"

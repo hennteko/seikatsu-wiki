@@ -150,13 +150,16 @@ Ranking の導入・config・ランキング看板の設置・権限・管理コ
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `ranking.stats` | 全員（`true`） | 自分の統計を表示（`/ranking`、`/ranking stats`） |
+| `ranking.stats` | OP | 自分の統計を見るコマンド権限（実装は OP のみ実行可） |
 | `ranking.stats.others` | OP | 他プレイヤーの統計を表示（`/ranking stats <名前>`） |
-| `ranking.ranking` | 全員（`true`） | ランキングを表示 |
-| `ranking.admin` | OP | 管理者コマンド全般（看板設置・削除・更新、reload、reset）。`ranking.stats`・`ranking.stats.others`・`ranking.ranking` を子として含む |
+| `ranking.ranking` | OP | ランキングを見るコマンド権限（プレイヤーはランキング看板で閲覧） |
+| `ranking.admin` | OP | 管理者権限（看板設置・削除・更新、reload、reset）。`ranking.stats`・`ranking.stats.others`・`ranking.ranking` を子として含む |
+| `ranking.use` | 全員（`true`） | マイステータス看板・GUIの利用権限 |
 
-!!! note "ランキング表示コマンドの権限について"
-    `plugin.yml` には `ranking.ranking`（ランキング閲覧権限、既定 `true`）が定義されていますが、実装上 `/ranking ranking`・`/ranking top` の各処理ではこの権限のチェックが行われていません。実際にはランキング表示は全員が実行できます。`ranking.stats.others` と `ranking.admin` は実装側でもチェックされています。
+!!! warning "実装側は全コマンドが `sender.isOp()` でガードされている"
+    `plugin.yml` の権限ノードに関係なく、`/ranking` 系コマンドはすべて **コマンドハンドラの先頭で `sender.isOp()` チェック** が行われます。`ranking.admin` を持っていても OP 権限が無いプレイヤーには「このコマンドはOPのみ実行可能です」と表示され、続いて「マイステータス看板を右クリックしてください」というガイドが流れます。一般プレイヤー向けの統計確認はマイステータス看板（GUI）に統一する設計です。
+
+    一方、コマンドハンドラ内部のサブコマンドは `ranking.stats.others` `ranking.ranking` `ranking.admin` を個別にチェックします。OPでない管理者（権限プラグインで `ranking.admin` だけを付与した運営）にコマンドを使わせたい場合は、`sender.isOp()` の前段ガードを外す改修が必要です。
 
 ## トラブルシューティング
 

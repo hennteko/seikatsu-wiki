@@ -8,37 +8,38 @@ EmeraldBank の導入・config・権限・ランキング看板の設置・管�
 
 | 項目 | 値 |
 |---|---|
-| プラグイン名 | EmeraldBank |
-| バージョン | 2.0.2 |
-| api-version | 1.21 |
+| プラグイン名 | CasinoPlugin（銀行モジュール `bank`） |
+| api-version | 26.1.2 |
 | メインコマンド | `/emerald`（`/eb`）、`/ed`、`/ew` |
-| 稼働形態 | 生活鯖では統合版 **CasinoPlugin に内包** された銀行モジュールとして稼働 |
-| 設定ファイル | `plugins/EmeraldBank/config.yml` |
-| 対応 | Spigot 1.21.x |
+| 稼働形態 | 統合版 **CasinoPlugin に内包** された銀行モジュールとして稼働 |
+| 共通設定 | `plugins/CasinoPlugin/config.yml`（モジュール有効化フラグ等） |
+| 残高データ | `plugins/CasinoPlugin/accounts.yml` |
 
 !!! info "CasinoPlugin への内包について"
-    生活鯖の本番環境では、EmeraldBank は単体ではなく統合版 **CasinoPlugin** に組み込まれた銀行モジュールとして動作しています。サーバー経済の通貨残高を一元管理する基盤であり、他のプラグインも口座データ（`AccountRepository`）を参照します。本ページは EmeraldBank 単体プラグインの仕様に基づいて記述しています。
+    EmeraldBank は単体プラグインとしては存在せず、統合版 **CasinoPlugin** に組み込まれた銀行モジュール（`bank`）として動作します。サーバー経済の通貨残高を一元管理する基盤であり、他モジュール（Poker / Slot / BlackJack / Tintiro / HorseRacing / Lottery / Quiz / Kart）は内部 API `EmeraldAPI` を経由してこの口座データを参照します。
 
 ## 導入手順
 
-1. ビルドした `EmeraldBank-2.0.2.jar` をサーバーの `plugins/` フォルダに配置する。
-2. サーバーを起動すると `plugins/EmeraldBank/config.yml` が自動生成される。
-3. 通常はそのまま利用可能。残高データは config.yml の `accounts` 以下に保存される。
-4. 統合版 CasinoPlugin として運用する場合は、CasinoPlugin の導入手順に従う（銀行モジュールはその内部で初期化される）。
+1. ビルドした `CasinoPlugin-*.jar` をサーバーの `plugins/` フォルダに配置する。
+2. サーバーを起動すると `plugins/CasinoPlugin/config.yml` および `plugins/CasinoPlugin/accounts.yml` が自動生成される。
+3. `config.yml` の `modules.bank.enabled` は **`true` 固定で運用**（他モジュールが依存するため）。
+4. 通常はそのまま利用可能。残高データは `accounts.yml` の `accounts.<uuid>` に保存される。
 
 !!! warning "残高データのバックアップ"
-    プレイヤーの口座残高は `config.yml` の `accounts` セクションに保存されます。サーバー経済の根幹データのため、定期的にバックアップを取ってください。
+    プレイヤーの口座残高は `plugins/CasinoPlugin/accounts.yml` の `accounts` セクションに保存されます。サーバー経済の根幹データのため、定期的にバックアップを取ってください。
 
-## config.yml 主要項目
+## config.yml 主要項目（銀行モジュール関連）
 
-config.yml は最小構成で、プレイヤーアカウントのデータ保存のみを担います。
+銀行モジュール固有の設定は CasinoPlugin 共通の `config.yml` で扱います。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `accounts` | `{}` | プレイヤーUUIDごとの残高を保存するセクション。プラグインが自動で読み書きするため、原則手動編集は不要 |
+| `modules.bank.enabled` | `true` | 銀行モジュールの有効/無効。他モジュールが依存するため通常は `true` 固定 |
+| `server-account-uuid` | `00000000-0000-0000-0000-000000000000` | BlackJack / Tintiro / Poker などでベットの一時保管に使用するハウス口座 UUID |
+| `accounts`（`accounts.yml`） | `{}` | プレイヤー UUID ごとの残高。プラグインが自動で読み書きするため原則手動編集不要 |
 
-!!! note "他プラグインからのアクセス"
-    `accounts` は EmeraldBank が管理するデータで、他のプラグイン（取引プラグイン等）は直接 YAML を編集せず、EmeraldBank の外部API `AccountRepository` を経由して残高を取得・更新します（`getBalance` / `setBalance` / `transact`）。
+!!! note "他モジュールからのアクセス"
+    口座データは `EmeraldAPI` 経由で公開されます（`getBalance` / `setBalance` / `transact`）。各ゲームモジュール（Poker / Slot / BlackJack / Tintiro / HorseRacing / Lottery / Quiz / Kart）はこのAPIを通して残高を読み書きします。
 
 ## 権限ノード
 
@@ -65,8 +66,23 @@ config.yml は最小構成で、プレイヤーアカウントのデータ保存
 !!! warning "ランキング看板の登録はメモリ上で保持されます"
     ランキング看板の位置データはサーバー稼働中のメモリ上で管理されます。サーバー再起動後はクリック判定が看板の文面（1〜2行目）から再認識される設計です。看板の文面を変更すると認識されなくなるため、文面は変更しないでください。
 
-!!! danger "「ATM看板」は未実装です"
-    看板からバンクGUIを直接開く「ATM看板」機能は **未実装** です（プラグインの今後の追加候補にとどまっています）。現状で実装済みの看板機能は本項の **ランキング看板** のみです。GUIはコマンド `/eb gui` またはウォレットの右クリックから開いてください。
+## ATM 看板の設置手順
+
+`[EmeraldBank]` 看板を設置することで、コマンドを打たずに右クリックで銀行機能を呼び出せます。設置には `emerald.admin` 権限が必要です。
+
+1. 看板を設置し、1行目に `[EmeraldBank]`、2行目に下表のいずれかを入力する。
+2. 設置に成功すると2行目が緑色に変換される。
+3. プレイヤーが右クリックすると指定の機能が実行される。
+
+| 2行目 | 機能 | 備考 |
+|---|---|---|
+| `wallet` | エメラルドウォレットを発行 | 既に所持済みの場合は重複発行に注意 |
+| `book` | エメラルド通帳を発行 | 同上 |
+| `gui` | バンクGUIを開く | コマンド `/eb gui` 相当 |
+| `money` | 自分の残高をチャットに表示 | コマンド `/eb money` 相当 |
+
+!!! note "ATM 看板の設置権限"
+    `[EmeraldBank]` 看板の設置には `emerald.admin` 権限が必要です。一般プレイヤーは設置できません。
 
 ## 管理コマンド
 

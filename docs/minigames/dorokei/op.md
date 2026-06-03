@@ -156,14 +156,15 @@ games:
 
 ## 権限ノード
 
-`plugin.yml` に **permissions ブロックは定義されていません**。専用の権限ノードは存在せず、`/dorokei setup` 系のセットアップコマンドや `/dorokei gamestart` などはコマンド実行権限（既定で OP）で判定されます。
+`plugin.yml` には `dorokei.admin` と `dorokei.play` の2つが定義されています。コード上でも、サブコマンドごとに以下の権限ノードでチェックされています。
 
-| 区分 | 判定 |
-|---|---|
-| `/dorokei`（全サブコマンド） | 専用権限ノードなし＝コマンド権限（既定で OP が実行可能） |
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `dorokei.admin` | OP | `/dorokei setup ...` / `gamestart` / 旧コマンド（`start` / `setpolice` / `settime` / `setjail`）の実行 |
+| `dorokei.play` | 全員 | `/dorokei join` / `leave` / `list` の実行 |
 
 !!! note "プレイヤー操作について"
-    `/dorokei join` / `leave` / `list` もコマンド権限で動作します。一般プレイヤーにロビー参加を許可する場合は、看板による参加導線を利用するか、サーバーの権限プラグインで `/dorokei` の実行を許可してください。
+    `dorokei.play` は既定で全員に付与されるため、一般プレイヤーは追加設定なしで `/dorokei join`・`/dorokei leave`・`/dorokei list` を利用できます。看板からの参加・退出はコマンドではなくイベント経由のため権限チェックの対象外です。
 
 ## 実装状況（v3.1）
 
