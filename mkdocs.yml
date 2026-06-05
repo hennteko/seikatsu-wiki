@@ -213,6 +213,11 @@ nav:
           - 👤 プレイヤー向け: transport/customvehicles/player.md
           - 🛠️ OP・運営向け: transport/customvehicles/op.md
   - ユーティリティ・基盤:
+      - LuckPerms（権限管理）: utility/luckperms.md
+      - LWC（チェスト保護）:
+          - utility/lwc/index.md
+          - 👤 プレイヤー向け: utility/lwc/player.md
+          - 🛠️ OP・運営向け: utility/lwc/op.md
       - Multiverse-Core: utility/multiverse-core.md
       - Multiverse-Inventories: utility/multiverse-inventories.md
       - Multiverse-Portals: utility/multiverse-portals.md
