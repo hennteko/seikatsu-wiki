@@ -57,18 +57,22 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 
 ### 参加用看板の設置
 
-`[Yukigassen]` 看板をロビーに設置すると、プレイヤーが看板クリックで参加・退出できます。
+ロビーに看板を設置し、**看板を見た状態**で以下のコマンドを実行します（`yukigassen.admin` 権限が必要）。
 
-- 1行目に `[Yukigassen]`、2行目に `join`（参加）または `leave`（退出）と入力します。
-- 設置すると1行目が `[Yukigassen]`、2行目が「参加」「退出」へ自動で色付けされます。
-- 看板の設置には `yukigassen.admin` 権限が必要です。
+```text
+/yukigassen setsign join    # 参加看板として登録
+/yukigassen setsign leave   # 退出看板として登録
+```
+
+コマンドを実行すると、プラグインが1行目に `[Yukigassen]`・2行目に「参加」または「退出」のテキストを自動書き込みし、位置を config に保存します。手書きでのテキスト入力は不要です。
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/yukigassen join [player]` | `yukigassen.user` | 雪合戦に参加する（対象指定可） |
-| `/yukigassen leave [player]` | `yukigassen.user` | 雪合戦から離脱する（対象指定可） |
+| `/yukigassen join [player]` | `yukigassen.admin` | 対象をロビーに参加させる（管理者用） |
+| `/yukigassen leave [player]` | `yukigassen.admin` | 対象をロビーから離脱させる（管理者用） |
+| `/yukigassen setsign <join\|leave>` | `yukigassen.admin` | 視線先の看板を参加/退出看板として登録する |
 | `/yukigassen start` | `yukigassen.admin` | ゲームを開始する |
 | `/yukigassen stop` | `yukigassen.admin` | ゲームを強制停止する |
 | `/yukigassen zanki <数>` | `yukigassen.admin` | 初期残機数を設定する |
@@ -91,8 +95,7 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `yukigassen.user` | 全員 | 参加・離脱などユーザー用コマンド |
-| `yukigassen.admin` | OP | ゲーム管理・セットアップ・看板設置 |
+| `yukigassen.admin` | OP | join/leave・setsign を含む全管理コマンド |
 
 ## トラブルシューティング
 

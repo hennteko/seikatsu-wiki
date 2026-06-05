@@ -48,14 +48,14 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 ### 参加・退出看板の作成
 
-ロビーの参加導線として、看板に以下を記入して設置します（`moba.admin` 権限が必要）。
+ロビーの参加導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。
 
-| 用途 | 1行目 | 2行目 |
-|---|---|---|
-| 参加看板 | `[MOBA]` | `lobby` |
-| 退出看板 | `[MOBA]` | `leave` |
+1. 看板を設置する。
+2. 看板を見た状態で `/moba setsign <join|leave|shop>` を実行する。
+3. テキストはプラグインが自動で書き込みます。
 
-設置に成功すると看板が自動で整形され、参加看板にはクリック誘導と「現人数 / 最大人数」が表示されます。
+!!! note "手書き登録は廃止済み"
+    以前の方式（1行目に `[MOBA]`、2行目に `lobby`/`leave` を手書きして認識させる方式）は廃止されています。必ずコマンドで登録してください。
 
 ## config.yml 主要項目
 
@@ -68,6 +68,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `MIN_PLAYERS_TO_START` | 2 | 開始に必要な最小人数 |
 | `AUTO_TEAM_BALANCE` | true | チーム人数の自動均等化 |
 | `COUNTDOWN_TIME` | 30 | 開始前カウントダウン（秒） |
+| `END_SCREEN_DURATION` | 10 | ゲーム終了後の統計表示時間（秒） |
 
 ### 経済（`ECONOMY`）
 
@@ -125,6 +126,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `/moba stop` | `moba.admin` | ゲームを停止する |
 | `/moba reload` | `moba.admin` | config.yml を再読み込み |
 | `/moba setup ...` | `moba.admin` | マップ座標の設定（前述） |
+| `/moba setsign <join\|leave\|shop>` | `moba.admin` | 視線先の看板を参加・退出・ショップ看板として登録する |
 | `/moba stats` | 全員 | 統計を表示 |
 
 ## ゲームの運営

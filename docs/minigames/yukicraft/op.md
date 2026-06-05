@@ -86,26 +86,32 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/yukicraft join [対象]` | `yukicraft.join` | ゲームに参加。対象指定（セレクタ）は `yukicraft.admin` が必要 |
-| `/yukicraft leave [対象]` | `yukicraft.join` | ゲームから離脱。対象指定は `yukicraft.admin` が必要 |
+| `/yukicraft join [対象]` | `yukicraft.admin` | 対象をロビーに参加させる（管理者用） |
+| `/yukicraft leave [対象]` | `yukicraft.admin` | 対象をロビーから離脱させる（管理者用） |
 | `/yukicraft start` | `yukicraft.admin` | ゲームを開始する |
 | `/yukicraft stop` | `yukicraft.admin` | ゲームを強制終了する |
 | `/yukicraft setup <type>` | `yukicraft.admin` | 地点・エリアの設定（前述） |
 | `/yukicraft reload` | `yukicraft.admin` | config.yml を再読み込みする |
 
 !!! note "看板による参加導線"
-    OPは `[Yukicraft]` 看板を設置すると、コマンドなしで参加・退出させられます。1行目に `[Yukicraft]`、2行目に `lobby`（参加看板）または `leave`（離脱看板）と記入します。設置にも `yukicraft.admin` 権限が必要です。参加看板にはロビー人数が `現在数/最大数人` で表示されます。
+    ロビーに看板を設置し、**その看板を見た状態**で以下のコマンドを実行します（`yukicraft.admin` 権限が必要）。
+
+    ```text
+    /yukicraft setsign join     # 参加看板として登録（1行目 [Yukicraft]・2行目 lobby・4行目に参加人数表示）
+    /yukicraft setsign leave    # 離脱看板として登録（2行目 leave）
+    ```
+
+    コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config に保存します。手書きでのテキスト入力は不要です。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `yukicraft.join` | 全員 | ゲームへの参加・離脱（メインコマンドの利用） |
-| `yukicraft.admin` | OP | start / stop / setup / reload、看板設置、対象指定での join/leave |
+| `yukicraft.admin` | OP | start / stop / setup / setsign / reload / join / leave（管理者コマンドすべて） |
 
 ## ゲームの運営
 
-1. プレイヤーが `/yukicraft join` または参加看板からロビーに集まる。
+1. プレイヤーが参加看板のクリックまたは管理者による `/yukicraft join` でロビーに集まる。
 2. 人数がそろったら `/yukicraft start` で開始する。
 3. 異常時は `/yukicraft stop` で強制終了する（`end-delay` 秒後に全員ロビーへ戻る）。
 
@@ -118,7 +124,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
     `arena` のエリア座標（`area pos1/pos2`）と `snow-layers`・`clear-min-y`・`clear-max-y` の設定を確認してください。マップリセットはこのエリア・高さ範囲に対して行われます。範囲が未設定だと雪が生成されません。設定変更後は `/yukicraft reload` を実行してください。
 
 ??? failure "プレイヤーが看板で参加できない"
-    看板の1行目が `[Yukicraft]`、2行目が `lobby`（参加）または `leave`（離脱）になっているか確認してください。看板の設置には `yukicraft.admin` 権限が必要です。
+    `/yukicraft setsign join`（または `leave`）を、登録したい看板を見ながら実行してください（`yukicraft.admin` 権限が必要）。
 
 ??? failure "クリーパーが地形を壊しすぎる"
     `creeper.block-damage` を `false` にすると、クリーパー爆発による地形破壊が無効になります（爆発エフェクトとプレイヤーへのダメージは残ります）。`true` の場合でも雪ブロックのみが破壊対象です。

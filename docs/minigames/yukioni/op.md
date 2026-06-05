@@ -11,7 +11,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 | プラグイン名 | Yukioni |
 | 説明 | 雪鬼ごっこミニゲームプラグイン |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukioni <setup\|start\|stop\|reload>` |
+| メインコマンド | `/yukioni <setup\|setsign\|start\|stop\|reload>` |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Yukioni/config.yml` |
 | 座標保存ファイル | `plugins/Yukioni/locations.yml`（自動生成・自動保存） |
@@ -60,7 +60,14 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 /yukioni setup area pos2   # ゲームエリアの角2
 ```
 
-設定後、ロビーに看板を設置します。看板の **1行目に `[Yukioni]`**、**2行目に `lobby`（参加用）または `leave`（離脱用）** と書いて設置すると、自動で整形された看板になります（設置には `yukioni.admin` 権限が必要）。
+設定後、ロビーに看板を設置します。看板を設置したら、**その看板を見た状態**で以下のコマンドを実行します（`yukioni.admin` 権限が必要）。
+
+```text
+/yukioni setsign join    # 参加看板として登録
+/yukioni setsign leave   # 離脱看板として登録
+```
+
+コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を `locations.yml` の `sign.join` / `sign.leave` に保存します。手書きでのテキスト入力は不要です。
 
 !!! tip "ゲームエリアについて"
     `area pos1` / `area pos2` の2点で囲まれた直方体がゲームエリアになります。プレイヤーはこの範囲外に出られず、開始時はこの範囲内のランダムな位置にテレポートされます。エリア未設定の場合は、エリア判定が無効になりロビー地点が代替に使われます。
@@ -90,7 +97,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 ## トラブルシューティング
 
 ??? failure "プレイヤーがゲームに参加できない"
-    参加導線は **ロビー看板** です。1行目 `[Yukioni]`・2行目 `lobby` の看板が正しく設置されているか、`/yukioni setup lobby` でロビー座標が設定済みかを確認してください。
+    参加導線は **ロビー看板** です。`/yukioni setsign join` を、登録したい看板を見ながら実行してください（`yukioni.admin` 権限が必要）。また、`/yukioni setup lobby` でロビー座標が設定済みかも確認してください。
 
 ??? failure "ゲームが開始できない"
     `min-players`（既定2人）以上がロビーに入っているか確認してください。人数不足の場合、`/yukioni start` を実行しても開始されません。また、すでにゲームが進行中の場合も開始できません。
@@ -98,8 +105,8 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 ??? failure "プレイヤーがエリア外に出てしまう／開始位置がおかしい"
     `/yukioni setup area pos1` と `pos2` の両方が設定されているか確認してください。エリアが未設定だとエリア判定が無効になり、開始時のテレポート先がロビー地点になります。pos1・pos2 は同じワールド内で設定してください。
 
-??? failure "看板を設置しても整形されない"
-    看板の整形には `yukioni.admin` 権限が必要です。1行目を `[Yukioni]`、2行目を `lobby` または `leave` と正確に入力してください（大文字小文字は問いません）。
+??? failure "看板が登録されない"
+    看板の登録には `yukioni.admin` 権限が必要です。登録したい看板を見ながら `/yukioni setsign join`（または `leave`）を実行してください（`yukioni.admin` 権限が必要）。
 
 ??? failure "設定変更が反映されない"
     `config.yml` を編集したら `/yukioni reload` を実行してください。なお、座標は `locations.yml` に保存され、setup コマンド実行時に即保存されます。

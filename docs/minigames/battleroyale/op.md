@@ -122,10 +122,10 @@ plugin.yml には次の2つの権限が定義されています。コード上�
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
 | `battleroyale.admin` | OP | `setup` / `setchest` / `setitem` / `settime` / `setarea` / `setmax` / `setteam` / `start` / `stop` / `reset` / `status` |
-| `battleroyale.play` | 全員 | プレイヤー参加用ノード（plugin.yml で定義済み） |
+| `battleroyale.play` | OP | プレイヤー参加用コマンド権限。一般プレイヤーの参加・退出は看板で行うためOP既定 |
 
 !!! note "プレイヤー用コマンドの権限チェック"
-    `/btr join` / `leave` / `team` はソース上で `hasPermission()` 判定を行っていません。`battleroyale.play` は plugin.yml に「参加する権限」として登録されていますが、実際の参加コマンドは権限チェックなしで動作します。制限したい場合はサーバーの権限管理プラグインで `battleroyale` コマンド自体の実行可否を調整してください。
+    `/btr join` / `leave` / `team` は `battleroyale.play` 権限をチェックしています。既定が OP のため、一般プレイヤーはこれらのコマンドで参加・退出できません。一般プレイヤーの参加・退出はロビーに設置された看板から行います。
 
 ## トラブルシューティング
 

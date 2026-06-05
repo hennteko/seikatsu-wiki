@@ -57,6 +57,7 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 /splatoon setfield 1         # フィールド範囲の角1（その場の位置）
 /splatoon setfield 2         # フィールド範囲の角2（その場の位置）
 /splatoon setsign            # 参加看板を設定（5ブロック以内の看板を見て実行）
+/splatoon setleavesign      # 離脱看板を設定（5ブロック以内の看板を見て実行）
 /splatoon setlobbyspawn      # ロビーのスポーン地点（その場の位置・任意）
 /splatoon spawn              # ゲーム外スポーン地点（その場の位置・任意）
 /splatoon setup              # 設定状態を確認
@@ -83,6 +84,7 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 |---|---|
 | `/splatoon start` | 試合を強制開始する（コマンドブロックからも実行可能） |
 | `/splatoon setsign` | 視線の先の看板を参加看板に設定する |
+| `/splatoon setleavesign` | 視線の先の看板を離脱看板に設定する |
 | `/splatoon setspawn <orange\|blue>` | 指定チームの試合内スポーンを現在地に設定 |
 | `/splatoon setlobbyspawn` | ロビーのスポーン地点を現在地に設定 |
 | `/splatoon spawn` | ゲーム外スポーン地点を現在地に設定 |
