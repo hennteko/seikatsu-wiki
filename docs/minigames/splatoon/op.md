@@ -56,10 +56,10 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 /splatoon setspawn blue      # ブルーチームの試合内スポーン（その場の位置）
 /splatoon setfield 1         # フィールド範囲の角1（その場の位置）
 /splatoon setfield 2         # フィールド範囲の角2（その場の位置）
-/splatoon setsign            # 参加看板を設定（5ブロック以内の看板を見て実行）
-/splatoon setleavesign      # 離脱看板を設定（5ブロック以内の看板を見て実行）
-/splatoon setlobbyspawn      # ロビーのスポーン地点（その場の位置・任意）
-/splatoon spawn              # ゲーム外スポーン地点（その場の位置・任意）
+/splatoon setsign join       # 参加看板を設定（5ブロック以内の看板を見て実行）
+/splatoon setsign leave      # 離脱看板を設定（5ブロック以内の看板を見て実行）
+/splatoon setlobby           # ロビーのスポーン地点（その場の位置・任意）
+/splatoon setstartspawn      # ゲーム外スポーン地点（その場の位置・任意）
 /splatoon setup              # 設定状態を確認
 ```
 
@@ -67,7 +67,7 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
     `setfield 1` と `setfield 2` の2点で囲まれた直方体がフィールド範囲（塗り判定の対象）になります。`setfield 2` を実行するとフィールドの総ブロック数が表示されます。塗れる床は草・土・石・各種コンクリート・テラコッタ・砂・砂利・板材などの表面ブロックに限られます。
 
 !!! note "ロビースポーン・デフォルトスポーンは任意"
-    `setlobbyspawn`（ロビーの戻り地点）と `spawn`（ログアウト後の戻り地点）は未設定でも試合は動作します。アリーナ（スポーン2点＋フィールド2点）と参加看板が必須項目です。
+    `setlobby`（ロビーの戻り地点）と `setstartspawn`（ログアウト後の戻り地点）は未設定でも試合は動作します。アリーナ（スポーン2点＋フィールド2点）と参加看板が必須項目です。
 
 ### 試合の流れ（運営視点）
 
@@ -83,11 +83,11 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 | コマンド | 説明 |
 |---|---|
 | `/splatoon start` | 試合を強制開始する（コマンドブロックからも実行可能） |
-| `/splatoon setsign` | 視線の先の看板を参加看板に設定する |
-| `/splatoon setleavesign` | 視線の先の看板を離脱看板に設定する |
+| `/splatoon setsign join` | 視線の先の看板を参加看板に設定する |
+| `/splatoon setsign leave` | 視線の先の看板を離脱看板に設定する |
 | `/splatoon setspawn <orange\|blue>` | 指定チームの試合内スポーンを現在地に設定 |
-| `/splatoon setlobbyspawn` | ロビーのスポーン地点を現在地に設定 |
-| `/splatoon spawn` | ゲーム外スポーン地点を現在地に設定 |
+| `/splatoon setlobby` | ロビーのスポーン地点を現在地に設定 |
+| `/splatoon setstartspawn` | ゲーム外スポーン地点を現在地に設定 |
 | `/splatoon setfield <1\|2>` | フィールド範囲の角を現在地に設定 |
 | `/splatoon give <武器名>` | 自分にブキを配布する（テスト用） |
 | `/splatoon setup` | 設定状態・現在のゲーム状態を確認 |
@@ -111,10 +111,10 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 ## トラブルシューティング
 
 ??? failure "コンソールにセットアップ未完了の警告が出る"
-    アリーナ（`/splatoon setspawn orange`・`setspawn blue`・`setfield 1`・`setfield 2`）と参加看板（`/splatoon setsign`）が未設定です。`/splatoon setup` で不足項目を確認し、すべて設定してください。
+    アリーナ（`/splatoon setspawn orange`・`setspawn blue`・`setfield 1`・`setfield 2`）と参加看板（`/splatoon setsign join`）が未設定です。`/splatoon setup` で不足項目を確認し、すべて設定してください。
 
 ??? failure "プレイヤーがゲームに参加できない"
-    参加導線は **ロビーの参加看板** です。`/splatoon setsign` で看板が正しく設定されているか確認してください。`setsign` は5ブロック以内の看板ブロックを見て実行する必要があります。
+    参加導線は **ロビーの参加看板** です。`/splatoon setsign join` で看板が正しく設定されているか確認してください。`setsign join` は5ブロック以内の看板ブロックを見て実行する必要があります。
 
 ??? failure "試合が始まらない"
     試合開始には `game.min-players`（既定2人）以上のロビー参加が必要です。人数が足りない場合カウントダウンは始まりません。`/splatoon start` で強制開始する場合も同じ最小人数が必要です。

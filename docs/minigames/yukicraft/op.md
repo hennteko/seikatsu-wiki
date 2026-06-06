@@ -10,7 +10,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 |---|---|
 | プラグイン名 | Yukicraft |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukicraft <join\|leave\|start\|stop\|setup\|reload>` |
+| メインコマンド | `/yukicraft <join\|leave\|start\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setstart\|setsign\|reload>` |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Yukicraft/config.yml` |
 
@@ -23,7 +23,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 ## config.yml 設定項目
 
-`config.yml` の各項目は次のとおりです。地点・エリアは基本的に `/yukicraft setup` で設定しますが、直接編集も可能です。
+`config.yml` の各項目は次のとおりです。地点・エリアは基本的にセットアップコマンド（`setstartspawn` / `setlobby` / `setspawn` / `setfield`）で設定しますが、直接編集も可能です。
 
 ### 地点設定
 
@@ -38,8 +38,8 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `arena.world` | `world` | ゲームエリアのワールド名 |
-| `arena.min-x` / `max-x` | 1075 / 1099 | エリアのX範囲（`setup area pos1/pos2` で設定） |
-| `arena.min-z` / `max-z` | 110 / 134 | エリアのZ範囲（`setup area pos1/pos2` で設定） |
+| `arena.min-x` / `max-x` | 1075 / 1099 | エリアのX範囲（`setfield 1`/`setfield 2` で設定） |
+| `arena.min-z` / `max-z` | 110 / 134 | エリアのZ範囲（`setfield 1`/`setfield 2` で設定） |
 | `arena.snow-layers` | 5,10,15,20,25 | 雪を生成するY座標のリスト（各層の高さ） |
 | `arena.clear-min-y` | 5 | マップリセット時にクリアする高さの下限 |
 | `arena.clear-max-y` | 25 | マップリセット時にクリアする高さの上限 |
@@ -72,15 +72,15 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
 ```text
-/yukicraft setup spawn        # 初期リスポーン地点（離脱時の戻り先）
-/yukicraft setup lobby        # ロビー地点（参加時・終了時の戻り先）
-/yukicraft setup gamespawn    # ゲーム開始スポーン地点（雪フィールド上空）
-/yukicraft setup area pos1    # ゲームエリアの角1
-/yukicraft setup area pos2    # ゲームエリアの角2
+/yukicraft setstartspawn      # 初期リスポーン地点（離脱時の戻り先）
+/yukicraft setlobby           # ロビー地点（参加時・終了時の戻り先）
+/yukicraft setspawn           # ゲーム開始スポーン地点（雪フィールド上空）
+/yukicraft setfield 1         # ゲームエリアの角1
+/yukicraft setfield 2         # ゲームエリアの角2
 ```
 
 !!! tip "セットアップのポイント"
-    `area pos1/pos2` はエリアのX・Z範囲のみを記録します（高さ範囲は config の `clear-min-y` / `clear-max-y` と `snow-layers` で別途指定）。`gamespawn` は雪フィールドより十分上空に設定すると、開始時に安全に着地できます。設定後は `/yukicraft reload` を実行してください。
+    `setfield 1`/`setfield 2` はエリアのX・Z範囲のみを記録します（高さ範囲は config の `clear-min-y` / `clear-max-y` と `snow-layers` で別途指定）。`setspawn` は雪フィールドより十分上空に設定すると、開始時に安全に着地できます。設定後は `/yukicraft reload` を実行してください。
 
 ## 管理コマンド
 
@@ -90,7 +90,12 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | `/yukicraft leave [対象]` | `yukicraft.admin` | 対象をロビーから離脱させる（管理者用） |
 | `/yukicraft start` | `yukicraft.admin` | ゲームを開始する |
 | `/yukicraft stop` | `yukicraft.admin` | ゲームを強制終了する |
-| `/yukicraft setup <type>` | `yukicraft.admin` | 地点・エリアの設定（前述） |
+| `/yukicraft setstartspawn` | `yukicraft.admin` | 初期リスポーン地点を設定する |
+| `/yukicraft setlobby` | `yukicraft.admin` | ロビー地点を設定する |
+| `/yukicraft setspawn` | `yukicraft.admin` | ゲーム開始スポーン地点を設定する |
+| `/yukicraft setfield 1` | `yukicraft.admin` | ゲームエリアの角1を設定する |
+| `/yukicraft setfield 2` | `yukicraft.admin` | ゲームエリアの角2を設定する |
+| `/yukicraft setstart` | `yukicraft.admin` | 視線先の看板をゲーム開始看板として登録する |
 | `/yukicraft reload` | `yukicraft.admin` | config.yml を再読み込みする |
 
 !!! note "看板による参加導線"
@@ -107,7 +112,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `yukicraft.admin` | OP | start / stop / setup / setsign / reload / join / leave（管理者コマンドすべて） |
+| `yukicraft.admin` | OP | start / stop / setstartspawn / setlobby / setspawn / setfield / setstart / setsign / reload / join / leave（管理者コマンドすべて） |
 
 ## ゲームの運営
 

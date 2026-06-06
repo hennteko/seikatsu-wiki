@@ -50,7 +50,7 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 
 ### 地点設定（`locations`）
 
-`spawn` / `lobby` / `area.pos1` / `area.pos2` の4地点を保持します。これらは後述の `/2dtreasure setup` コマンドで設定され、自動的に `config.yml` に保存されます。手動で書き換える必要はありません。
+`spawn` / `lobby` / `area.pos1` / `area.pos2` の4地点を保持します。これらは後述の `/2dtreasure setstartspawn` / `setlobby` / `setfield` コマンドで設定され、自動的に `config.yml` に保存されます。手動で書き換える必要はありません。
 
 !!! note "設定変更後は `/2dtreasure reload`"
     `config.yml` を編集したら `/2dtreasure reload` で再読み込みしてください。ただしゲーム進行中はリロードできません（待機中のみ可）。
@@ -60,18 +60,18 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 ゲーム用ワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置の座標が保存されます）。
 
 ```text
-/2dtreasure setup spawn          # 初期リスポーン地点（途中抜け時の戻り先）
-/2dtreasure setup lobby          # ロビー地点（参加者の集合場所）
-/2dtreasure setup area pos1      # ゲームエリアの角1
-/2dtreasure setup area pos2      # ゲームエリアの角2
+/2dtreasure setstartspawn        # 初期リスポーン地点（途中抜け時の戻り先）
+/2dtreasure setlobby             # ロビー地点（参加者の集合場所）
+/2dtreasure setfield 1           # ゲームエリアの角1
+/2dtreasure setfield 2           # ゲームエリアの角2
 ```
 
-- `area pos1` と `area pos2` の2点で囲んだX軸の範囲が、マップが生成されるプレイエリアになります。
+- `setfield 1` と `setfield 2` の2点で囲んだX軸の範囲が、マップが生成されるプレイエリアになります。
 - 4地点をすべて設定すると、コマンド実行時に「✓ 全ての設定が完了しています！」と表示されます。
 - 設定状況は `/2dtreasure status` でいつでも確認できます。
 
 !!! tip "ゲームエリアはX軸の幅で決まります"
-    マップ生成はエリアの最小X〜最大X、固定Z（`fixed-z`）、Y軸（`y-min`〜`y-max`）の範囲で行われます。pos1・pos2 のX座標が十分に離れた範囲を選んでください。
+    マップ生成はエリアの最小X〜最大X、固定Z（`fixed-z`）、Y軸（`y-min`〜`y-max`）の範囲で行われます。`setfield 1`・`setfield 2` のX座標が十分に離れた範囲を選んでください。
 
 ## 看板の登録
 
@@ -80,6 +80,7 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 ```text
 /2dtreasure setsign join     # 参加看板として登録
 /2dtreasure setsign leave    # 退出看板として登録
+/2dtreasure setstart         # 開始看板として登録（任意・右クリックでゲーム開始）
 ```
 
 登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。
@@ -98,8 +99,11 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 
 | コマンド | 説明 |
 |---|---|
-| `/2dtreasure setup <spawn\|lobby\|area>` | 地点を設定する（area は `pos1`/`pos2` を指定） |
+| `/2dtreasure setstartspawn` | 初期リスポーン地点を設定する |
+| `/2dtreasure setlobby` | ロビー地点を設定する |
+| `/2dtreasure setfield <1\|2>` | ゲームエリアの角1／角2を設定する |
 | `/2dtreasure setsign <join\|leave>` | 視線先の看板を参加／退出看板として登録する |
+| `/2dtreasure setstart` | 視線先の看板をゲーム開始看板として登録する（右クリックで試合開始） |
 | `/2dtreasure start` | ゲームを開始する（コマンドブロック対応） |
 | `/2dtreasure stop` | 進行中のゲームを強制終了する |
 | `/2dtreasure reload` | config.yml を再読み込みする（待機中のみ可） |

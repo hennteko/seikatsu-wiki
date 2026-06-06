@@ -54,10 +54,10 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として `locations.yml` に保存されます）。
 
 ```text
-/yukioni setup spawn       # 初期スポーン地点（退出・終了時の戻り先）
-/yukioni setup lobby       # 待機ロビーの地点
-/yukioni setup area pos1   # ゲームエリアの角1
-/yukioni setup area pos2   # ゲームエリアの角2
+/yukioni setstartspawn     # 初期スポーン地点（退出・終了時の戻り先）
+/yukioni setlobby          # 待機ロビーの地点
+/yukioni setfield 1        # ゲームエリアの角1
+/yukioni setfield 2        # ゲームエリアの角2
 ```
 
 設定後、ロビーに看板を設置します。看板を設置したら、**その看板を見た状態**で以下のコマンドを実行します（`yukioni.admin` 権限が必要）。
@@ -70,16 +70,16 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を `locations.yml` の `sign.join` / `sign.leave` に保存します。手書きでのテキスト入力は不要です。
 
 !!! tip "ゲームエリアについて"
-    `area pos1` / `area pos2` の2点で囲まれた直方体がゲームエリアになります。プレイヤーはこの範囲外に出られず、開始時はこの範囲内のランダムな位置にテレポートされます。エリア未設定の場合は、エリア判定が無効になりロビー地点が代替に使われます。
+    `setfield 1` / `setfield 2` の2点で囲まれた直方体がゲームエリアになります。プレイヤーはこの範囲外に出られず、開始時はこの範囲内のランダムな位置にテレポートされます。エリア未設定の場合は、エリア判定が無効になりロビー地点が代替に使われます。
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/yukioni setup spawn` | `yukioni.admin` | スポーン地点を設定 |
-| `/yukioni setup lobby` | `yukioni.admin` | ロビー地点を設定 |
-| `/yukioni setup area pos1` | `yukioni.admin` | ゲームエリアの角1を設定 |
-| `/yukioni setup area pos2` | `yukioni.admin` | ゲームエリアの角2を設定 |
+| `/yukioni setstartspawn` | `yukioni.admin` | スポーン地点を設定 |
+| `/yukioni setlobby` | `yukioni.admin` | ロビー地点を設定 |
+| `/yukioni setfield 1` | `yukioni.admin` | ゲームエリアの角1を設定 |
+| `/yukioni setfield 2` | `yukioni.admin` | ゲームエリアの角2を設定 |
 | `/yukioni start` | `yukioni.admin` | ゲームを開始する |
 | `/yukioni stop` | `yukioni.admin` | ゲームを強制終了する |
 | `/yukioni reload` | `yukioni.admin` | config.yml を再読み込み |
@@ -97,13 +97,13 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 ## トラブルシューティング
 
 ??? failure "プレイヤーがゲームに参加できない"
-    参加導線は **ロビー看板** です。`/yukioni setsign join` を、登録したい看板を見ながら実行してください（`yukioni.admin` 権限が必要）。また、`/yukioni setup lobby` でロビー座標が設定済みかも確認してください。
+    参加導線は **ロビー看板** です。`/yukioni setsign join` を、登録したい看板を見ながら実行してください（`yukioni.admin` 権限が必要）。また、`/yukioni setlobby` でロビー座標が設定済みかも確認してください。
 
 ??? failure "ゲームが開始できない"
     `min-players`（既定2人）以上がロビーに入っているか確認してください。人数不足の場合、`/yukioni start` を実行しても開始されません。また、すでにゲームが進行中の場合も開始できません。
 
 ??? failure "プレイヤーがエリア外に出てしまう／開始位置がおかしい"
-    `/yukioni setup area pos1` と `pos2` の両方が設定されているか確認してください。エリアが未設定だとエリア判定が無効になり、開始時のテレポート先がロビー地点になります。pos1・pos2 は同じワールド内で設定してください。
+    `/yukioni setfield 1` と `/yukioni setfield 2` の両方が設定されているか確認してください。エリアが未設定だとエリア判定が無効になり、開始時のテレポート先がロビー地点になります。pos1・pos2 は同じワールド内で設定してください。
 
 ??? failure "看板が登録されない"
     看板の登録には `yukioni.admin` 権限が必要です。登録したい看板を見ながら `/yukioni setsign join`（または `leave`）を実行してください（`yukioni.admin` 権限が必要）。

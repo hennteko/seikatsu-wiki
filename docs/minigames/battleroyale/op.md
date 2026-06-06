@@ -74,12 +74,13 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 OP権限で以下のコマンドを実行します。地点系のコマンドは **実行した位置** が座標として保存されます。看板・チェスト系のコマンドは対象ブロックを **5ブロック以内で見ながら** 実行します。
 
 ```text
-/btr setup spawn                # 初期リスポーン地点（その場に立って実行）
-/btr setup lobby                # 受付ロビー（その場に立って実行）
-/btr setup area pos1            # ゲームエリアの角1（その場に立って実行）
-/btr setup area pos2            # ゲームエリアの角2（その場に立って実行）
-/btr setup joinsign             # 参加看板（看板を見ながら実行）
-/btr setup leavesign            # 退出看板（看板を見ながら実行）
+/btr setstartspawn              # 初期リスポーン地点（その場に立って実行）
+/btr setlobby                   # 受付ロビー（その場に立って実行）
+/btr setfield 1                 # ゲームエリアの角1（その場に立って実行）
+/btr setfield 2                 # ゲームエリアの角2（その場に立って実行）
+/btr setsign join               # 参加看板（看板を見ながら実行）
+/btr setsign leave              # 退出看板（看板を見ながら実行）
+/btr setstart                   # 開始看板（看板を見ながら実行）
 /btr setchest                   # チェストを登録（チェストを見ながら実行・複数登録可）
 /btr setitem                    # 手に持っているアイテムをアイテムプールに追加
 /btr settime <秒>               # ボーダー縮小間隔を設定
@@ -88,7 +89,7 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 ```
 
 !!! tip "看板について"
-    `/btr setup joinsign` / `leavesign` で登録した看板は、プラグインが自動的に装飾します（`[BattleRoyale]` の見出しや参加人数表示など）。参加看板はクリックでロビー参加、退出看板はクリックでロビー離脱になります。
+    `/btr setsign join` / `/btr setsign leave` で登録した看板は、プラグインが自動的に装飾します（`[BattleRoyale]` の見出しや参加人数表示など）。参加看板はクリックでロビー参加、退出看板はクリックでロビー離脱になります。
 
 !!! note "設定の確認"
     `/btr status` で、地点・看板・ゲーム設定・チェスト数・アイテムプール数・現在のロビー状況をまとめて確認できます。ゲーム開始前に未設定項目がないか確認してください。
@@ -97,7 +98,11 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 
 | コマンド | 説明 |
 |---|---|
-| `/btr setup <spawn\|lobby\|area\|joinsign\|leavesign>` | 各種地点・看板を設定 |
+| `/btr setstartspawn` | 初期リスポーン地点を設定 |
+| `/btr setlobby` | 受付ロビー地点を設定 |
+| `/btr setfield <1\|2>` | ゲームエリアの角1または2を設定 |
+| `/btr setsign <join\|leave>` | 参加または退出看板を設定 |
+| `/btr setstart` | 開始看板を設定 |
 | `/btr setchest` | 見ているチェストを登録 |
 | `/btr setitem` | 手持ちアイテムをアイテムプールに追加 |
 | `/btr settime <秒>` | ワールドボーダーの縮小間隔を設定 |
@@ -139,7 +144,7 @@ plugin.yml には次の2つの権限が定義されています。コード上�
     アイテムプール（`itemPool`）が空の可能性があります。`/btr setitem` でアイテムを追加するか、`config.yml` の `itemPool` にアイテムIDを記載してください。また、登録した座標のブロックが実際にチェストでないとアイテムは補充されません。
 
 ??? failure "看板をクリックしても参加・退出できない"
-    `/btr setup joinsign` / `leavesign` で看板が登録済みか `/btr status` で確認してください。看板の位置を変更・破壊した場合は再登録が必要です。
+    `/btr setsign join` / `/btr setsign leave` で看板が登録済みか `/btr status` で確認してください。看板の位置を変更・破壊した場合は再登録が必要です。
 
 ??? failure "プレイヤーがゲームエリア外にスポーンする"
     `areaPos1` と `areaPos2` がゲームエリアの正しい対角に設定されているか確認してください。スポーン地点はこの2点で囲まれた範囲内からランダムに選ばれます。

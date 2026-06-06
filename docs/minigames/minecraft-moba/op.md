@@ -30,18 +30,21 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
 ```text
-/moba setup spawn                  # 初期リスポーン地点（途中抜け時の戻り先）
-/moba setup lobby                  # 待機ロビー
-/moba setup area pos1              # ゲームエリアの角1
-/moba setup area pos2              # ゲームエリアの角2
-/moba setup teamspawn RED          # 赤チームのスポーン
-/moba setup teamspawn BLUE         # 青チームのスポーン
+/moba setstartspawn                # 初期リスポーン地点（途中抜け時の戻り先）
+/moba setlobby                     # 待機ロビー
+/moba setfield 1                   # ゲームエリアの角1
+/moba setfield 2                   # ゲームエリアの角2
+/moba setspawn red                 # 赤チームのスポーン
+/moba setspawn blue                # 青チームのスポーン
 /moba setup core RED               # 赤チームのコア
 /moba setup core BLUE              # 青チームのコア
 /moba setup tower RED 1            # 赤チームのタワー1（1〜5まで繰り返す）
 /moba setup tower BLUE 1           # 青チームのタワー1（1〜5まで繰り返す）
 /moba setup minion RED LANE_TOP 1  # ミニオン経路（レーン・通過順を指定）
 ```
+
+!!! note "コマンド体系について"
+    初期リスポーン・ロビー・エリア範囲・チームスポーンは独立コマンド（`setstartspawn` / `setlobby` / `setfield <1\|2>` / `setspawn <red\|blue>`）です。コア・タワー・ミニオン経路のみ `/moba setup <core\|tower\|minion> ...` のサブコマンド形式です。
 
 !!! tip "ミニオン経路（ウェイポイント）"
     `/moba setup minion` でも設定できますが、経路はまとめて `config.yml` の `MAP_SETTINGS.MINION_WAYPOINTS` を直接編集したほうが確実です。`RED_TEAM` / `BLUE_TEAM` それぞれに `LANE_TOP` / `LANE_MID` / `LANE_BOT` の通過座標を順に並べます。
@@ -138,7 +141,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 ## トラブルシューティング
 
 ??? failure "プレイヤーがゲームに参加できない"
-    参加導線は **ロビー看板** です。看板が正しく設置されているか、`/moba setup lobby` でロビー座標が設定済みかを確認してください。
+    参加導線は **ロビー看板** です。看板が正しく設置されているか、`/moba setlobby` でロビー座標が設定済みかを確認してください。
 
 ??? failure "ミニオンが進軍しない／挙動がおかしい"
     既知の制約です。ミニオンのAI（Pathfinding）は簡易実装の段階で、`config.yml` の経路設定が正しくても期待通り動かない場合があります。

@@ -29,27 +29,27 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 |---|---|---|
 | `decay-delay-ticks` | 20 | 足場に乗ってからブロックが消滅するまでの時間（tick単位、20 tick = 1秒） |
 | `max-players` | 6 | 最大参加人数 |
-| `locations.spawn` | 未設定 | 初期リスポーン地点。途中抜け時の戻り先。`/tntran setup spawn` で設定 |
-| `locations.lobby` | 未設定 | 待機ロビー（看板設置場所）。`/tntran setup lobby` で設定 |
-| `locations.area.pos1` | 未設定 | ゲームエリアの角1。`/tntran setup area pos1` で設定 |
-| `locations.area.pos2` | 未設定 | ゲームエリアの角2。`/tntran setup area pos2` で設定 |
+| `locations.spawn` | 未設定 | 初期リスポーン地点。途中抜け時の戻り先。`/tntran setstartspawn` で設定 |
+| `locations.lobby` | 未設定 | 待機ロビー（看板設置場所）。`/tntran setlobby` で設定 |
+| `locations.area.pos1` | 未設定 | ゲームエリアの角1。`/tntran setfield 1` で設定 |
+| `locations.area.pos2` | 未設定 | ゲームエリアの角2。`/tntran setfield 2` で設定 |
 
-!!! note "座標は setup コマンドで設定"
-    `locations` 配下の座標は手書きせず、後述の `/tntran setup` コマンドで設定するのが確実です。実行したプレイヤーの立ち位置が保存されます。
+!!! note "座標はコマンドで設定"
+    `locations` 配下の座標は手書きせず、後述の各設定コマンドで設定するのが確実です。実行したプレイヤーの立ち位置が保存されます。
 
 ## セットアップ手順
 
 専用ワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置が座標として保存されます）。
 
 ```text
-/tntran setup spawn          # 初期リスポーン地点（途中抜け時の戻り先）
-/tntran setup lobby          # 待機ロビー
-/tntran setup area pos1      # ゲームエリアの角1
-/tntran setup area pos2      # ゲームエリアの角2
+/tntran setstartspawn        # 初期リスポーン地点（途中抜け時の戻り先）
+/tntran setlobby             # 待機ロビー
+/tntran setfield 1           # ゲームエリアの角1
+/tntran setfield 2           # ゲームエリアの角2
 ```
 
-!!! tip "ゲームエリア（area）の作り方"
-    `area pos1`〜`pos2` で囲んだ直方体範囲が、ゲーム開始時に **マップ（ウール足場）が自動生成される領域** になります。pos1 と pos2 の Y 座標の差をもとに、下から **5ブロック間隔・最大6層** の足場が生成されます（赤・橙・黄・黄緑・緑・水色のウール）。十分な高さ・広さを確保してください。
+!!! tip "ゲームエリア（field）の作り方"
+    `setfield 1`〜`setfield 2` で囲んだ直方体範囲が、ゲーム開始時に **マップ（ウール足場）が自動生成される領域** になります。pos1 と pos2 の Y 座標の差をもとに、下から **5ブロック間隔・最大6層** の足場が生成されます（赤・橙・黄・黄緑・緑・水色のウール）。十分な高さ・広さを確保してください。
 
 ### ロビー看板の設置
 
@@ -73,7 +73,9 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 | `/tntran leave [対象]` | なし（全員） | ゲームから離脱する |
 | `/tntran start` | `tntran.admin` | ゲームを開始する（マップ生成・5秒カウントダウン後にスタート） |
 | `/tntran stop` | `tntran.admin` | ゲームを強制停止・リセットする |
-| `/tntran setup <spawn\|lobby\|area>` | `tntran.admin` | 各座標を設定する（前述） |
+| `/tntran setstartspawn` | `tntran.admin` | 初期リスポーン地点を設定する |
+| `/tntran setlobby` | `tntran.admin` | 待機ロビーを設定する |
+| `/tntran setfield <1\|2>` | `tntran.admin` | ゲームエリアの角1または角2を設定する |
 | `/tntran reload` | `tntran.admin` | config.yml を再読み込みする |
 
 !!! note "ゲームの運営"
@@ -88,10 +90,10 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 ## トラブルシューティング
 
 ??? failure "ゲームが開始できない（エリア未設定エラー）"
-    `/tntran start` 実行時に「ゲームエリアが設定されていません」と出る場合、`area pos1` と `pos2` が両方設定されていません。`/tntran setup area pos1` / `pos2` を専用ワールドで実行してください。両方のワールドが読み込まれている必要もあります。
+    `/tntran start` 実行時に「ゲームエリアが設定されていません」と出る場合、角1・角2が両方設定されていません。`/tntran setfield 1` / `/tntran setfield 2` を専用ワールドで実行してください。両方のワールドが読み込まれている必要もあります。
 
 ??? failure "参加看板をクリックしても参加できない"
-    看板の1行目が `[Tntran]`、2行目が `lobby` になっているか確認してください。また、ゲームエリア（`area`）が未設定だと参加できません。ゲーム進行中・満員時も参加不可です。
+    `/tntran setsign join` で正しく登録されているか確認してください（座標一致で判定するため手書きは機能しません）。また、ゲームエリア（`setfield 1` / `setfield 2`）が未設定だと参加できません。ゲーム進行中・満員時も参加不可です。
 
 ??? failure "足場が生成されない／層が少ない"
     足場は `area` の Y 座標の範囲をもとに **5ブロック間隔で最大6層** 生成されます。pos1 と pos2 の高低差が小さいと層数が減ります。十分な高さの範囲を指定してください。

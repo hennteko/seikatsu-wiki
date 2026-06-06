@@ -27,17 +27,18 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 ゲームに使うワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置・向きが座標として保存されます）。
 
 ```text
-/fpb setup spawn        # 初期リスポーン地点（退出・終了時の戻り先）
-/fpb setup lobby        # 待機ロビー地点
-/fpb setup area pos1    # ゲームエリアの角1
-/fpb setup area pos2    # ゲームエリアの角2
-/fpb setup fishspot     # 高ポイントゾーン（任意）
+/fpb setstartspawn      # 初期リスポーン地点（退出・終了時の戻り先）
+/fpb setlobby           # 待機ロビー地点
+/fpb setfield 1         # ゲームエリアの角1
+/fpb setfield 2         # ゲームエリアの角2
+/fpb setfishspot        # 高ポイントゾーン（任意）
 /fpb setsign join       # 視線先の看板を参加看板として登録
 /fpb setsign leave      # 視線先の看板を退出看板として登録
+/fpb setstart           # 視線先の看板をゲーム開始看板として登録（任意）
 ```
 
 !!! note "必須の座標と任意の座標"
-    `spawn` / `lobby` / `area pos1` / `area pos2` の4点はゲーム開始に **必須** です。すべて設定されていないと `/fpb start` を実行できません。`fishspot`（高ポイントゾーン）は **任意** で、未設定でもゲームは開始できます。設定した座標は config.yml の `locations` セクションに自動保存されます。
+    初期リスポーン（`setstartspawn`）・ロビー（`setlobby`）・ゲームエリアの角1/2（`setfield 1`・`setfield 2`）の4点はゲーム開始に **必須** です。すべて設定されていないと `/fpb start` を実行できません。`fishspot`（高ポイントゾーン）は **任意** で、未設定でもゲームは開始できます。設定した座標は config.yml の `locations` セクションに自動保存されます。
 
 !!! tip "看板での参加導線を設置"
     プレイヤーの参加・退出は看板で行います。看板を設置し、**看板を見ながら（5ブロック以内）** `/fpb setsign join`（参加看板）または `/fpb setsign leave`（退出看板）を実行して登録してください。
@@ -173,7 +174,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 ### その他のセクション
 
-- `locations` … エリア座標の保存先。`/fpb setup` で自動更新されるため **手動編集は非推奨** です。
+- `locations` … エリア座標の保存先。`/fpb setstartspawn` / `setlobby` / `setfield` / `setfishspot` で自動更新されるため **手動編集は非推奨** です。
 - `messages` … 各種ゲーム内メッセージとプレフィックス。文言を変更できます。
 
 !!! note "設定変更後は必ず `/fpb reload`"
@@ -181,14 +182,18 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 ## 管理コマンド
 
-`/fpb` コマンド自体はすべてのプレイヤーが実行できますが、サブコマンドごとに権限が分かれています。`setup` / `setsign` / `start` / `stop` / `reload` は `fpb.admin` 権限が必要、`help` / `status` は誰でも実行可能です。`setup` と `setsign` はプレイヤー（コンソール不可）として実行する必要があります。
+`/fpb` コマンド自体はすべてのプレイヤーが実行できますが、サブコマンドごとに権限が分かれています。`setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `setstart` / `start` / `stop` / `reload` は `fpb.admin` 権限が必要、`help` / `status` は誰でも実行可能です。地点・看板の設定系はプレイヤー（コンソール不可）として実行する必要があります。
 
 | コマンド | 必要権限 | 説明 |
 |---|---|---|
 | `/fpb help` | なし | ヘルプを表示（管理者には管理者コマンド一覧も表示） |
 | `/fpb status` | なし | 現在の状態・参加人数・座標設定状況を表示 |
-| `/fpb setup <spawn\|lobby\|area\|fishspot>` | `fpb.admin` | 各種座標を設定（前述） |
+| `/fpb setstartspawn` | `fpb.admin` | 初期リスポーン地点を設定 |
+| `/fpb setlobby` | `fpb.admin` | 待機ロビー地点を設定 |
+| `/fpb setfield <1\|2>` | `fpb.admin` | ゲームエリアの角1または2を設定 |
+| `/fpb setfishspot` | `fpb.admin` | 高ポイントゾーンを設定（任意） |
 | `/fpb setsign <join\|leave>` | `fpb.admin` | 視線先の看板を参加／退出看板として登録（テキストは自動書き込み） |
+| `/fpb setstart` | `fpb.admin` | 視線先の看板をゲーム開始看板として登録（看板の右クリックで既定時間で開始） |
 | `/fpb start [分]` | `fpb.admin` | ゲームを開始（分を省略すると `default-duration`。1〜60分の範囲で指定可） |
 | `/fpb stop` | `fpb.admin` | ゲームを強制終了 |
 | `/fpb reload` | `fpb.admin` | config.yml を再読み込み |
@@ -197,7 +202,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `/fpb setup` / `setsign` / `start` / `stop` / `reload` の使用 |
+| `fpb.admin` | OP | `/fpb setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `setstart` / `start` / `stop` / `reload` の使用 |
 | `fpb.play` | 全員 | 参加看板からゲームに参加できる |
 
 !!! note "コマンド権限の設計"
@@ -213,16 +218,16 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 ## トラブルシューティング
 
 ??? failure "`/fpb start` でゲームが開始できない"
-    必須座標（`spawn` / `lobby` / `area pos1` / `area pos2`）が未設定の可能性があります。`/fpb status` で各座標の設定状況を確認し、未設定の項目を `/fpb setup` で設定してください。また参加者が `min-players` 未満の場合も開始できません。
+    必須座標（初期リスポーン・ロビー・エリア角1/2）が未設定の可能性があります。`/fpb status` で各座標の設定状況を確認し、未設定の項目を `/fpb setstartspawn` / `setlobby` / `setfield 1` / `setfield 2` で設定してください。また参加者が `min-players` 未満の場合も開始できません。
 
 ??? failure "プレイヤーが看板でゲームに参加できない"
-    看板が `/fpb setsign join` で登録されているか確認してください（`/fpb status` の「参加看板」欄で確認可能）。手書きで文字を書いただけの看板は機能しません。また、ロビー座標（`/fpb setup lobby`）が設定されていないと参加できません。プレイヤーに `fpb.play` 権限があるかも確認してください。
+    看板が `/fpb setsign join` で登録されているか確認してください（`/fpb status` の「参加看板」欄で確認可能）。手書きで文字を書いただけの看板は機能しません。また、ロビー座標（`/fpb setlobby`）が設定されていないと参加できません。プレイヤーに `fpb.play` 権限があるかも確認してください。
 
 ??? failure "ポイントが入らない・倍率が反映されない"
     `points` セクションに無いアイテムはポイント0になります。配点を変更したい場合は `config.yml` を編集し `/fpb reload` を実行してください。釣りスポット倍率は `fishspot` が設定済みで、その半径内で釣った場合のみ適用されます。
 
 ??? failure "config.yml の変更が反映されない"
-    編集後に `/fpb reload` を実行していない可能性があります。リロードを実行してください。なお `locations` セクションは `/fpb setup` で管理されるため手動編集は推奨しません。
+    編集後に `/fpb reload` を実行していない可能性があります。リロードを実行してください。なお `locations` セクションは設定コマンド（`setstartspawn` / `setlobby` / `setfield` / `setfishspot`）で管理されるため手動編集は推奨しません。
 
 ---
 

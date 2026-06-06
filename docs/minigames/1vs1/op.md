@@ -40,6 +40,7 @@
 | `points.spectate.{world,x,y,z}` | 観戦場所（`/pvp setspectate` で設定） |
 | `points.lobby.{world,x,y,z}` | ロビー（`/pvp setlobby` で設定） |
 | `signs.join` | `[PvP参加]` 看板の位置リスト（`{world,x,y,z}` の配列） |
+| `signs.leave` | `[PvP離脱]` 看板の位置リスト（右クリックで待機キューから離脱・入場料返金） |
 | `signs.bet` | `[PvP賭け]` 看板の位置リスト |
 | `signs.start` | `[PvP開始]` 看板の位置リスト |
 | `signs.spectate` | `[PvP観戦]` 看板の位置リスト |
@@ -80,7 +81,8 @@
 /pvp setchest2            # 装備リセット用チェスト2（同上）
 /pvp setspectate          # 観戦場所（コマンドを実行した自分の現在地が保存される）
 /pvp setlobby             # ロビー（同上）
-/pvp setsign <join|bet|start|spectate|lobby>   # 視線の先5ブロック以内の看板を登録
+/pvp setsign <join|leave|bet|spectate|lobby>   # 視線の先5ブロック以内の看板を登録
+/pvp setstart             # 視線の先5ブロック以内の看板を [PvP開始] 看板として登録
 /pvp removesign           # 視線の先5ブロック以内の看板の登録を解除
 ```
 
@@ -107,7 +109,8 @@
 | `/pvp setchest1` / `setchest2` | `1vs1.admin` | 装備リセット用チェストを設定する |
 | `/pvp setspectate` | `1vs1.admin` | 観戦場所を設定する（実行時の立ち位置） |
 | `/pvp setlobby` | `1vs1.admin` | ロビーを設定する（実行時の立ち位置） |
-| `/pvp setsign <join\|bet\|start\|spectate\|lobby>` | `1vs1.admin` | 視線の先の看板を指定種別のPvP看板として登録する |
+| `/pvp setsign <join\|leave\|bet\|spectate\|lobby>` | `1vs1.admin` | 視線の先の看板を指定種別のPvP看板として登録する |
+| `/pvp setstart` | `1vs1.admin` | 視線の先の看板を `[PvP開始]` 看板として登録する |
 | `/pvp removesign` | `1vs1.admin` | 視線の先の看板の登録を解除する |
 | `/pvp ranklist` | `1vs1.admin` | 全プレイヤーのバトルパスランク一覧を表示する |
 

@@ -34,24 +34,24 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 | `settings.respawn-protection` | 10 | リスポーン保護時間（秒）。この間、耐性IIが付与される |
 
 !!! note "locations / signs セクションについて"
-    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setup` コマンド、看板は `/zankipvp setsign` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
+    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
 
 !!! warning "残機数の設定とリロードについて"
-    `/zankipvp zanki <数字>` で設定した初期残機数はメモリ上にのみ保持され、`config.yml` には保存されません。サーバー再起動時は `config.yml` の `default-lives` が初期値として使われます。常に同じ残機数で運用したい場合は `config.yml` の `settings.default-lives` を直接編集してください。
+    `/zankipvp setzanki <数字>` で設定した初期残機数はメモリ上にのみ保持され、`config.yml` には保存されません。サーバー再起動時は `config.yml` の `default-lives` が初期値として使われます。常に同じ残機数で運用したい場合は `config.yml` の `settings.default-lives` を直接編集してください。
 
 ## セットアップ手順
 
 OP権限で、設定したい場所に **その場に立って** 以下のコマンドを実行します（実行位置が座標として保存されます）。
 
 ```text
-/zankipvp setup exit                       # 初期リスポーン地点（退出時の戻り先）
-/zankipvp setup lobby                      # 受付ロビー（参加時の待機場所）
-/zankipvp setup area pos1                  # ゲームエリアの角1
-/zankipvp setup area pos2                  # ゲームエリアの角2
-/zankipvp setup spawn red                  # 赤チームのスポーン地点
-/zankipvp setup spawn blue                 # 青チームのスポーン地点
-/zankipvp setup spawn yellow               # 黄チームのスポーン地点
-/zankipvp setup spawn green                # 緑チームのスポーン地点
+/zankipvp setstartspawn                    # 初期リスポーン地点（退出時の戻り先）
+/zankipvp setlobby                         # 受付ロビー（参加時の待機場所）
+/zankipvp setfield 1                       # ゲームエリアの角1
+/zankipvp setfield 2                       # ゲームエリアの角2
+/zankipvp setspawn red                     # 赤チームのスポーン地点
+/zankipvp setspawn blue                    # 青チームのスポーン地点
+/zankipvp setspawn yellow                  # 黄チームのスポーン地点
+/zankipvp setspawn green                   # 緑チームのスポーン地点
 ```
 
 設定状況は `/zankipvp status` で確認できます。
@@ -84,14 +84,14 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 | コマンド | 説明 |
 |---|---|
-| `/zankipvp setup spawn <red\|blue\|yellow\|green>` | チーム別スポーン地点を設定 |
-| `/zankipvp setup lobby` | 受付ロビー地点を設定 |
-| `/zankipvp setup area pos1` | ゲームエリアの角1を設定 |
-| `/zankipvp setup area pos2` | ゲームエリアの角2を設定 |
-| `/zankipvp setup exit` | 初期リスポーン地点（退出先）を設定 |
+| `/zankipvp setspawn <red\|blue\|yellow\|green>` | チーム別スポーン地点を設定 |
+| `/zankipvp setlobby` | 受付ロビー地点を設定 |
+| `/zankipvp setfield 1` | ゲームエリアの角1を設定 |
+| `/zankipvp setfield 2` | ゲームエリアの角2を設定 |
+| `/zankipvp setstartspawn` | 初期リスポーン地点（退出先）を設定 |
 | `/zankipvp start` | ゲームを開始する（コマンドブロック対応） |
 | `/zankipvp stop` | ゲームを強制終了する（コマンドブロック対応） |
-| `/zankipvp zanki <数字>` | 初期残機数を設定（1以上） |
+| `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上） |
 | `/zankipvp maxplayers <数字>` | 最大参加人数を設定（2以上） |
 | `/zankipvp status` | 現在の地点・ゲーム設定の状況を表示 |
 | `/zankipvp setsign <join\|leave>` | 視線先の看板をゲート看板として登録 |
@@ -133,7 +133,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
     `[ZankiPvP]` 看板の設置・破壊には `zankipvp.admin` 権限が必要です。一般プレイヤーには設置・破壊できません。
 
 ??? failure "残機数を変えたのに再起動で元に戻る"
-    `/zankipvp zanki` で設定した残機数は保存されません。恒久的に変更したい場合は `config.yml` の `settings.default-lives` を編集し、`/zankipvp reload` してからサーバーを再起動してください。
+    `/zankipvp setzanki` で設定した残機数は保存されません。恒久的に変更したい場合は `config.yml` の `settings.default-lives` を編集し、`/zankipvp reload` してからサーバーを再起動してください。
 
 ??? failure "リスポーン地点や設定が反映されない"
     `/zankipvp reload` で config.yml を再読み込みしてください。なお `setup` 系コマンドでの地点設定は即座に config.yml へ保存されます。

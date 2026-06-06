@@ -17,7 +17,7 @@ DorokeiGame の導入・ゲーム（ロビー＋エリア）の設定・config�
 | 設定ファイル | `plugins/DorokeiGame/config.yml` |
 
 !!! success "v3.1 の変更点"
-    v3.0 までは「ロビー（lobby）」と「エリア（area）」を別IDで管理し、`/dorokei setup link <ロビーID> <エリアID>` で紐付ける必要がありました。v3.1 からは **「ゲーム名」1つに統合** され、`/dorokei setup <ゲーム名> lobby` / `pos1` / `pos2` / `jail` を順に実行するだけで設定が完結します。`setup link` は **廃止**、ゲーム単位の `/dorokei setup <ゲーム名> delete` が追加されました。
+    v3.0 までは「ロビー（lobby）」と「エリア（area）」を別IDで管理し、`/dorokei setup link <ロビーID> <エリアID>` で紐付ける必要がありました。v3.1 からは **「ゲーム名」1つに統合** され、`/dorokei setlobby <ゲーム名>` / `/dorokei setfield <ゲーム名> 1` / `/dorokei setfield <ゲーム名> 2` / `/dorokei setjail <ゲーム名>` を順に実行するだけで設定が完結します。`setup link` は **廃止**、ゲーム単位の `/dorokei delete <ゲーム名>` が追加されました。
 
 !!! warning "実装状況：v3.1"
     ロビーシステム・看板連携・警官自動割り振り・追跡演出・捕獲／救出・自動ロビー帰還・ログアウト復帰までが実装済みです。旧方式のコマンド（後方互換）も残っていますが、運用では新方式（ゲーム名単位）の利用を推奨します。詳細は下記「実装状況」の節を確認してください。
@@ -30,7 +30,7 @@ DorokeiGame の導入・ゲーム（ロビー＋エリア）の設定・config�
 4. 必要に応じて `config.yml` を直接編集し、サーバーを再起動して反映する。
 
 !!! note "config の反映について"
-    本プラグインには config 再読み込み用のコマンドがありません。`config.yml` を手で編集した場合は **サーバーの再起動** で反映してください。なお `/dorokei setup ...` 系コマンドで変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます。
+    本プラグインには config 再読み込み用のコマンドがありません。`config.yml` を手で編集した場合は **サーバーの再起動** で反映してください。なお `setstartspawn` / `setlobby` / `setfield` / `setjail` / `delete` 系コマンドで変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます。
 
 ## config.yml 設定項目
 
@@ -38,7 +38,7 @@ DorokeiGame の導入・ゲーム（ロビー＋エリア）の設定・config�
 |---|---|---|
 | `version` | "3.1" | 設定ファイルのバージョン |
 | `spawn-location` | world / 0,64,0 | 初期リスポーン地点。ログアウト時に戻り先が不明な場合に使用 |
-| `games` | `{}` | ゲーム定義（v3.1で統合）。`/dorokei setup <ゲーム名> <lobby\|pos1\|pos2\|jail>` で追加される |
+| `games` | `{}` | ゲーム定義（v3.1で統合）。`/dorokei setlobby <ゲーム名>` / `setfield <ゲーム名> 1` / `setfield <ゲーム名> 2` / `setjail <ゲーム名>` で追加される |
 | `games.<ゲーム名>.lobby` | — | 待機ロビー定義。`world` / `x` / `y` / `z` / `yaw` / `pitch` / `max-players`（既定20） |
 | `games.<ゲーム名>.area` | — | ゲームエリア定義。`world` / `pos1` / `pos2` / `jail` の各座標 |
 | `game-settings.game-time` | 480 | ゲーム時間（秒）。既定8分 |
@@ -48,7 +48,7 @@ DorokeiGame の導入・ゲーム（ロビー＋エリア）の設定・config�
 | `defaults.game-time` | 300 | 旧方式（後方互換）用の既定ゲーム時間（秒） |
 
 !!! info "config 構造の変更（v3.0 → v3.1）"
-    旧 `lobbies:` / `game-areas:` / `linked-area` の3キーは **廃止** され、すべて `games.<ゲーム名>.lobby` / `games.<ゲーム名>.area` に統合されました。v3.0 以前の config はそのままでは読み込まれないため、**v3.1 では config を作り直してから `/dorokei setup` で再構築** してください。
+    旧 `lobbies:` / `game-areas:` / `linked-area` の3キーは **廃止** され、すべて `games.<ゲーム名>.lobby` / `games.<ゲーム名>.area` に統合されました。v3.0 以前の config はそのままでは読み込まれないため、**v3.1 では config を作り直してからセットアップコマンドで再構築** してください。
 
 ### games セクションの構造例
 
@@ -86,27 +86,27 @@ games:
 
 ## セットアップ手順（v3.1 新コマンド体系）
 
-専用ワールドを用意し、OP権限で以下のコマンドを **設定したい地点に立って** 実行します（実行位置が座標として保存されます）。v3.1 では **ゲーム名が最初** に来て、サブタイプを後ろに置く形式に統一されています。
+専用ワールドを用意し、OP権限で以下のコマンドを **設定したい地点に立って** 実行します（実行位置が座標として保存されます）。v3.1 では引数の順序は「コマンド → ゲーム名 → 番号」に統一されています。
 
 ```text
-/dorokei setup spawn                       # 初期リスポーン地点
-/dorokei setup <ゲーム名> lobby            # 現在地を待機ロビーに
-/dorokei setup <ゲーム名> pos1             # エリア角1を現在地に
-/dorokei setup <ゲーム名> pos2             # エリア角2を現在地に
-/dorokei setup <ゲーム名> jail             # 牢獄地点を現在地に
-/dorokei setup <ゲーム名> delete           # ゲームを丸ごと削除
+/dorokei setstartspawn                     # 初期リスポーン地点
+/dorokei setlobby <ゲーム名>              # 現在地を待機ロビーに
+/dorokei setfield <ゲーム名> 1            # エリア角1を現在地に
+/dorokei setfield <ゲーム名> 2            # エリア角2を現在地に
+/dorokei setjail <ゲーム名>               # 牢獄地点を現在地に
+/dorokei delete <ゲーム名>                # ゲームを丸ごと削除
 ```
 
 設定の流れは次のとおりです。
 
-1. `/dorokei setup spawn` で初期リスポーン地点を設定する。
-2. ロビーにする場所に立ち `/dorokei setup game1 lobby` を実行する（ロビーの既定上限は20人。`config.yml` の `games.<ゲーム名>.lobby.max-players` を手動で書き換えれば変更可能）。
-3. エリアの角1に立ち `/dorokei setup game1 pos1`、対角の角2に立ち `/dorokei setup game1 pos2` を実行する（pos1/pos2 がそろうとエリアサイズがチャットに表示されます）。
-4. 牢獄にする場所に立ち `/dorokei setup game1 jail` を実行する。
+1. `/dorokei setstartspawn` で初期リスポーン地点を設定する。
+2. ロビーにする場所に立ち `/dorokei setlobby game1` を実行する（ロビーの既定上限は20人。`config.yml` の `games.<ゲーム名>.lobby.max-players` を手動で書き換えれば変更可能）。
+3. エリアの角1に立ち `/dorokei setfield game1 1`、対角の角2に立ち `/dorokei setfield game1 2` を実行する（pos1/pos2 がそろうとエリアサイズがチャットに表示されます）。
+4. 牢獄にする場所に立ち `/dorokei setjail game1` を実行する。
 5. `/dorokei list` でゲームが `[待機中]` として正しく登録されているか確認する。
 
 !!! tip "次のステップが自動で案内されます"
-    各 `setup` コマンドの実行後、未設定のサブタイプ（lobby / pos1 / pos2 / jail）がチャットに表示されます。4点すべてがそろうと「セットアップが完了しました!」と通知され、`/dorokei gamestart <ゲーム名>` で開始できる旨が案内されます。
+    各セットアップコマンドの実行後、未設定の項目（lobby / pos1 / pos2 / jail）がチャットに表示されます。4点すべてがそろうと「セットアップが完了しました!」と通知され、`/dorokei gamestart <ゲーム名>` で開始できる旨が案内されます。
 
 !!! warning "pos1 / pos2 のワールドは一致が必須"
     pos1 と pos2 が異なるワールドにあるとセットアップが拒否されます。先に登録した方と同じワールドで取り直してください。
@@ -135,12 +135,12 @@ games:
 | `/dorokei`（引数なし） | ヘルプを表示する |
 | `/dorokei list` | ゲーム一覧と各ゲームの設定状況・状態を表示する |
 | `/dorokei gamestart <ゲーム名>` | 指定ゲームのロビーからゲームを開始する |
-| `/dorokei setup spawn` | 初期リスポーン地点を設定する |
-| `/dorokei setup <ゲーム名> lobby` | 現在地を待機ロビーに設定する |
-| `/dorokei setup <ゲーム名> pos1` | エリアの角1を現在地に設定する |
-| `/dorokei setup <ゲーム名> pos2` | エリアの角2を現在地に設定する |
-| `/dorokei setup <ゲーム名> jail` | 牢獄地点を現在地に設定する |
-| `/dorokei setup <ゲーム名> delete` | ゲームを丸ごと削除する（`remove` でも可） |
+| `/dorokei setstartspawn` | 初期リスポーン地点を設定する |
+| `/dorokei setlobby <ゲーム名>` | 現在地を待機ロビーに設定する |
+| `/dorokei setfield <ゲーム名> 1` | エリアの角1を現在地に設定する |
+| `/dorokei setfield <ゲーム名> 2` | エリアの角2を現在地に設定する |
+| `/dorokei setjail <ゲーム名>` | 牢獄地点を現在地に設定する |
+| `/dorokei delete <ゲーム名>` | ゲームを丸ごと削除する（`remove` でも可） |
 | `/dorokei join <ゲーム名>` | プレイヤーをロビーに参加させる |
 | `/dorokei leave` | ロビーから退出する |
 
@@ -156,7 +156,7 @@ games:
 | `/dorokei setjail` | 旧方式の牢獄地点を設定する |
 
 !!! note "plugin.yml の usage 表記について"
-    v3.1 では `plugin.yml` の usage 欄も v3.1 形式に更新されています（`/dorokei setup <ゲーム名> <lobby\|pos1\|pos2\|jail\|delete>` 等）。引数なしで `/dorokei` を実行するとプラグイン内蔵の最新ヘルプが表示されます。
+    v3.1 では `plugin.yml` の usage 欄も v3.1 形式に更新されています（`/dorokei setlobby <ゲーム名>` / `/dorokei setfield <ゲーム名> <1\|2>` / `/dorokei setjail <ゲーム名>` / `/dorokei delete <ゲーム名>` 等）。引数なしで `/dorokei` を実行するとプラグイン内蔵の最新ヘルプが表示されます。
 
 ## 権限ノード
 
@@ -164,7 +164,7 @@ games:
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `dorokei.admin` | OP | `/dorokei setup ...` / `gamestart` / 旧コマンド（`start` / `setpolice` / `settime` / `setjail`）の実行 |
+| `dorokei.admin` | OP | セットアップ系コマンド（`setstartspawn` / `setlobby` / `setfield` / `setjail` / `delete`） / `gamestart` / 旧コマンド（`start` / `setpolice` / `settime` / `setjail`）の実行 |
 | `dorokei.play` | 全員 | `/dorokei join` / `leave` / `list` の実行 |
 
 !!! note "プレイヤー操作について"
@@ -174,7 +174,7 @@ games:
 
 !!! info "実装済みの機能"
     - ゲーム単位の統合管理（ロビー＋エリアを `games.<ゲーム名>` 配下にまとめて保持）
-    - 簡略化されたセットアップコマンド（`setup link` 廃止・`setup <ゲーム名> delete` 追加・ワンド廃止）
+    - 簡略化されたセットアップコマンド（`setup link` 廃止・`delete <ゲーム名>` 追加・ワンド廃止）
     - 複数ゲーム対応（ロビー既定上限20人・看板／コマンド参加）
     - ゲームエリア管理（pos1/pos2/jail の3点による範囲設定・エリア外移動制限）
     - 参加人数に応じた警官の自動割り振り（`cop-allocation`）
@@ -189,7 +189,7 @@ games:
 !!! warning "注意点・制限"
     - 旧方式（`start` / `setpolice` / `settime` / `setjail`）のコマンドが後方互換として残っています。新方式（ゲーム名単位）の運用と混在させないでください。
     - config 再読み込み用コマンドはありません。`config.yml` を手動編集した場合はサーバー再起動が必要です。
-    - **v3.0 以前の config（`lobbies:` / `game-areas:`）は v3.1 では読み込まれません**。アップデート時は config を作り直し、`/dorokei setup` で再構築してください。
+    - **v3.0 以前の config（`lobbies:` / `game-areas:`）は v3.1 では読み込まれません**。アップデート時は config を作り直し、セットアップコマンドで再構築してください。
 
 ## トラブルシューティング
 
@@ -197,22 +197,22 @@ games:
     ゲーム開始には **ロビーに最低2人** が必要です。`/dorokei list` でロビーの参加人数を確認してください。
 
 ??? failure "「ゲームエリアが設定されていません」と表示される"
-    そのゲーム名のエリア（pos1 / pos2 / jail）が未設定です。`/dorokei setup <ゲーム名> pos1` / `pos2` / `jail` をすべて実行してください。エリアは pos1・pos2・jail の3点がそろって初めて有効になります。
+    そのゲーム名のエリア（pos1 / pos2 / jail）が未設定です。`/dorokei setfield <ゲーム名> 1` / `/dorokei setfield <ゲーム名> 2` / `/dorokei setjail <ゲーム名>` をすべて実行してください。エリアは pos1・pos2・jail の3点がそろって初めて有効になります。
 
 ??? failure "ゲームが list に [未完成] と表示される"
-    ロビーまたはエリアの一部が未設定です。`/dorokei list` の各ゲームの内訳で `ロビー: 未設定` や `エリア: (pos1/pos2 未設定)` 等を確認し、不足しているサブタイプを `/dorokei setup <ゲーム名> ...` で追加してください。3点がそろわないエリアは読み込まれません。ワールドが存在しない場合も読み込みに失敗します。
+    ロビーまたはエリアの一部が未設定です。`/dorokei list` の各ゲームの内訳で `ロビー: 未設定` や `エリア: (pos1/pos2 未設定)` 等を確認し、不足している項目を `/dorokei setlobby <ゲーム名>` / `/dorokei setfield <ゲーム名> 1` / `/dorokei setfield <ゲーム名> 2` / `/dorokei setjail <ゲーム名>` で追加してください。3点がそろわないエリアは読み込まれません。ワールドが存在しない場合も読み込みに失敗します。
 
 ??? failure "「pos2 と異なるワールドです」と言われる"
     pos1 と pos2 は同じワールドである必要があります。先に登録した方と同じワールドで取り直してください。
 
 ??? failure "参加看板をクリックしても参加できない"
-    看板の1行目が `[ドロケイ]`、2行目に有効な **ゲーム名（=ロビーID）** が入っているか確認してください。対象ロビーがゲーム中の場合は参加できません。
+    `/dorokei setsign join <ゲーム名>` で登録済みか確認してください（座標登録が必要なため手書きは機能しません）。対象ロビーがゲーム中の場合は参加できません。
 
 ??? failure "config.yml を編集したのに反映されない"
     config 再読み込みコマンドはありません。サーバーを再起動して反映してください。
 
 ??? failure "ゲームを丸ごと作り直したい"
-    `/dorokei setup <ゲーム名> delete` でそのゲームを丸ごと削除できます。削除後に同じ手順で再設定してください。
+    `/dorokei delete <ゲーム名>` でそのゲームを丸ごと削除できます。削除後に同じ手順で再設定してください。
 
 ---
 

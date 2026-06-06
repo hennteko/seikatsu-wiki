@@ -32,9 +32,9 @@ Zinro（Minecraft人狼プラグイン）の導入・初期設定・config・権
 OP権限で、設定したい場所に **立った状態** で以下を実行します（実行位置が座標として保存されます）。
 
 ```text
-/zinro setlocation spawn    # 初期スポーン地点（途中抜け時などの戻り先）
-/zinro setlocation lobby    # ロビー（ゲーム開始前の待機場所）
-/zinro setlocation field    # ゲームフィールド（開始時のテレポート先）
+/zinro setstartspawn    # 初期スポーン地点（途中抜け時などの戻り先）
+/zinro setlobby         # ロビー（ゲーム開始前の待機場所）
+/zinro setspawn         # ゲームフィールド（開始時のテレポート先）
 ```
 
 ### 2. フィールド範囲の設定（任意）
@@ -42,8 +42,8 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 スケルトン（エメラルドの番人）をフィールド範囲内にランダム出現させたい場合に設定します。
 
 ```text
-/zinro setfield pos1        # フィールド範囲の角1
-/zinro setfield pos2        # フィールド範囲の角2
+/zinro setfield 1        # フィールド範囲の角1
+/zinro setfield 2        # フィールド範囲の角2
 ```
 
 !!! tip "スケルトン出現範囲について"
@@ -111,8 +111,8 @@ role_distribution:
 | `skeleton.spawn_radius` | 50 | スケルトン出現半径（フィールド範囲未設定時に使用） |
 | `skeleton.spawn` | world (0,64,0) | スケルトン出現の中心座標 |
 | `game.lobby_return_time` | 10 | ゲーム終了後にロビーへ戻るまでの待ち時間（秒） |
-| `locations.spawn / lobby / field` | （未設定） | 各位置座標。`/zinro setlocation` で自動保存 |
-| `field_area.pos1 / pos2` | （未設定） | フィールド範囲。`/zinro setfield` で自動保存 |
+| `locations.spawn / lobby / field` | （未設定） | 各位置座標。`/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn` で自動保存 |
+| `field_area.pos1 / pos2` | （未設定） | フィールド範囲。`/zinro setfield 1`・`/zinro setfield 2` で自動保存 |
 | `boards.board_1 〜 board_20` | （未設定） | 占い看板の座標。`/zinro setboard` で自動保存 |
 | `role_distribution.<人数>` | 2〜20人分を同梱 | 人数ごとの役職配分 |
 
@@ -154,8 +154,10 @@ role_distribution:
 | `/zinro` | コマンドのヘルプを表示 |
 | `/zinro start` | ゲームを開始する（最低2人の参加が必要） |
 | `/zinro stop` | ゲームを強制終了する |
-| `/zinro setlocation <spawn\|lobby\|field>` | 各位置を現在地に設定 |
-| `/zinro setfield <pos1\|pos2>` | フィールド範囲を現在地に設定 |
+| `/zinro setstartspawn` | 初期スポーン地点を現在地に設定 |
+| `/zinro setlobby` | ロビー地点を現在地に設定 |
+| `/zinro setspawn` | ゲームスポーン地点を現在地に設定 |
+| `/zinro setfield <1\|2>` | フィールド範囲を現在地に設定 |
 | `/zinro setboard <1-20>` | 見ている看板を占い看板として登録 |
 | `/zinro setsign <join\|leave\|shop>` | 視線先の看板をゲート看板として登録 |
 | `/zinro leave <player>` | 指定プレイヤーをロビーから強制離脱させる |
@@ -191,7 +193,7 @@ role_distribution:
 !!! warning "同梱ドキュメントとコマンド体系の差異"
     Zinroには複数の同梱ドキュメント（README.md・SETUP_GUIDE.md・QUICKSTART.md・各種PHASEレポートなど）が含まれていますが、内容が古く現行バージョンと食い違う箇所があります。**このWIKIは現行コード（v1.4.0）の実装を正としています。** 特に次の点に注意してください。
 
-    - `/zinro join`・`/zinro leave`（自己参加）・`/zinro vote`・`/zinro config`・`/zinro setup ...` といったコマンドは、現行コードには **存在しません**。参加・退出はゲート看板、投票は投票用紙GUIで行います。位置設定は `/zinro setlocation` ／ `/zinro setfield` です。
+    - `/zinro join`・`/zinro leave`（自己参加）・`/zinro vote`・`/zinro config`・`/zinro setup ...` といったコマンドは、現行コードには **存在しません**。参加・退出はゲート看板、投票は投票用紙GUIで行います。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。
     - 一部ドキュメントに「死神（REAPER）削除済み」とありますが、現行の役職定義には未使用の死神が残っています。実際の配役には登場しないため通常プレイへの影響はありません。
     - 価格変更コマンドや `shop_prices` 設定は現行の同梱 `config.yml` には含まれません。ショップ価格は固定です。
 

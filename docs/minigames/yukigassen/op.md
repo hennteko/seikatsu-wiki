@@ -44,16 +44,16 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
 ```text
-/yukigassen setup spawn         # 初期リスポーン地点（途中抜け時の戻り先）
-/yukigassen setup lobby         # 受付ロビー地点
-/yukigassen setup spawnred      # 赤チームのスポーン地点
-/yukigassen setup spawnblue     # 青チームのスポーン地点
-/yukigassen setup area pos1     # ゲームエリアの角1
-/yukigassen setup area pos2     # ゲームエリアの角2
+/yukigassen setstartspawn       # 初期リスポーン地点（途中抜け時の戻り先）
+/yukigassen setlobby            # 受付ロビー地点
+/yukigassen setspawn red        # 赤チームのスポーン地点
+/yukigassen setspawn blue       # 青チームのスポーン地点
+/yukigassen setfield 1          # ゲームエリアの角1
+/yukigassen setfield 2          # ゲームエリアの角2
 ```
 
 !!! tip "ゲーム開始の必須条件"
-    `/yukigassen start` には **赤チームと青チームのスポーン地点が両方とも設定済み** であることが必要です。`spawnred` と `spawnblue` を必ず設定してください。エリア（`area`）が未設定の場合はエリア外移動の制限がかからない（マップ全体が有効）扱いになります。
+    `/yukigassen start` には **赤チームと青チームのスポーン地点が両方とも設定済み** であることが必要です。`setspawn red` と `setspawn blue` を必ず実行してください。エリア（`setfield`）が未設定の場合はエリア外移動の制限がかからない（マップ全体が有効）扱いになります。
 
 ### 参加用看板の設置
 
@@ -78,7 +78,13 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 | `/yukigassen zanki <数>` | `yukigassen.admin` | 初期残機数を設定する |
 | `/yukigassen teamjoinred [player]` | `yukigassen.admin` | プレイヤーを赤チームに参加させる |
 | `/yukigassen teamjoinblue [player]` | `yukigassen.admin` | プレイヤーを青チームに参加させる |
-| `/yukigassen setup <type> [pos]` | `yukigassen.admin` | 各種地点を設定する（前述） |
+| `/yukigassen setstartspawn` | `yukigassen.admin` | 初期リスポーン地点を設定する |
+| `/yukigassen setlobby` | `yukigassen.admin` | ロビー地点を設定する |
+| `/yukigassen setspawn red` | `yukigassen.admin` | 赤チームのスポーン地点を設定する |
+| `/yukigassen setspawn blue` | `yukigassen.admin` | 青チームのスポーン地点を設定する |
+| `/yukigassen setfield 1` | `yukigassen.admin` | ゲームエリアの角1を設定する |
+| `/yukigassen setfield 2` | `yukigassen.admin` | ゲームエリアの角2を設定する |
+| `/yukigassen setstart` | `yukigassen.admin` | 視線先の看板をゲーム開始看板として登録する |
 
 !!! note "対象（player）指定について"
     `join` / `leave` / `teamjoinred` / `teamjoinblue` は、引数でターゲットセレクタ（プレイヤー名や `@a` など）を指定できます。省略した場合は実行者自身が対象になります。`teamjoinred` / `teamjoinblue` で割り振ったチームは、ゲーム開始時のランダム振り分けより優先されます。
@@ -100,16 +106,16 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 ## トラブルシューティング
 
 ??? failure "`/yukigassen start` でゲームが開始できない"
-    赤・青チームのスポーン地点が未設定の可能性があります。`/yukigassen setup spawnred` と `/yukigassen setup spawnblue` を実行してください。また、参加者が1人もいない場合も開始できません。
+    赤・青チームのスポーン地点が未設定の可能性があります。`/yukigassen setspawn red` と `/yukigassen setspawn blue` を実行してください。また、参加者が1人もいない場合も開始できません。
 
 ??? failure "プレイヤーがエリア外に弾かれない"
-    `locations.area.pos1` / `pos2` が未設定だと、エリア判定が常に有効（マップ全体OK）になります。`/yukigassen setup area pos1` と `pos2` でエリアの2点を設定してください。
+    `locations.area.pos1` / `pos2` が未設定だと、エリア判定が常に有効（マップ全体OK）になります。`/yukigassen setfield 1` と `/yukigassen setfield 2` でエリアの2点を設定してください。
 
 ??? failure "参加看板が機能しない"
     看板の1行目が `[Yukigassen]`、2行目が `join` または `leave` になっているか確認してください。看板の設置・編集には `yukigassen.admin` 権限が必要です。
 
 ??? failure "ゲーム終了後にプレイヤーがロビーに戻らない"
-    `locations.lobby` が未設定の可能性があります。`/yukigassen setup lobby` でロビー地点を設定してください。
+    `locations.lobby` が未設定の可能性があります。`/yukigassen setlobby` でロビー地点を設定してください。
 
 ---
 
