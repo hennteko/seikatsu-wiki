@@ -72,7 +72,7 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
 ### 1. コースを登録する
 
-```text
+```text title="コースを新規登録する"
 /asure course create <コースID> <asure|dropper> [距離]
 ```
 
@@ -82,9 +82,12 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
 設定したい位置に立って実行します。
 
-```text
-/asure setup spawn [コースID]     # ロビー（クリア・ギブアップ後の戻り先）を現在地に設定
-/asure setup start [コースID]     # スタート地点を現在地に設定（距離計測の基準にもなる）
+```text title="ロビー（クリア・ギブアップ後の戻り先）を現在地に設定"
+/asure setup spawn [コースID]
+```
+
+```text title="スタート地点を現在地に設定（距離計測の基準にもなる）"
+/asure setup start [コースID]
 ```
 
 コースIDを省略すると `default-course` が対象になります。

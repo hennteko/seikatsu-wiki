@@ -74,16 +74,40 @@
 
 専用のPvPアリーナを用意し、OP権限で以下のコマンドを **その場に立って／チェストを見て** 実行します。
 
-```text
-/pvp setpoint1            # プレイヤー1の対戦開始地点（コマンドを実行した自分の現在地が保存される）
-/pvp setpoint2            # プレイヤー2の対戦開始地点（同上）
-/pvp setchest1            # 装備リセット用チェスト1（視線の先5ブロック以内のチェストを指定）
-/pvp setchest2            # 装備リセット用チェスト2（同上）
-/pvp setspectate          # 観戦場所（コマンドを実行した自分の現在地が保存される）
-/pvp setlobby             # ロビー（同上）
-/pvp setsign <join|leave|bet|spectate|lobby>   # 視線の先5ブロック以内の看板を登録
-/pvp setstart             # 視線の先5ブロック以内の看板を [PvP開始] 看板として登録
-/pvp removesign           # 視線の先5ブロック以内の看板の登録を解除
+```text title="プレイヤー1の対戦開始地点（コマンドを実行した自分の現在地が保存される）"
+/pvp setpoint1
+```
+
+```text title="プレイヤー2の対戦開始地点（コマンドを実行した自分の現在地が保存される）"
+/pvp setpoint2
+```
+
+```text title="装備リセット用チェスト1（視線の先5ブロック以内のチェストを指定）"
+/pvp setchest1
+```
+
+```text title="装備リセット用チェスト2（視線の先5ブロック以内のチェストを指定）"
+/pvp setchest2
+```
+
+```text title="観戦場所（コマンドを実行した自分の現在地が保存される）"
+/pvp setspectate
+```
+
+```text title="ロビー（コマンドを実行した自分の現在地が保存される）"
+/pvp setlobby
+```
+
+```text title="視線の先5ブロック以内の看板を登録"
+/pvp setsign <join|leave|bet|spectate|lobby>
+```
+
+```text title="視線の先5ブロック以内の看板を [PvP開始] 看板として登録"
+/pvp setstart
+```
+
+```text title="視線の先5ブロック以内の看板の登録を解除"
+/pvp removesign
 ```
 
 - `setpoint1`・`setpoint2`・`setspectate`・`setlobby` は **コマンド実行者の現在位置** を保存します。プレイヤーを飛ばしたい場所に立って実行してください。

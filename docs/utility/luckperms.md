@@ -96,16 +96,23 @@
 
 ## よく使う設定例
 
-```text
-# 「moderator」グループを作り、default を継承させ、優先度を設定
+```text title="「moderator」グループを作成する"
 /lp creategroup moderator
+```
+
+```text title="moderator に default グループを継承させる"
 /lp group moderator parent add default
+```
+
+```text title="moderator の優先度を設定する"
 /lp group moderator setweight 10
+```
 
-# moderator に LWC の管理権限を付与
+```text title="moderator に LWC の管理権限を付与する"
 /lp group moderator permission set lwc.mod true
+```
 
-# プレイヤーを moderator にする
+```text title="プレイヤーを moderator グループにする"
 /lp user Steve parent add moderator
 ```
 

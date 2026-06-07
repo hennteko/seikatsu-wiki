@@ -43,15 +43,36 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 
 OP権限で、設定したい場所に **その場に立って** 以下のコマンドを実行します（実行位置が座標として保存されます）。
 
-```text
-/zankipvp setstartspawn                    # 初期リスポーン地点（退出時の戻り先）
-/zankipvp setlobby                         # 受付ロビー（参加時の待機場所）
-/zankipvp setfield 1                       # ゲームエリアの角1
-/zankipvp setfield 2                       # ゲームエリアの角2
-/zankipvp setspawn red                     # 赤チームのスポーン地点
-/zankipvp setspawn blue                    # 青チームのスポーン地点
-/zankipvp setspawn yellow                  # 黄チームのスポーン地点
-/zankipvp setspawn green                   # 緑チームのスポーン地点
+```text title="初期リスポーン地点（退出時の戻り先）"
+/zankipvp setstartspawn
+```
+
+```text title="受付ロビー（参加時の待機場所）"
+/zankipvp setlobby
+```
+
+```text title="ゲームエリアの角1"
+/zankipvp setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/zankipvp setfield 2
+```
+
+```text title="赤チームのスポーン地点"
+/zankipvp setspawn red
+```
+
+```text title="青チームのスポーン地点"
+/zankipvp setspawn blue
+```
+
+```text title="黄チームのスポーン地点"
+/zankipvp setspawn yellow
+```
+
+```text title="緑チームのスポーン地点"
+/zankipvp setspawn green
 ```
 
 設定状況は `/zankipvp status` で確認できます。
@@ -63,10 +84,16 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 ロビーには参加・退出用の看板を設置します。看板を見ながら以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。`zankipvp.admin` 権限が必要です。
 
-```text
-/zankipvp setsign join    # 参加看板として登録
-/zankipvp setsign leave   # 退出看板として登録
-/zankipvp removesign      # 視線先の看板の登録を解除
+```text title="参加看板として登録"
+/zankipvp setsign join
+```
+
+```text title="退出看板として登録"
+/zankipvp setsign leave
+```
+
+```text title="視線先の看板の登録を解除"
+/zankipvp removesign
 ```
 
 登録するとプラグインが `[ZankiPvP]` / `lobby` / `クリックで参加` 等のテキストを自動で書き込みます。手書き登録は廃止されています。

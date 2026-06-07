@@ -42,11 +42,20 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 
 専用ワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置が座標として保存されます）。
 
-```text
-/tntran setstartspawn        # 初期リスポーン地点（途中抜け時の戻り先）
-/tntran setlobby             # 待機ロビー
-/tntran setfield 1           # ゲームエリアの角1
-/tntran setfield 2           # ゲームエリアの角2
+```text title="初期リスポーン地点（途中抜け時の戻り先）"
+/tntran setstartspawn
+```
+
+```text title="待機ロビー"
+/tntran setlobby
+```
+
+```text title="ゲームエリアの角1"
+/tntran setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/tntran setfield 2
 ```
 
 !!! tip "ゲームエリア（field）の作り方"

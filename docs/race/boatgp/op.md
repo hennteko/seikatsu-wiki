@@ -136,18 +136,48 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 
 標準フロー（create → setfinish → addcheckpoint → addgrid → additembox → setlobby → laps → save）:
 
-```text
-/race admin create <名前>            # 編集開始（現在のワールドが対象になる）
-/race admin setfinish [半径]         # フィニッシュライン(=CP0)を現在地に設定（既定半径6.0）
-/race admin addcheckpoint [半径]     # チェックポイントを現在地に追加（コース順に繰り返す）
-/race admin addgrid                  # スタートグリッドを現在地に追加（参加可能人数ぶん繰り返す）
-/race admin additembox [半径]        # アイテムボックスを現在地に追加（任意・複数可）
-/race admin setlobby                 # 待機ロビーを現在地に設定
-/race admin laps <周回数>            # 周回数を設定
-/race admin world [名前]             # レースワールドを明示指定（省略時は現在のワールド）
-/race admin info                     # 編集状況を確認
-/race admin save                     # サーキットを保存
-/race admin cancel                   # 編集を破棄
+```text title="編集開始（現在のワールドが対象になる）"
+/race admin create <名前>
+```
+
+```text title="フィニッシュライン(=CP0)を現在地に設定（既定半径6.0）"
+/race admin setfinish [半径]
+```
+
+```text title="チェックポイントを現在地に追加（コース順に繰り返す）"
+/race admin addcheckpoint [半径]
+```
+
+```text title="スタートグリッドを現在地に追加（参加可能人数ぶん繰り返す）"
+/race admin addgrid
+```
+
+```text title="アイテムボックスを現在地に追加（任意・複数可）"
+/race admin additembox [半径]
+```
+
+```text title="待機ロビーを現在地に設定"
+/race admin setlobby
+```
+
+```text title="周回数を設定"
+/race admin laps <周回数>
+```
+
+```text title="レースワールドを明示指定（省略時は現在のワールド）"
+/race admin world [名前]
+```
+
+```text title="編集状況を確認"
+/race admin info
+```
+
+```text title="サーキットを保存"
+/race admin save
+```
+
+```text title="編集を破棄"
+/race admin cancel
 ```
 
 !!! tip "保存に必要な最低条件"

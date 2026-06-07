@@ -43,13 +43,28 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
-```text
-/yukigassen setstartspawn       # 初期リスポーン地点（途中抜け時の戻り先）
-/yukigassen setlobby            # 受付ロビー地点
-/yukigassen setspawn red        # 赤チームのスポーン地点
-/yukigassen setspawn blue       # 青チームのスポーン地点
-/yukigassen setfield 1          # ゲームエリアの角1
-/yukigassen setfield 2          # ゲームエリアの角2
+```text title="初期リスポーン地点（途中抜け時の戻り先）"
+/yukigassen setstartspawn
+```
+
+```text title="受付ロビー地点"
+/yukigassen setlobby
+```
+
+```text title="赤チームのスポーン地点"
+/yukigassen setspawn red
+```
+
+```text title="青チームのスポーン地点"
+/yukigassen setspawn blue
+```
+
+```text title="ゲームエリアの角1"
+/yukigassen setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/yukigassen setfield 2
 ```
 
 !!! tip "ゲーム開始の必須条件"
@@ -59,9 +74,12 @@ Yukigassen の導入・地点のセットアップ・config・権限・管理コ
 
 ロビーに看板を設置し、**看板を見た状態**で以下のコマンドを実行します（`yukigassen.admin` 権限が必要）。
 
-```text
-/yukigassen setsign join    # 参加看板として登録
-/yukigassen setsign leave   # 退出看板として登録
+```text title="参加看板として登録"
+/yukigassen setsign join
+```
+
+```text title="退出看板として登録"
+/yukigassen setsign leave
 ```
 
 コマンドを実行すると、プラグインが1行目に `[Yukigassen]`・2行目に「参加」または「退出」のテキストを自動書き込みし、位置を config に保存します。手書きでのテキスト入力は不要です。

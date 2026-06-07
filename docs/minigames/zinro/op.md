@@ -31,19 +31,28 @@ Zinro（Minecraft人狼プラグイン）の導入・初期設定・config・権
 
 OP権限で、設定したい場所に **立った状態** で以下を実行します（実行位置が座標として保存されます）。
 
-```text
-/zinro setstartspawn    # 初期スポーン地点（途中抜け時などの戻り先）
-/zinro setlobby         # ロビー（ゲーム開始前の待機場所）
-/zinro setspawn         # ゲームフィールド（開始時のテレポート先）
+```text title="初期スポーン地点（途中抜け時などの戻り先）"
+/zinro setstartspawn
+```
+
+```text title="ロビー（ゲーム開始前の待機場所）"
+/zinro setlobby
+```
+
+```text title="ゲームフィールド（開始時のテレポート先）"
+/zinro setspawn
 ```
 
 ### 2. フィールド範囲の設定（任意）
 
 スケルトン（エメラルドの番人）をフィールド範囲内にランダム出現させたい場合に設定します。
 
-```text
-/zinro setfield 1        # フィールド範囲の角1
-/zinro setfield 2        # フィールド範囲の角2
+```text title="フィールド範囲の角1"
+/zinro setfield 1
+```
+
+```text title="フィールド範囲の角2"
+/zinro setfield 2
 ```
 
 !!! tip "スケルトン出現範囲について"
@@ -53,10 +62,17 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 
 占いアイテムを使うための看板を、参加人数分（最大20個）設置します。設置したい看板を見ながら実行します。
 
-```text
+```text title="占い看板を番号1で登録"
 /zinro setboard 1
+```
+
+```text title="占い看板を番号2で登録"
 /zinro setboard 2
-...
+```
+
+（以下、3〜19も同様に実行）
+
+```text title="占い看板を番号20で登録"
 /zinro setboard 20
 ```
 
@@ -66,17 +82,23 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 
 プレイヤーが右クリックで参加・退出できる看板を設置します。看板を見ながら以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。
 
-```text
-/zinro setsign join    # 参加看板として登録（テキストは自動書き込み）
-/zinro setsign leave   # 退出看板として登録
-/zinro setsign shop    # ショップ看板として登録（任意）
+```text title="参加看板として登録（テキストは自動書き込み）"
+/zinro setsign join
+```
+
+```text title="退出看板として登録"
+/zinro setsign leave
+```
+
+```text title="ショップ看板として登録（任意）"
+/zinro setsign shop
 ```
 
 登録するとプラグインが `[人狼]` / `▶クリックで参加`（参加看板）や `[人狼]` / `▶クリックで退出`（退出看板）などのテキストを自動で書き込みます。手書きによる自動登録は廃止されています。
 
 ### 5. 設定の保存
 
-```text
+```text title="設定を保存する"
 /zinro save
 ```
 

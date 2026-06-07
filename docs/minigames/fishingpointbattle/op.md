@@ -26,15 +26,36 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 ゲームに使うワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置・向きが座標として保存されます）。
 
-```text
-/fpb setstartspawn      # 初期リスポーン地点（退出・終了時の戻り先）
-/fpb setlobby           # 待機ロビー地点
-/fpb setfield 1         # ゲームエリアの角1
-/fpb setfield 2         # ゲームエリアの角2
-/fpb setfishspot        # 高ポイントゾーン（任意）
-/fpb setsign join       # 視線先の看板を参加看板として登録
-/fpb setsign leave      # 視線先の看板を退出看板として登録
-/fpb setstart           # 視線先の看板をゲーム開始看板として登録（任意）
+```text title="初期リスポーン地点（退出・終了時の戻り先）"
+/fpb setstartspawn
+```
+
+```text title="待機ロビー地点"
+/fpb setlobby
+```
+
+```text title="ゲームエリアの角1"
+/fpb setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/fpb setfield 2
+```
+
+```text title="高ポイントゾーン（任意）"
+/fpb setfishspot
+```
+
+```text title="視線先の看板を参加看板として登録"
+/fpb setsign join
+```
+
+```text title="視線先の看板を退出看板として登録"
+/fpb setsign leave
+```
+
+```text title="視線先の看板をゲーム開始看板として登録（任意）"
+/fpb setstart
 ```
 
 !!! note "必須の座標と任意の座標"

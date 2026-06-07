@@ -59,11 +59,20 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 
 ゲーム用ワールドを用意し、OP権限で以下のコマンドを **設定したい場所に立って** 実行します（実行位置の座標が保存されます）。
 
-```text
-/2dtreasure setstartspawn        # 初期リスポーン地点（途中抜け時の戻り先）
-/2dtreasure setlobby             # ロビー地点（参加者の集合場所）
-/2dtreasure setfield 1           # ゲームエリアの角1
-/2dtreasure setfield 2           # ゲームエリアの角2
+```text title="初期リスポーン地点（途中抜け時の戻り先）"
+/2dtreasure setstartspawn
+```
+
+```text title="ロビー地点（参加者の集合場所）"
+/2dtreasure setlobby
+```
+
+```text title="ゲームエリアの角1"
+/2dtreasure setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/2dtreasure setfield 2
 ```
 
 - `setfield 1` と `setfield 2` の2点で囲んだX軸の範囲が、マップが生成されるプレイエリアになります。
@@ -77,10 +86,16 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 
 参加・退出はロビーの看板で行います。看板を設置し、**看板を見ながら（5ブロック以内）** 以下のコマンドで登録します（`twodtreasure.admin` 権限が必要）。
 
-```text
-/2dtreasure setsign join     # 参加看板として登録
-/2dtreasure setsign leave    # 退出看板として登録
-/2dtreasure setstart         # 開始看板として登録（任意・右クリックでゲーム開始）
+```text title="参加看板として登録"
+/2dtreasure setsign join
+```
+
+```text title="退出看板として登録"
+/2dtreasure setsign leave
+```
+
+```text title="開始看板として登録（任意・右クリックでゲーム開始）"
+/2dtreasure setstart
 ```
 
 登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。

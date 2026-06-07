@@ -78,14 +78,15 @@ GUIは1段9スロットの `Inventory`（タイトル：白＋太字「アンク
 
 ### 配布手順
 
-```text
-# 自分に1個
+```text title="自分に1個"
 /giveuncraft
+```
 
-# 指定プレイヤーに1個
+```text title="指定プレイヤーに1個"
 /giveuncraft Steve
+```
 
-# 指定プレイヤーに16個
+```text title="指定プレイヤーに16個"
 /giveuncraft Steve 16
 ```
 
@@ -117,17 +118,19 @@ GUIは1段9スロットの `Inventory`（タイトル：白＋太字「アンク
 | `uncraft.*` | `op` | 上記すべて（children: `uncraft.use`, `uncraft.give`） |
 
 !!! example "LuckPerms 設定例"
-    ```bash
-    # 全員に基本許可（既定値と同じだが明示する場合）
+    ```text title="全員に基本許可（既定値と同じだが明示する場合）"
     /lp group default permission set uncraft.use true
+    ```
 
-    # モデレーターに配布権限
+    ```text title="モデレーターに配布権限"
     /lp group moderator permission set uncraft.give true
+    ```
 
-    # 管理者に全権限
+    ```text title="管理者に全権限"
     /lp group admin permission set uncraft.* true
+    ```
 
-    # 特定グループから明示的に剥奪
+    ```text title="特定グループから明示的に剥奪"
     /lp group guest permission set uncraft.use false
     ```
 

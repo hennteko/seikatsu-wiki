@@ -28,7 +28,7 @@ BossPluginの導入・召喚コマンド・各ボスのconfig・権限・トラ�
 
 ## `/bossspawn` コマンド
 
-```text
+```text title="ボスを召喚する（実行者の現在地）"
 /bossspawn <zombie|skeleton|spider> [hp]
 ```
 

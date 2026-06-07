@@ -87,12 +87,24 @@ KartRace の導入・コース設定・config・権限・管理コマンドを�
 
 専用ワールドにコースを用意し、OP権限で **その場に立って** 以下のコマンドを実行します（実行位置が座標として保存されます）。
 
-```text
-/kartadmin setlobby                       # ロビースポーン地点
-/kartadmin setstart 1                     # スタート位置 #1（1〜8まで繰り返す）
-/kartadmin setcheckpoint 1 [幅] [高さ]    # チェックポイント #1（番号順に設定）
-/kartadmin setfinish [幅] [高さ]          # ゴールライン
-/kartadmin setitembox                     # アイテムボックスを追加
+```text title="ロビースポーン地点"
+/kartadmin setlobby
+```
+
+```text title="スタート位置 #1（1〜8まで繰り返す）"
+/kartadmin setstart 1
+```
+
+```text title="チェックポイント #1（番号順に設定）"
+/kartadmin setcheckpoint 1 [幅] [高さ]
+```
+
+```text title="ゴールライン"
+/kartadmin setfinish [幅] [高さ]
+```
+
+```text title="アイテムボックスを追加"
+/kartadmin setitembox
 ```
 
 - `setcheckpoint` / `setfinish` の幅・高さは省略可能（既定: 幅5・高さ3ブロック）。

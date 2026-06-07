@@ -88,3 +88,19 @@ h1.page-op {
 
 /* ---- ペア切り替えリンク ---- */
 .md-button { margin: 0.2rem 0.3rem 0.2rem 0; }
+
+/* ---- コマンドブロックのタイトル（説明ヘッダー） ---- */
+/* title="..." 付きコードブロックの説明部分。コピーボタンの対象外。 */
+.md-typeset .highlight span.filename {
+  font-size: 0.68rem;
+  font-weight: 500;
+  background-color: var(--md-code-bg-color);
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  user-select: none;          /* 説明部分はドラッグ選択でもコピー不可に */
+  -webkit-user-select: none;
+}
+/* 連続するコマンドブロックの間隔を詰める */
+.md-typeset .highlight + .highlight {
+  margin-top: 0.6em;
+}

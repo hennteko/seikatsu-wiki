@@ -29,18 +29,48 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
-```text
-/moba setstartspawn                # 初期リスポーン地点（途中抜け時の戻り先）
-/moba setlobby                     # 待機ロビー
-/moba setfield 1                   # ゲームエリアの角1
-/moba setfield 2                   # ゲームエリアの角2
-/moba setspawn red                 # 赤チームのスポーン
-/moba setspawn blue                # 青チームのスポーン
-/moba setup core RED               # 赤チームのコア
-/moba setup core BLUE              # 青チームのコア
-/moba setup tower RED 1            # 赤チームのタワー1（1〜5まで繰り返す）
-/moba setup tower BLUE 1           # 青チームのタワー1（1〜5まで繰り返す）
-/moba setup minion RED LANE_TOP 1  # ミニオン経路（レーン・通過順を指定）
+```text title="初期リスポーン地点（途中抜け時の戻り先）"
+/moba setstartspawn
+```
+
+```text title="待機ロビー"
+/moba setlobby
+```
+
+```text title="ゲームエリアの角1"
+/moba setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/moba setfield 2
+```
+
+```text title="赤チームのスポーン"
+/moba setspawn red
+```
+
+```text title="青チームのスポーン"
+/moba setspawn blue
+```
+
+```text title="赤チームのコア"
+/moba setup core RED
+```
+
+```text title="青チームのコア"
+/moba setup core BLUE
+```
+
+```text title="赤チームのタワー1（1〜5まで繰り返す）"
+/moba setup tower RED 1
+```
+
+```text title="青チームのタワー1（1〜5まで繰り返す）"
+/moba setup tower BLUE 1
+```
+
+```text title="ミニオン経路（レーン・通過順を指定）"
+/moba setup minion RED LANE_TOP 1
 ```
 
 !!! note "コマンド体系について"

@@ -53,18 +53,30 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として `locations.yml` に保存されます）。
 
-```text
-/yukioni setstartspawn     # 初期スポーン地点（退出・終了時の戻り先）
-/yukioni setlobby          # 待機ロビーの地点
-/yukioni setfield 1        # ゲームエリアの角1
-/yukioni setfield 2        # ゲームエリアの角2
+```text title="初期スポーン地点（退出・終了時の戻り先）"
+/yukioni setstartspawn
+```
+
+```text title="待機ロビーの地点"
+/yukioni setlobby
+```
+
+```text title="ゲームエリアの角1"
+/yukioni setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/yukioni setfield 2
 ```
 
 設定後、ロビーに看板を設置します。看板を設置したら、**その看板を見た状態**で以下のコマンドを実行します（`yukioni.admin` 権限が必要）。
 
-```text
-/yukioni setsign join    # 参加看板として登録
-/yukioni setsign leave   # 離脱看板として登録
+```text title="参加看板として登録"
+/yukioni setsign join
+```
+
+```text title="離脱看板として登録"
+/yukioni setsign leave
 ```
 
 コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を `locations.yml` の `sign.join` / `sign.leave` に保存します。手書きでのテキスト入力は不要です。

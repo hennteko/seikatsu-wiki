@@ -73,19 +73,52 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 
 OP権限で以下のコマンドを実行します。地点系のコマンドは **実行した位置** が座標として保存されます。看板・チェスト系のコマンドは対象ブロックを **5ブロック以内で見ながら** 実行します。
 
-```text
-/btr setstartspawn              # 初期リスポーン地点（その場に立って実行）
-/btr setlobby                   # 受付ロビー（その場に立って実行）
-/btr setfield 1                 # ゲームエリアの角1（その場に立って実行）
-/btr setfield 2                 # ゲームエリアの角2（その場に立って実行）
-/btr setsign join               # 参加看板（看板を見ながら実行）
-/btr setsign leave              # 退出看板（看板を見ながら実行）
-/btr setstart                   # 開始看板（看板を見ながら実行）
-/btr setchest                   # チェストを登録（チェストを見ながら実行・複数登録可）
-/btr setitem                    # 手に持っているアイテムをアイテムプールに追加
-/btr settime <秒>               # ボーダー縮小間隔を設定
-/btr setarea <範囲>             # ボーダーの初期範囲を設定
-/btr setmax <人数>              # 最大参加人数を設定
+```text title="初期リスポーン地点（その場に立って実行）"
+/btr setstartspawn
+```
+
+```text title="受付ロビー（その場に立って実行）"
+/btr setlobby
+```
+
+```text title="ゲームエリアの角1（その場に立って実行）"
+/btr setfield 1
+```
+
+```text title="ゲームエリアの角2（その場に立って実行）"
+/btr setfield 2
+```
+
+```text title="参加看板（看板を見ながら実行）"
+/btr setsign join
+```
+
+```text title="退出看板（看板を見ながら実行）"
+/btr setsign leave
+```
+
+```text title="開始看板（看板を見ながら実行）"
+/btr setstart
+```
+
+```text title="チェストを登録（チェストを見ながら実行・複数登録可）"
+/btr setchest
+```
+
+```text title="手に持っているアイテムをアイテムプールに追加"
+/btr setitem
+```
+
+```text title="ボーダー縮小間隔を設定"
+/btr settime <秒>
+```
+
+```text title="ボーダーの初期範囲を設定"
+/btr setarea <範囲>
+```
+
+```text title="最大参加人数を設定"
+/btr setmax <人数>
 ```
 
 !!! tip "看板について"

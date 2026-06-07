@@ -71,12 +71,24 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
-```text
-/yukicraft setstartspawn      # 初期リスポーン地点（離脱時の戻り先）
-/yukicraft setlobby           # ロビー地点（参加時・終了時の戻り先）
-/yukicraft setspawn           # ゲーム開始スポーン地点（雪フィールド上空）
-/yukicraft setfield 1         # ゲームエリアの角1
-/yukicraft setfield 2         # ゲームエリアの角2
+```text title="初期リスポーン地点（離脱時の戻り先）"
+/yukicraft setstartspawn
+```
+
+```text title="ロビー地点（参加時・終了時の戻り先）"
+/yukicraft setlobby
+```
+
+```text title="ゲーム開始スポーン地点（雪フィールド上空）"
+/yukicraft setspawn
+```
+
+```text title="ゲームエリアの角1"
+/yukicraft setfield 1
+```
+
+```text title="ゲームエリアの角2"
+/yukicraft setfield 2
 ```
 
 !!! tip "セットアップのポイント"
@@ -101,9 +113,12 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 !!! note "看板による参加導線"
     ロビーに看板を設置し、**その看板を見た状態**で以下のコマンドを実行します（`yukicraft.admin` 権限が必要）。
 
-    ```text
-    /yukicraft setsign join     # 参加看板として登録（1行目 [Yukicraft]・2行目 lobby・4行目に参加人数表示）
-    /yukicraft setsign leave    # 離脱看板として登録（2行目 leave）
+    ```text title="参加看板として登録（1行目 [Yukicraft]・2行目 lobby・4行目に参加人数表示）"
+    /yukicraft setsign join
+    ```
+
+    ```text title="離脱看板として登録（2行目 leave）"
+    /yukicraft setsign leave
     ```
 
     コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config に保存します。手書きでのテキスト入力は不要です。

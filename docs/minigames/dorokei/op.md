@@ -88,13 +88,28 @@ games:
 
 専用ワールドを用意し、OP権限で以下のコマンドを **設定したい地点に立って** 実行します（実行位置が座標として保存されます）。v3.1 では引数の順序は「コマンド → ゲーム名 → 番号」に統一されています。
 
-```text
-/dorokei setstartspawn                     # 初期リスポーン地点
-/dorokei setlobby <ゲーム名>              # 現在地を待機ロビーに
-/dorokei setfield <ゲーム名> 1            # エリア角1を現在地に
-/dorokei setfield <ゲーム名> 2            # エリア角2を現在地に
-/dorokei setjail <ゲーム名>               # 牢獄地点を現在地に
-/dorokei delete <ゲーム名>                # ゲームを丸ごと削除
+```text title="初期リスポーン地点"
+/dorokei setstartspawn
+```
+
+```text title="現在地を待機ロビーに"
+/dorokei setlobby <ゲーム名>
+```
+
+```text title="エリア角1を現在地に"
+/dorokei setfield <ゲーム名> 1
+```
+
+```text title="エリア角2を現在地に"
+/dorokei setfield <ゲーム名> 2
+```
+
+```text title="牢獄地点を現在地に"
+/dorokei setjail <ゲーム名>
+```
+
+```text title="ゲームを丸ごと削除"
+/dorokei delete <ゲーム名>
 ```
 
 設定の流れは次のとおりです。

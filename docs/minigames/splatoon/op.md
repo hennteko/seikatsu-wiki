@@ -51,16 +51,40 @@ SplatoonPlugin の導入・フィールド設定・config・権限・管理コ�
 
 専用のフィールドを用意し、OP権限で以下のコマンドを **その場に立って／対象を見て** 実行します。座標は実行位置・視線の先のブロックとして保存されます。
 
-```text
-/splatoon setspawn orange    # オレンジチームの試合内スポーン（その場の位置）
-/splatoon setspawn blue      # ブルーチームの試合内スポーン（その場の位置）
-/splatoon setfield 1         # フィールド範囲の角1（その場の位置）
-/splatoon setfield 2         # フィールド範囲の角2（その場の位置）
-/splatoon setsign join       # 参加看板を設定（5ブロック以内の看板を見て実行）
-/splatoon setsign leave      # 離脱看板を設定（5ブロック以内の看板を見て実行）
-/splatoon setlobby           # ロビーのスポーン地点（その場の位置・任意）
-/splatoon setstartspawn      # ゲーム外スポーン地点（その場の位置・任意）
-/splatoon setup              # 設定状態を確認
+```text title="オレンジチームの試合内スポーン（その場の位置）"
+/splatoon setspawn orange
+```
+
+```text title="ブルーチームの試合内スポーン（その場の位置）"
+/splatoon setspawn blue
+```
+
+```text title="フィールド範囲の角1（その場の位置）"
+/splatoon setfield 1
+```
+
+```text title="フィールド範囲の角2（その場の位置）"
+/splatoon setfield 2
+```
+
+```text title="参加看板を設定（5ブロック以内の看板を見て実行）"
+/splatoon setsign join
+```
+
+```text title="離脱看板を設定（5ブロック以内の看板を見て実行）"
+/splatoon setsign leave
+```
+
+```text title="ロビーのスポーン地点（その場の位置・任意）"
+/splatoon setlobby
+```
+
+```text title="ゲーム外スポーン地点（その場の位置・任意）"
+/splatoon setstartspawn
+```
+
+```text title="設定状態を確認"
+/splatoon setup
 ```
 
 !!! tip "フィールド設定のポイント"
