@@ -33,6 +33,7 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 | `locations.lobby` | 未設定 | 待機ロビー（看板設置場所）。`/tntran setlobby` で設定 |
 | `locations.area.pos1` | 未設定 | ゲームエリアの角1。`/tntran setfield 1` で設定 |
 | `locations.area.pos2` | 未設定 | ゲームエリアの角2。`/tntran setfield 2` で設定 |
+| `signs.join` / `signs.leave` / `signs.start` | `[]` | 参加・退出・開始看板の位置リスト。`/tntran setsign <join\|leave>`・`/tntran setstart` で自動保存 |
 
 !!! note "座標はコマンドで設定"
     `locations` 配下の座標は手書きせず、後述の各設定コマンドで設定するのが確実です。実行したプレイヤーの立ち位置が保存されます。
@@ -53,14 +54,18 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 
 ### ロビー看板の設置
 
-ロビーには参加・退出用の看板をコマンドで登録します。看板を見ながら以下のコマンドを実行してください。
+ロビーには参加・退出・開始用の看板をコマンドで登録します。看板を見ながら（5ブロック以内）以下のコマンドを実行してください。
 
 | コマンド | 役割 |
 |---|---|
 | `/tntran setsign join` | 参加看板を登録。クリックでゲームに参加・ロビーへTP。参加人数を表示 |
 | `/tntran setsign leave` | 退出看板を登録。クリックでゲームから離脱 |
+| `/tntran setstart` | **開始看板** を登録（表示: `[Tntran]`／`start`／`▶クリックで開始`）。クリックでゲーム開始 |
 
 看板のテキストはプラグインが自動で書き込みます。登録を解除するには看板を見ながら `/tntran removesign` を実行してください。
+
+!!! tip "開始看板はプレイヤーも押せます"
+    開始看板のクリックに権限は不要です。最低人数などの開始条件チェックは看板経由でも行われるため、条件を満たしていればプレイヤー主導でゲームを始められます。
 
 !!! note "手書き登録は廃止済み"
     以前の方式（1行目に `[Tntran]`、2行目に `lobby`/`leave` を手書きして認識させる方式）は廃止されています。必ずコマンドで登録してください。
@@ -76,16 +81,19 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 | `/tntran setstartspawn` | `tntran.admin` | 初期リスポーン地点を設定する |
 | `/tntran setlobby` | `tntran.admin` | 待機ロビーを設定する |
 | `/tntran setfield <1\|2>` | `tntran.admin` | ゲームエリアの角1または角2を設定する |
+| `/tntran setsign <join\|leave>` | `tntran.admin` | 視線先の看板を参加／退出看板として登録する |
+| `/tntran setstart` | `tntran.admin` | 視線先の看板をゲーム開始看板として登録する |
+| `/tntran removesign` | `tntran.admin` | 視線先の看板の登録を解除する |
 | `/tntran reload` | `tntran.admin` | config.yml を再読み込みする |
 
 !!! note "ゲームの運営"
-    プレイヤーがロビー看板から参加するのを待ち、十分集まったら `/tntran start` で開始します。自動開始の機能はないため、開始は手動で行ってください。異常時は `/tntran stop` で強制終了・リセットできます。
+    プレイヤーがロビー看板から参加するのを待ち、十分集まったら `/tntran start` または **開始看板のクリック** で開始します。自動開始の機能はありません。異常時は `/tntran stop` で強制終了・リセットできます。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `tntran.admin` | OP | 管理コマンド（start / stop / setup / setsign / removesign / reload）を使用できる |
+| `tntran.admin` | OP | 管理コマンド（start / stop / setstartspawn / setlobby / setfield / setsign / setstart / removesign / reload）を使用できる |
 
 ## トラブルシューティング
 
