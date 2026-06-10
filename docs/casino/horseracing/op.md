@@ -91,15 +91,27 @@ modules:
 
 ### 競馬看板
 
-看板の1行目に `[HorseRacing]`、2行目に種類を入力すると、競馬用の看板になります。
+看板を設置し、看板を見ながら（6ブロック以内）以下のコマンドを実行すると、テキストが自動で整形されます。
 
-| 2行目 | 種類 | クリック時の動作 |
-|---|---|---|
-| `lobby` | ロビー看板 | クリックしたプレイヤーをロビー地点へテレポート |
-| `leave` | 離脱看板 | クリックしたプレイヤーをスポーン地点へテレポート |
-| `getitem` | 馬券販売看板 | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
+```text title="ロビー看板"
+/horseracing setsign lobby
+```
 
-看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。
+```text title="離脱看板"
+/horseracing setsign leave
+```
+
+```text title="馬券販売看板"
+/horseracing setsign getitem
+```
+
+| 種類 | クリック時の動作 |
+|---|---|
+| ロビー看板（`lobby`） | クリックしたプレイヤーをロビー地点へテレポート |
+| 離脱看板（`leave`） | クリックしたプレイヤーをスポーン地点へテレポート |
+| 馬券販売看板（`getitem`） | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
+
+手書き設置（1行目に `[HorseRacing]`、2行目に種類を入力）もサポートされています。看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。
 
 ## 管理コマンド
 
@@ -115,6 +127,7 @@ modules:
 | `/horseracing getbetitem [対象]` | OP（対象指定時は `horseracing.admin` または `horseracing.giveitem`） | 競馬ベット券を入手。プレイヤー名を指定すると配布 |
 | `/horseracing givebetitem <対象> [枚数]` | OP（`horseracing.admin` または `horseracing.giveitem`） | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
 | `/horseracing bet [対象]` | OP（`horseracing.admin`） | ベット画面を開く。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックして開く |
+| `/horseracing setsign <lobby\|leave\|getitem>` | `horseracing.admin` または `horseracing.sign.create` | 視線先の看板を競馬看板として登録する |
 
 !!! note "レース進行と緊急停止"
     レースの基本フローは「`start`（ベット期間開始）→ `start`（発走）→ 自動でゴール・配当」です。途中でやめたいときは `/horseracing stop` を使うと、馬が撤去され、購入済みの馬券の賭け金が全プレイヤーへ全額返金されます。CasinoPlugin の無効化時にも自動で緊急停止が走ります。

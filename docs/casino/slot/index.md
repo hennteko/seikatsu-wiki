@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎰 カジノ・ギャンブル</span></div>
   <div class="quick-card"><span class="label">所属</span><span class="value">CasinoPlugin / slot モジュール</span></div>
   <div class="quick-card"><span class="label">通貨</span><span class="value">エメラルド（銀行口座）</span></div>
-  <div class="quick-card"><span class="label">メインコマンド</span><span class="value">/slot</span></div>
+  <div class="quick-card"><span class="label">遊び方</span><span class="value">[Slot] 看板を右クリック</span></div>
 </div>
 
 !!! info "CasinoPlugin の中の slot モジュール"

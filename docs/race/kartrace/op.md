@@ -116,11 +116,21 @@ KartRace の導入・コース設定・config・権限・管理コマンドを�
 
 ### 看板の作成
 
-レース参加用の看板は、看板の **1行目に `[KartRace]`** と入力して設置すると自動で登録されます。
+看板は **参加／退出／ガレージ／ショップ** の4種別に分かれています。設置済みの看板を見ながら（6ブロック以内）以下のコマンドで種別を指定して登録します。
 
-- 看板作成には `kartrace.sign.create` 権限が必要です（既定: OP）。
-- 登録された看板にはコース名・参加人数・状態（待機中／カウントダウン中／レース中など）が自動表示されます。
-- プレイヤーが看板を右クリックするとロビーへの参加／退出がトグルされます。
+```text title="看板を登録（種別を指定）"
+/kartadmin setsign <join|leave|garage|shop>
+```
+
+- `join` … クリックでロビーに参加する看板
+- `leave` … クリックでロビーから退出する看板
+- `garage` … クリックでガレージGUIを開く看板（`kartrace.garage` 権限が必要）
+- `shop` … クリックでショップGUIを開く看板（`kartrace.shop` 権限が必要）
+
+手書き設置も可能です。看板の **1行目に `[KartRace]`**、**2行目に種別**（`join` / `leave` / `garage` / `shop`、未指定は `join` 扱い）を入力すると自動で登録されます。手書き登録には `kartrace.sign.create` 権限が必要です（既定: OP）。
+
+- 参加看板にはコース名・参加人数・状態（待機中／カウントダウン中／レース中など）が自動表示されます。
+- 参加と退出はトグルではなく別々の看板です。それぞれ設置してください。
 
 ## 権限ノード
 
@@ -152,6 +162,7 @@ KartRace の導入・コース設定・config・権限・管理コマンドを�
 | `/kartadmin forcestop` | レースを強制終了 |
 | `/kartadmin give <player> <kart_id>` | 指定プレイヤーにカートを付与 |
 | `/kartadmin setlevel <player> <強化タイプ> <レベル>` | 強化レベルを設定（0〜100） |
+| `/kartadmin setsign <join\|leave\|garage\|shop>` | 視線先の看板を指定種別の看板として登録 |
 
 !!! note "強化タイプ"
     `/kartadmin setlevel` の強化タイプは SPEED / ACCELERATION / HANDLING / BOOST_POWER / BOOST_DURATION / BOOST_CHARGE / WEIGHT / GRIP の8種類です。

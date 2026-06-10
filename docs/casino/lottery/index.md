@@ -5,7 +5,7 @@
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎰 カジノ・ギャンブル</span></div>
   <div class="quick-card"><span class="label">価格</span><span class="value">抽選券1枚 10エメラルド</span></div>
-  <div class="quick-card"><span class="label">メインコマンド</span><span class="value">/kuzi（/lottery）</span></div>
+  <div class="quick-card"><span class="label">買い方</span><span class="value">[宝くじ] 看板を右クリック</span></div>
   <div class="quick-card"><span class="label">景品</span><span class="value">5カテゴリーのアイテム抽選</span></div>
 </div>
 
@@ -17,5 +17,5 @@
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … 抽選券の買い方、右クリックでの抽選、カテゴリーごとの景品、コマンドの使い方。
+- **プレイヤー向け** … 看板での抽選券の買い方、右クリックでの抽選、カテゴリーごとの景品。
 - **OP・運営向け** … 有効化、`lottery.yml` の景品テーブル設定、確率（重み）の仕組み、管理コマンド。

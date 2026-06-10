@@ -73,14 +73,14 @@ modules:
 3. **離脱スポーンを設定** — 離脱時の戻り先に立ち、`/poker setup spawn` を実行する。
 4. **公開札看板を5枚設置** — 会場に看板を5枚設置し、それぞれの看板を見ながら `/poker sign1` 〜 `/poker sign5` を実行する（看板を見ながら実行する必要があります）。
 5. **ベット額・レイズ上限を設定** — `/poker bet <額>` でスモールブラインド額を、`/poker raisemoney <額>` でレイズ上限を設定する。
-6. **参加・離脱看板を設置** — 看板の1行目に `[Poker]`（または `[Poker参加]` / `[PokerJoin]`）と書くと参加看板に、`[PokerLeave]`（または `[Poker離脱]`）と書くと離脱看板になる。設置すると自動で整形される。
+6. **参加・離脱看板を設置** — 看板を設置し、看板を見ながら `/poker setsign join`（参加看板）または `/poker setsign leave`（離脱看板）を実行する。テキストは自動で整形される。
 7. **設定状況を確認** — `/poker status` で3座標とベット額・待機人数を確認する。
 
 !!! tip "公開札看板の役割"
     `sign1`〜`sign5` の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。
 
 !!! note "参加・離脱看板のフォーマット"
-    参加看板は1行目を `[Poker]` / `[Poker参加]` / `[PokerJoin]` のいずれかに、離脱看板は `[PokerLeave]` / `[Poker離脱]` のいずれかにして設置します。設置時に看板の表示が自動で整形され、参加看板にはリアルタイムの参加人数（最大6人）が表示されます。
+    `/poker setsign <join|leave>` で登録するのが基本です。手書きの場合は、参加看板は1行目を `[Poker]` / `[Poker参加]` / `[PokerJoin]` のいずれかに、離脱看板は `[PokerLeave]` / `[Poker離脱]` のいずれかにして設置します。設置時に看板の表示が自動で整形され、参加看板にはリアルタイムの参加人数（最大6人）が表示されます。
 
 ## 管理コマンド
 
@@ -90,6 +90,7 @@ modules:
 | `/poker setup area` | `poker.admin.setup` | 現在地をゲームエリア座標に設定 |
 | `/poker setup spawn` | `poker.admin.setup` | 現在地を離脱スポーン座標に設定 |
 | `/poker sign1`〜`sign5` | `poker.admin.setup` | 見ている看板を公開札看板に登録 |
+| `/poker setsign <join\|leave>` | `poker.admin.setup` | 見ている看板を参加／離脱看板として登録（自動整形） |
 | `/poker bet <額>` | `poker.admin.setup` | スモールブラインド（SB）額を設定（BB はその2倍。ゲーム進行中は変更不可） |
 | `/poker raisemoney <額>` | `poker.admin.setup` | レイズ上限を設定（poker.yml に保存される） |
 | `/poker getraisemoney` | なし | 現在のレイズ上限を表示 |
