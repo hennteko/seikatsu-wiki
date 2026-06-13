@@ -9,11 +9,11 @@
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
-!!! success "v3.1 アップデート概要"
-    v3.1 では **セットアップコマンドが大幅に簡略化** されました。これまでロビー（lobby）とエリア（area）は別IDで管理し `setup link` で紐付ける必要がありましたが、v3.1 からは **「ゲーム名」1つに統合** され、`/dorokei setlobby <ゲーム名>` / `/dorokei setfield <ゲーム名> 1` / `/dorokei setfield <ゲーム名> 2` / `/dorokei setjail <ゲーム名>` を順番に実行するだけで設定が完結します（`setup link` は廃止）。`/dorokei delete <ゲーム名>` でゲーム単位の削除も可能になりました。
+!!! success "最新アップデート概要（単一会場化）"
+    会場を「ゲーム名」で複数管理する方式から、**1サーバー1会場（単一会場）方式に簡略化** されました。`/dorokei setlobby` / `setfield 1` / `setfield 2` / `setjail` を順番に実行するだけで設定が完結し、**ゲーム名の指定は不要** です。あわせて **牢屋の複数登録**（`setjail` / `setjail clear`）、**人数別の警官数設定**（`setcop`）、**設定状況の確認**（`status`）が追加されました。
 
 !!! info "実装済みの機能"
-    ロビー参加・看板連携・警官の自動割り振り・逃走準備・追跡演出・捕獲／救出・ログアウト時の位置復帰・自動ロビー再参加までが実装済みです。旧方式（`start` / `setpolice` / `settime` / `setjail`）のコマンドも後方互換として残っていますが、運用ではロビー方式を推奨します。
+    ロビー参加・看板連携・警官の自動割り振り・逃走準備・追跡演出・捕獲／救出・ログアウト時の位置復帰・自動ロビー再参加までが実装済みです。旧コマンド（`start` / `setpolice` / `settime`）は廃止され、`gamestart` / `setcop` 等の新方式に統一されています。
 
 ## ページを選ぶ
 
