@@ -93,6 +93,30 @@
 
 ## プレイヤー用コマンド
 
+```text title="クイズのヘルプを表示"
+/quiz
+```
+
+```text title="デイリークイズに挑戦（/quiz daily でも可）"
+/qd
+```
+
+```text title="クイズタワーに挑戦（/quiz tower でも可）"
+/qt
+```
+
+```text title="正解率ランキングを表示"
+/quiz ranking accuracy
+```
+
+```text title="総正解数ランキングを表示"
+/quiz ranking total
+```
+
+```text title="クイズタワーランキングを表示"
+/quiz ranking tower
+```
+
 | コマンド | エイリアス | 説明 |
 |---|---|---|
 | `/quiz` | `/q` | クイズのヘルプを表示 |

@@ -176,7 +176,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 | コマンド | エイリアス | 説明 |
 |---|---|---|
-| `/slot [remote]` | ― | スロットマシン GUI を開く / リモートアイテム取得（権限 `slot.use`） |
+| `/slot [remote\|setsign]` | ― | スロットマシン GUI / 起動ロッド取得 / 看板登録（OP専用、権限 `slot.admin`） |
 
 ### 宝くじ（lottery）
 

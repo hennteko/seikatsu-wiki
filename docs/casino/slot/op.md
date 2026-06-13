@@ -89,6 +89,18 @@
 
 `/slot` コマンドは **OP専用**（`slot.admin` 権限）です。一般プレイヤーは `[Slot]` 看板または起動ロッドからGUIを開きます。
 
+```text title="賭け金選択GUIを開く（OP専用）"
+/slot
+```
+
+```text title="スロット起動ロッド（ブレイズロッド）を入手"
+/slot remote
+```
+
+```text title="視線先の看板を [Slot] 起動看板として登録"
+/slot setsign
+```
+
 | コマンド | 説明 |
 |---|---|
 | `/slot` | 賭け金選択GUIを開く（OP専用） |

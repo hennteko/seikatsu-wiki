@@ -62,11 +62,21 @@
 
 ## セットアップ手順
 
-1. **モジュールを有効化** — 上記「有効化」の手順で `modules.blackjack.enabled: true` にする。
-2. **spawn 地点を設定** — 退出・離脱時に戻したい場所に立ち、`/blackjack setup spawn` を実行する。
-3. **lobby 地点を設定** — ロビー参加者を集めたい場所に立ち、`/blackjack setup lobby` を実行する。
-4. **看板を設置する** — 会場に参加用の看板を設置する（下記「看板の作り方」を参照）。
-5. **動作確認** — `/blackjack join` でロビー参加、`/blackjack bet` でベット、`/blackjack start` で開始してテストする。
+**① モジュールを有効化** — 上記「有効化」の手順で `modules.blackjack.enabled: true` にする。
+
+**② spawn / lobby 地点を設定** — 設定したい場所に立って以下を実行する。
+
+```text title="spawn 地点（退出・離脱時の戻り先）を現在地に設定"
+/blackjack setup spawn
+```
+
+```text title="lobby 地点（参加者の集合場所）を現在地に設定"
+/blackjack setup lobby
+```
+
+**③ 看板を設置する** — 会場に参加用の看板を設置する（下記「看板の作り方」を参照）。
+
+**④ 動作確認** — `/blackjack join` でロビー参加、`/blackjack bet` でベット、`/blackjack start` で開始してテストする。
 
 !!! tip "地点設定はその場の座標が保存されます"
     `/blackjack setup spawn` / `setup lobby` は、**コマンドを実行したプレイヤーの現在位置・向き** をそのまま地点として保存します。設定したい場所に正しい向きで立ってから実行してください。
@@ -104,7 +114,29 @@
 !!! note "看板の挙動メモ"
     参加看板（lobby）は4行目に現在の参加人数を表示し、人数が変わると自動更新されます。看板からの参加は **最大6人** で、満員時はクリックしても参加できません。ベット看板は3行目に数字（ベット額）を入力します。看板タグは大文字小文字を区別しません（`[BlackJack]`）。
 
-## 管理コマンド
+## ゲーム運営コマンド
+
+```text title="ゲームを開始（ロビーに1人以上必要）"
+/blackjack start
+```
+
+```text title="進行中のゲームを強制終了"
+/blackjack stop
+```
+
+```text title="ロビー全員のベット額を設定（例: 100エメラルド）"
+/blackjack bet 100
+```
+
+```text title="プレイヤーをロビーに参加させる（名前省略時は自分）"
+/blackjack join <プレイヤー名>
+```
+
+```text title="プレイヤーをロビーから退出させる（名前省略時は自分）"
+/blackjack leave <プレイヤー名>
+```
+
+## 管理コマンド一覧
 
 | コマンド | 権限 | 説明 |
 |---|---|---|

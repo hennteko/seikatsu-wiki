@@ -127,11 +127,17 @@ questions:
 
 Citizens プラグインが導入されている場合、NPC を右クリックしてクイズを開始させられます。NPC コマンドは Citizens が無いと登録されません。
 
-| コマンド | 説明 |
-|---|---|
-| `/quiznpc create <タイプ> <名前>` | 現在地に指定タイプのクイズ NPC を作成 |
-| `/quiznpc remove` | 選択中（右クリックで選択）の NPC を削除 |
-| `/quiznpc settype <タイプ>` | 選択中の NPC のタイプを変更 |
+```text title="現在地に指定タイプのクイズNPCを作成（タイプ: daily / tower / menu）"
+/quiznpc create <タイプ> <名前>
+```
+
+```text title="選択中（右クリックで選択）のNPCを削除"
+/quiznpc remove
+```
+
+```text title="選択中のNPCのタイプを変更"
+/quiznpc settype <タイプ>
+```
 
 NPC の **タイプ** は3種類です。
 
@@ -145,12 +151,21 @@ NPC の **タイプ** は3種類です。
 
 設置済みの看板をランキング表示看板として登録できます。看板は **5分ごとに自動更新** されます。
 
-| コマンド | 説明 |
-|---|---|
-| `/quizsign create <タイプ> <順位>` | 見ている看板（5ブロック以内）をランキング看板として登録 |
-| `/quizsign remove` | 見ている看板の登録を解除 |
-| `/quizsign update` | すべてのランキング看板を手動更新 |
-| `/quizsign list` | 登録済み看板の数を表示 |
+```text title="見ている看板（5ブロック以内）をランキング看板として登録（タイプ: daily / tower）"
+/quizsign create <タイプ> <順位>
+```
+
+```text title="見ている看板の登録を解除"
+/quizsign remove
+```
+
+```text title="すべてのランキング看板を手動更新"
+/quizsign update
+```
+
+```text title="登録済み看板の数を表示"
+/quizsign list
+```
 
 看板の **タイプ** は2種類です。
 
@@ -162,6 +177,14 @@ NPC の **タイプ** は3種類です。
 `<順位>` には 1・2・3… のように表示したい順位を指定します（1看板につき1順位）。登録情報は `plugins/CasinoPlugin/quiz/signs.yml` に保存されます。
 
 ## 管理コマンド
+
+```text title="quiz.yml と questions.yml を再読み込み"
+/quiz admin reload
+```
+
+```text title="登録プレイヤー数・総問題数を表示"
+/quiz admin stats
+```
 
 | コマンド | 必要権限 | 説明 |
 |---|---|---|

@@ -66,15 +66,63 @@ modules:
 
 ## セットアップ手順
 
-ポーカー会場を作るには、座標3地点と公開札看板5枚を設定します。OP 権限（`poker.admin.setup`）を持った状態で行います。
+ポーカー会場を作るには、座標3地点と公開札看板5枚を設定します。OP 権限（`poker.admin.setup`）を持った状態で、以下を順に実行します（座標系はその場に立って、看板系は看板を見ながら実行）。
 
-1. **ロビーを設定** — ロビーにしたい場所に立ち、`/poker setup lobby` を実行する。
-2. **ゲームエリアを設定** — 対戦エリアにしたい場所に立ち、`/poker setup area` を実行する。
-3. **離脱スポーンを設定** — 離脱時の戻り先に立ち、`/poker setup spawn` を実行する。
-4. **公開札看板を5枚設置** — 会場に看板を5枚設置し、それぞれの看板を見ながら `/poker sign1` 〜 `/poker sign5` を実行する（看板を見ながら実行する必要があります）。
-5. **ベット額・レイズ上限を設定** — `/poker bet <額>` でスモールブラインド額を、`/poker raisemoney <額>` でレイズ上限を設定する。
-6. **参加・離脱看板を設置** — 看板を設置し、看板を見ながら `/poker setsign join`（参加看板）または `/poker setsign leave`（離脱看板）を実行する。テキストは自動で整形される。
-7. **設定状況を確認** — `/poker status` で3座標とベット額・待機人数を確認する。
+```text title="① ロビーを現在地に設定"
+/poker setup lobby
+```
+
+```text title="② ゲームエリアを現在地に設定"
+/poker setup area
+```
+
+```text title="③ 離脱スポーンを現在地に設定"
+/poker setup spawn
+```
+
+公開札看板を5枚設置し、それぞれの看板を見ながら1枚ずつ実行します。
+
+```text title="④ 公開札看板 1枚目"
+/poker sign1
+```
+
+```text title="公開札看板 2枚目"
+/poker sign2
+```
+
+```text title="公開札看板 3枚目"
+/poker sign3
+```
+
+```text title="公開札看板 4枚目"
+/poker sign4
+```
+
+```text title="公開札看板 5枚目"
+/poker sign5
+```
+
+```text title="⑤ スモールブラインド額を設定（例: 10）"
+/poker bet 10
+```
+
+```text title="レイズ上限を設定（例: 1000）"
+/poker raisemoney 1000
+```
+
+参加・離脱用の看板を設置し、看板を見ながら登録します（テキストは自動整形）。
+
+```text title="⑥ 参加看板を登録"
+/poker setsign join
+```
+
+```text title="離脱看板を登録"
+/poker setsign leave
+```
+
+```text title="⑦ 設定状況を確認（3座標・ベット額・待機人数）"
+/poker status
+```
 
 !!! tip "公開札看板の役割"
     `sign1`〜`sign5` の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。
@@ -82,7 +130,25 @@ modules:
 !!! note "参加・離脱看板のフォーマット"
     `/poker setsign <join|leave>` で登録するのが基本です。手書きの場合は、参加看板は1行目を `[Poker]` / `[Poker参加]` / `[PokerJoin]` のいずれかに、離脱看板は `[PokerLeave]` / `[Poker離脱]` のいずれかにして設置します。設置時に看板の表示が自動で整形され、参加看板にはリアルタイムの参加人数（最大6人）が表示されます。
 
-## 管理コマンド
+## ゲーム運営コマンド
+
+```text title="ゲームを開始（最少2人・公開札看板5枚が必要）"
+/poker start
+```
+
+```text title="進行中のゲームを強制終了"
+/poker stop
+```
+
+```text title="現在のポット額を表示"
+/poker money
+```
+
+```text title="現在のレイズ上限を表示"
+/poker getraisemoney
+```
+
+## 管理コマンド一覧
 
 | コマンド | 必要権限 | 説明 |
 |---|---|---|
