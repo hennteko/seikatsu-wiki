@@ -16,12 +16,16 @@ DorokeiGame の導入・会場（ロビー＋エリア）の設定・config・�
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/DorokeiGame/config.yml` |
 
-!!! success "最新アップデートの変更点（単一会場化）"
-    これまでは会場を「ゲーム名」で複数管理する方式でしたが、最新版では **1サーバー1会場（単一会場）方式に簡略化** されました。すべてのセットアップ・看板・開始コマンドから **ゲーム名の指定が不要** になっています。あわせて次の3点が追加されました。
+!!! success "最新アップデートの変更点（ラッキーチェスト＆逃走者支援アイテム）"
+    逃走者（市民）を支援する **ラッキーチェスト** が追加されました。マップ上のチェスト・トラップチェスト・樽を会場に登録すると、市民が右クリックした際にランダムで支援アイテムを入手できます（警官・収監中は利用不可）。あわせて次が追加されています。
 
-    - **牢屋の複数登録** … `/dorokei setjail` を別々の場所で実行すると牢屋を何か所でも追加でき、`/dorokei setjail clear` で全解除できます。
-    - **人数別の警官数を手動設定** … `/dorokei setcop <人数> <警官数>` で割り振り表を上書きできます。
-    - **設定状況の確認** … `/dorokei status` で地点・看板・現在の状態を一覧で確認できます。
+    - **ラッキーチェストの登録／解除** … `/dorokei setchest`（視線先のチェストを登録）・`/dorokei setchest clear`（全解除）。
+    - **逃走者支援アイテム5種** … スピードポーション／跳躍のお守り／蜘蛛の巣トラップ／鈍足の罠／レーダージャマー（加えて予備の煙幕玉・緊急テレポート用エンダーパールが抽選で出現）。
+    - **`config.yml` の `chest-settings`** … 再開封クールダウン（`cooldown-seconds`）と出現重み付きルートテーブル（`loot`）を設定可能。
+    - **`/dorokei status`** にラッキーチェストの登録数を表示。
+
+!!! note "会場運用について（単一会場方式）"
+    会場は **1サーバー1会場（単一会場）方式** です。セットアップ・看板・開始コマンドから **ゲーム名の指定は不要** です。牢屋は複数登録可（`/dorokei setjail` / `setjail clear`）、人数別の警官数は `/dorokei setcop <人数> <警官数>` で上書きでき、`/dorokei status` で設定状況を確認できます。
 
 !!! warning "旧コマンド（start / setpolice / settime）は廃止されました"
     以前後方互換として残っていた `/dorokei start` / `setpolice` / `settime` の各コマンドは **廃止** されました。実行すると「不明なサブコマンドです」と表示されます。運営は新方式のコマンド（`gamestart` / `setcop` など）を使用してください。
@@ -34,7 +38,7 @@ DorokeiGame の導入・会場（ロビー＋エリア）の設定・config・�
 4. 必要に応じて `config.yml` を直接編集し、サーバーを再起動して反映する。
 
 !!! note "config の反映について"
-    本プラグインには config 再読み込み用のコマンドがありません。`config.yml` を手で編集した場合は **サーバーの再起動** で反映してください。なお `setstartspawn` / `setlobby` / `setfield` / `setjail` / `setcop` / `delete` 系コマンドで変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます。
+    本プラグインには config 再読み込み用のコマンドがありません。`config.yml` を手で編集した場合は **サーバーの再起動** で反映してください。なお `setstartspawn` / `setlobby` / `setfield` / `setjail` / `setchest` / `setcop` / `delete` 系コマンドで変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます（`chest-settings` の出現重み・クールダウンを手動編集した場合のみ再起動が必要です）。
 
 ## config.yml 設定項目
 
@@ -44,10 +48,13 @@ DorokeiGame の導入・会場（ロビー＋エリア）の設定・config・�
 | `spawn-location` | world / 0,64,0 | 初期リスポーン地点。ログアウト時に戻り先が不明な場合に使用 |
 | `games` | `{}` | 会場定義。単一会場（内部名 `main`）で管理され、セットアップコマンドで自動的に追加される |
 | `games.main.lobby` | — | 待機ロビー定義。`world` / `x` / `y` / `z` / `yaw` / `pitch` / `max-players`（既定20） |
-| `games.main.area` | — | ゲームエリア定義。`world` / `pos1` / `pos2` / `jails`（牢屋座標のリスト） |
+| `games.main.area` | — | ゲームエリア定義。`world` / `pos1` / `pos2` / `jails`（牢屋座標のリスト） / `luck-chests`（ラッキーチェスト座標のリスト） |
+| `games.main.area.luck-chests` | — | ラッキーチェストの座標リスト。`/dorokei setchest` で自動追加される |
 | `signs` | `{}` | 登録済み看板（参加 / 離脱 / 開始）。`setsign` / `setstart` で自動追加され、再起動後も復元される |
 | `game-settings.game-time` | 480 | ゲーム時間（秒）。既定8分 |
 | `game-settings.escape-preparation-time` | 30 | 逃走準備時間（秒）。この間は警官が動けない |
+| `chest-settings.cooldown-seconds` | 45 | 同じラッキーチェストの再開封クールダウン（秒） |
+| `chest-settings.loot` | 7種の既定テーブル | ラッキーチェストの出現アイテム。`item`（アイテムキー）と `weight`（出現重み・大きいほど出やすい）のリスト |
 | `cop-allocation` | 2〜20の対応表 | プレイヤー数ごとの警官人数の割り振り表（`/dorokei setcop` で上書き可能） |
 | `defaults.cop-count` | 1 | フォールバック用の既定警官人数 |
 | `defaults.game-time` | 300 | フォールバック用の既定ゲーム時間（秒） |
@@ -75,6 +82,9 @@ games:
       jails:
         - { x: 150.0, y: 65.0, z: 150.0 }
         - { x: 160.0, y: 65.0, z: 140.0 }
+      luck-chests:
+        - { x: 120.0, y: 64.0, z: 130.0 }
+        - { x: 180.0, y: 64.0, z: 170.0 }
 ```
 
 ### 警官の自動割り振り（`cop-allocation`）
@@ -96,6 +106,43 @@ games:
 
 !!! tip "対応表にない人数のとき"
     `cop-allocation` に該当する人数の項目がない場合は、内部のフォールバック計算（約35%目安）で警官数が決定されます。21人以上の場合も内部計算で7人になります。`/dorokei setcop <人数> <警官数>` で個別に上書きすると、その人数のときの警官数を固定できます（警官数は1以上かつ参加人数未満で指定）。
+
+### ラッキーチェスト（`chest-settings`）
+
+逃走者（市民）専用のラッキーチェストの挙動を設定します。チェストの **設置場所** は `config.yml` を直接編集せず、ゲーム内で `/dorokei setchest` を使って登録してください（後述）。出現アイテムの内容や確率はこの `chest-settings` で調整します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `chest-settings.cooldown-seconds` | 45 | 同じチェストを再度開けられるようになるまでの秒数 |
+| `chest-settings.loot` | 下表の7種 | 出現アイテムのリスト。各要素は `item`（アイテムキー）と `weight`（出現重み） |
+
+ルートテーブルの既定値と各アイテムキーは次のとおりです。`weight` が大きいほど出やすくなります。
+
+| `item` キー | アイテム | 既定 `weight` | 効果 |
+|---|---|---|---|
+| `speed_potion` | スピードポーション | 10 | 10秒間 速度II |
+| `jump_charm` | 跳躍のお守り | 10 | 15秒間 跳躍III |
+| `smoke_bomb` | 予備の煙幕玉 | 8 | 配布と同じ煙幕玉を補充 |
+| `ender_escape` | 緊急テレポート | 5 | エンダーパール（バニラ動作） |
+| `cobweb_trap` | 蜘蛛の巣トラップ | 5 | 足元に蜘蛛の巣を設置（約8秒で消滅） |
+| `slow_trap` | 鈍足の罠 | 5 | 周囲6m以内の警官を4秒間 鈍足 |
+| `radar_jammer` | レーダージャマー | 4 | 全警官の追跡コンパスを20秒間 無効化 |
+
+```yaml title="chest-settings の記述例"
+chest-settings:
+  cooldown-seconds: 45
+  loot:
+    - { item: speed_potion, weight: 10 }
+    - { item: jump_charm,   weight: 10 }
+    - { item: smoke_bomb,   weight: 8 }
+    - { item: ender_escape, weight: 5 }
+    - { item: cobweb_trap,  weight: 5 }
+    - { item: slow_trap,    weight: 5 }
+    - { item: radar_jammer, weight: 4 }
+```
+
+!!! note "loot 未設定でも動作します"
+    `chest-settings.loot` が未設定（または空）の場合は、上表の組み込み既定テーブルで動作します。特定のアイテムを出さないようにしたい場合は、その行を削除するか `loot` を書き換えてサーバーを再起動してください。
 
 ## セットアップ手順（単一会場）
 
@@ -125,13 +172,25 @@ games:
 /dorokei setjail clear
 ```
 
+```text title="⑥ ラッキーチェストを登録（視線先のチェスト・トラップチェスト・樽。5ブロック以内）"
+/dorokei setchest
+```
+
+```text title="ラッキーチェストの登録を全て解除したいとき"
+/dorokei setchest clear
+```
+
 設定の流れは次のとおりです。
 
 1. `/dorokei setstartspawn` で初期リスポーン地点を設定する。
 2. ロビーにする場所に立ち `/dorokei setlobby` を実行する（ロビーの既定上限は20人。`config.yml` の `games.main.lobby.max-players` を手動で書き換えれば変更可能）。
 3. エリアの角1に立ち `/dorokei setfield 1`、対角の角2に立ち `/dorokei setfield 2` を実行する（pos1/pos2 がそろうとエリアサイズがチャットに表示されます）。
 4. 牢屋にする場所に立ち `/dorokei setjail` を実行する。必要なら別の場所で繰り返し実行して牢屋を増やせます。
-5. `/dorokei status` で4点（ロビー / pos1 / pos2 / 牢屋）と看板の設定状況を確認する。
+5. （任意）マップ上にチェスト・トラップチェスト・樽を設置し、それを見ながら `/dorokei setchest` を実行してラッキーチェストを登録する。別のチェストで繰り返すと複数登録できます。
+6. `/dorokei status` で4点（ロビー / pos1 / pos2 / 牢屋）・ラッキーチェスト・看板の設定状況を確認する。
+
+!!! note "ラッキーチェストは任意設定です"
+    ラッキーチェスト（`/dorokei setchest`）は会場成立の必須条件ではありません。未登録でもゲームは開始でき、その場合は逃走者支援アイテムが手に入らないだけです。設置するとゲーム性が大きく変わるので、会場に合わせて数か所登録するのがおすすめです。
 
 !!! tip "次のステップが自動で案内されます"
     各セットアップコマンドの実行後、未設定の項目（lobby / pos1 / pos2 / jail）がチャットに表示されます。4点すべてがそろうと「セットアップが完了しました!」と通知され、`/dorokei gamestart` で開始できる旨が案内されます。
@@ -192,6 +251,8 @@ games:
 | `/dorokei setfield 2` | エリアの角2を現在地に設定する |
 | `/dorokei setjail` | 牢屋を現在地に追加する（複数登録可） |
 | `/dorokei setjail clear` | 牢屋の登録を全て解除する |
+| `/dorokei setchest` | 視線先のチェスト（樽可）をラッキーチェストに追加する（複数登録可） |
+| `/dorokei setchest clear` | ラッキーチェストの登録を全て解除する |
 | `/dorokei setcop <人数> <警官数>` | 人数別の警官数を設定する |
 | `/dorokei delete` | 会場の設定を削除する |
 | `/dorokei setsign join` | 視線先の看板を参加看板に登録する |
@@ -210,7 +271,7 @@ games:
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `dorokei.admin` | OP | セットアップ系（`setstartspawn` / `setlobby` / `setfield` / `setjail` / `setcop` / `delete`） / 看板系（`setsign` / `setstart` / `removesign`） / `gamestart` / `status` の実行 |
+| `dorokei.admin` | OP | セットアップ系（`setstartspawn` / `setlobby` / `setfield` / `setjail` / `setchest` / `setcop` / `delete`） / 看板系（`setsign` / `setstart` / `removesign`） / `gamestart` / `status` の実行 |
 | `dorokei.play` | OP | `/dorokei join` / `leave` / `list` の実行 |
 
 !!! note "プレイヤー操作について"
@@ -229,6 +290,8 @@ games:
     - 逃走準備フェーズ（警官の盲目・移動制限）と追跡フェーズ
     - 捕獲（警棒）・牢獄・市民による救出（救出時の速度上昇バフ）
     - 警官／市民の専用アイテム（煙幕玉・ダッシュブーツ・スプリントブースト・ネット投擲）
+    - **ラッキーチェスト**（`setchest` で登録・逃走者専用・チェストごとの再開封クールダウン・出現重み付きルートテーブル）
+    - **逃走者支援アイテム5種**（スピードポーション・跳躍のお守り・蜘蛛の巣トラップ・鈍足の罠・レーダージャマー）＋抽選用の予備煙幕玉・緊急テレポート
     - ボスバー・**専用サイドバー（残り時間／逃走中／捕獲済／救出／役割）**・コンパス・追跡パーティクル・心臓の鼓動音などの演出
     - 勝敗判定（全市民捕獲／時間切れ／全員ログアウト）
     - ログアウト処理（ゲーム・ロビーからの離脱、次回ログイン時の位置復帰）
@@ -258,6 +321,12 @@ games:
 
 ??? failure "config.yml を編集したのに反映されない"
     config 再読み込みコマンドはありません。サーバーを再起動して反映してください。
+
+??? failure "ラッキーチェストを右クリックしても何も出ない"
+    まず `/dorokei setchest` でそのチェストが登録済みか確認してください（`/dorokei status` の「ラッキーチェスト」件数で確認できます）。登録済みでも、**警官が開いた場合**や**収監中**は出ません（逃走者専用のため）。また同じチェストには再開封クールダウン（既定45秒）があります。なお `/dorokei setchest` はチェスト・トラップチェスト・樽のいずれかを **5ブロック以内で見ながら** 実行する必要があります。
+
+??? failure "アップグレード後、ラッキーチェストの抽選内容を変えたい / 反映されない"
+    `chest-settings.loot` を編集してサーバーを再起動してください。**v3.0 など古いバージョンから更新した既存サーバーでは、既存の `config.yml` に `chest-settings` が自動追記されません**（組み込み既定テーブルで動作します）。抽選内容をカスタムしたい場合は、`config.yml` に `chest-settings` セクションを手動追記するか、一度 `config.yml` を退避してサーバー再起動で再生成してください。
 
 ??? failure "会場を丸ごと作り直したい"
     `/dorokei delete` で会場の設定を丸ごと削除できます。削除後に同じ手順で再設定してください。牢屋だけを取り直したい場合は `/dorokei setjail clear` で全解除してから登録し直せます。
