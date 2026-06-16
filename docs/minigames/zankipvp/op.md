@@ -31,13 +31,16 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 | `settings.max-players` | 16 | 最大参加人数 |
 | `settings.default-lives` | 3 | プレイヤーの初期残機数 |
 | `settings.respawn-delay` | 5 | リスポーン待機時間（秒） |
-| `settings.respawn-protection` | 10 | リスポーン保護時間（秒）。この間、耐性IIが付与される |
+| `settings.respawn-protection` | 10 | リスポーン保護時間（秒）。この間、**すべてのダメージが無効化**される（耐性付与ではなく完全無敵・発光表示） |
 
 !!! note "locations / signs セクションについて"
-    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
+    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign`・`/zankipvp setstart` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
 
-!!! warning "残機数の設定とリロードについて"
-    `/zankipvp setzanki <数字>` で設定した初期残機数はメモリ上にのみ保持され、`config.yml` には保存されません。サーバー再起動時は `config.yml` の `default-lives` が初期値として使われます。常に同じ残機数で運用したい場合は `config.yml` の `settings.default-lives` を直接編集してください。
+!!! note "残機・保護・人数の設定は config に保存されます"
+    `/zankipvp setzanki <数字>`・`/zankipvp setprotection <秒>`・`/zankipvp maxplayers <数字>` で設定した値は **`config.yml` に即保存され、サーバー再起動後も維持** されます。`config.yml` の `settings.*` を直接編集して `/zankipvp reload` で反映することもできます。
+
+!!! warning "既存サーバーは config が自動追記されません"
+    本プラグインは `saveDefaultConfig()` のみのため、旧バージョンから更新した場合 `respawn-delay` / `respawn-protection` 等の新キーは既存 `config.yml` に自動追記されません（コード側に既定値があるため動作はします）。値をファイルで変更したい場合は手動追記、または `/zankipvp setprotection` 等のコマンドで設定してください。
 
 ## セットアップ手順
 
@@ -102,6 +105,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 |---|---|
 | 参加看板 | クリックでゲームに参加。現在人数が表示される |
 | 退出看板 | クリックでゲームから退出 |
+| 開始看板 | クリックでゲーム開始（`/zankipvp setstart` で登録） |
 
 登録済みの看板を破壊するには `zankipvp.admin` 権限が必要で、破壊すると登録も解除されます。
 
@@ -118,10 +122,12 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `/zankipvp setstartspawn` | 初期リスポーン地点（退出先）を設定 |
 | `/zankipvp start` | ゲームを開始する（コマンドブロック対応） |
 | `/zankipvp stop` | ゲームを強制終了する（コマンドブロック対応） |
-| `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上） |
-| `/zankipvp maxplayers <数字>` | 最大参加人数を設定（2以上） |
+| `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上・config保存） |
+| `/zankipvp setprotection <秒>` | リスポーン保護時間を設定（0以上・config保存） |
+| `/zankipvp maxplayers <数字>` | 最大参加人数を設定（2以上・config保存） |
 | `/zankipvp status` | 現在の地点・ゲーム設定の状況を表示 |
 | `/zankipvp setsign <join\|leave>` | 視線先の看板をゲート看板として登録 |
+| `/zankipvp setstart` | 視線先の看板を開始看板として登録 |
 | `/zankipvp removesign` | 視線先の看板の登録を解除 |
 | `/zankipvp reload` | config.yml を再読み込み |
 
@@ -159,8 +165,8 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 ??? failure "看板を設置・破壊できない"
     `[ZankiPvP]` 看板の設置・破壊には `zankipvp.admin` 権限が必要です。一般プレイヤーには設置・破壊できません。
 
-??? failure "残機数を変えたのに再起動で元に戻る"
-    `/zankipvp setzanki` で設定した残機数は保存されません。恒久的に変更したい場合は `config.yml` の `settings.default-lives` を編集し、`/zankipvp reload` してからサーバーを再起動してください。
+??? failure "残機数・保護時間・最大人数を変えたい"
+    `/zankipvp setzanki <数>`・`/zankipvp setprotection <秒>`・`/zankipvp maxplayers <数>` で設定した値は **config.yml に即保存され、再起動後も維持** されます。`config.yml` の `settings.*` を直接編集した場合は `/zankipvp reload` で反映してください。
 
 ??? failure "リスポーン地点や設定が反映されない"
     `/zankipvp reload` で config.yml を再読み込みしてください。なお `setup` 系コマンドでの地点設定は即座に config.yml へ保存されます。

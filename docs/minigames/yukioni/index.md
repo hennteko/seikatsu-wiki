@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2〜16人（既定）</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">7分（既定 420秒）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Spigot/Paper 1.21.x</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! note "ゲームの特徴"

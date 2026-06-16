@@ -7,7 +7,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2人（観戦・賭けは何人でも）</span></div>
   <div class="quick-card"><span class="label">勝敗</span><span class="value">相手を倒せば勝利（1本勝負）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Spigot/Paper 1.21.x</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! note "ゲームの特徴"
