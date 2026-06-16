@@ -15,8 +15,8 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/MinecraftMOBA/config.yml` |
 
-!!! warning "実装状況：Phase 1"
-    現在は **基本構造のみ実装済み** です。下記「実装状況」の節を必ず確認してください。戦闘・勝敗判定などコアなゲーム進行は未実装です。
+!!! success "実装状況：チャンピオン制MOBA"
+    **チャンピオン/スキル制・中立クリープ・ワード・リコール・AFK対策・HUD・ルーン（スタッツ装備）** まで実装されました。プレイヤーは5チャンピオンから選択し、スキル（マナ・CD・レベル解放）で戦います。詳細は下記「実装状況」を確認してください。
 
 ## 導入手順
 
@@ -73,6 +73,10 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 /moba setup minion RED LANE_TOP 1
 ```
 
+```text title="中立クリープの湧き地点を現在地に追加（NORMAL/BUFF/BOSS）"
+/moba setup creep NORMAL
+```
+
 !!! note "コマンド体系について"
     初期リスポーン・ロビー・エリア範囲・チームスポーンは独立コマンド（`setstartspawn` / `setlobby` / `setfield <1\|2>` / `setspawn <red\|blue>`）です。コア・タワー・ミニオン経路のみ `/moba setup <core\|tower\|minion> ...` のサブコマンド形式です。
 
@@ -81,14 +85,22 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 ### 参加・退出看板の作成
 
-ロビーの参加導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。
+ロビーの導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。看板は **参加 / 退出 / ショップ / チャンピオン選択 / 開始** の5種類です。
+
+```text title="参加・退出・ショップ・チャンピオン選択看板を登録"
+/moba setsign <join|leave|shop|champion>
+```
+
+```text title="開始看板を登録（クリックでゲーム開始）"
+/moba setstart
+```
 
 1. 看板を設置する。
-2. 看板を見た状態で `/moba setsign <join|leave|shop>` を実行する。
+2. 看板を見た状態（5ブロック以内）で上記コマンドを実行する。
 3. テキストはプラグインが自動で書き込みます。
 
-!!! note "手書き登録は廃止済み"
-    以前の方式（1行目に `[MOBA]`、2行目に `lobby`/`leave` を手書きして認識させる方式）は廃止されています。必ずコマンドで登録してください。
+!!! note "チャンピオン選択看板と開始看板が追加されました"
+    プレイヤーは **チャンピオン選択看板** をクリックしてGUIでチャンピオンを選びます。**開始看板**（`/moba setstart`）はクリックでゲームを開始できます。手書き登録は廃止済みで、必ずコマンドで登録してください。`/moba status` で5種すべての登録状況を確認できます。
 
 ## config.yml 主要項目
 
@@ -131,14 +143,34 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `TOWER.BASE_HEALTH` | 300 | タワーのHP |
 | `TOWER.ATTACK_RANGE` | 15 | タワーの攻撃範囲（ブロック） |
 
+### スキル解放レベル（`EXPERIENCE.LEVEL_UP_REWARDS.SKILL_UNLOCK_LEVELS`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `SKILL_UNLOCK_LEVELS` | `[6, 11, 16]` | 2つ目以降のスキルが解放されるレベル。**空だと2つ目以降が即解放（Lv1）になる** ため、既存サーバーは要確認 |
+
 ### ミニオン・クリープ・ショップ
 
-- `MINION` … スポーン間隔（30秒）、レーン構成（ゾンビ3＋スケルトン2）、時間強化係数を設定。
-- `NEUTRAL_CREEPS` … 通常／バフ（アイアンゴーレム）／ボス（ウィザー）の有効化・HP・報酬・スポーン座標。
-- `SHOP` … 販売アイテムを `SHOP.ITEMS` で定義。価格・エンチャント・表示名・説明を編集可能。
+- `MINION` … スポーン間隔（30秒）、有効レーン（既定 `LANE_MID` のみのARAM想定）、構成（ゾンビ3＋スケルトン2）、時間強化係数を設定。
+- `NEUTRAL_CREEPS` … 通常（ゾンビ）／バフ（アイアンゴーレム・撃破で力）／ボス（ウィザー・チーム強化）の有効化・HP・報酬・`SPAWN_LOCATIONS`・`RESPAWN_TIME` を設定。**`SPAWN_LOCATIONS` が空だとクリープが湧きません**（`/moba setup creep` で追加）。
+- `SHOP` … 武器・防具・消耗品・ワードは `SHOP.ITEMS` で定義。**ただしルーン（攻撃/守り/俊足/賢者/加速）の価格・効果はコード側にハードコードされており、config非連動** です（価格変更にはコード修正が必要）。
+
+### チャンピオン/スキル・AFK・リコール・ワード
+
+| セクション | 主なキー | 説明 |
+|---|---|---|
+| `AFK` | `KICK_TIME`(300) / `CHECK_INTERVAL`(60) / `AUTO_KICK` | 一定時間無移動で自動離脱 |
+| `RECALL` | `CHANNEL_TIME`(8) / `COOLDOWN`(60) / `CANCEL_ON_DAMAGE` / `CANCEL_ON_MOVE` | 拠点帰還の詠唱・CD・中断条件 |
+| `VISION.WARD` | `DURATION`(180) / `VISION_RANGE`(20) / `MAX_WARDS_PER_PLAYER`(3) / `COST`(75) | ワードの持続・範囲・上限・価格 |
+| `RESPAWN` | `BASE_TIME`(5) / `TIME_PER_LEVEL`(0.5) / `KEEP_INVENTORY` | リスポーン時間と装備保持 |
+| `KILLSTREAK` | `REQUIRED_KILLS`(3) / `BONUS_EMERALD`(2) | キルストリーク |
+| `SIGNS` | `JOIN` / `LEAVE` / `SHOP` / `CHAMPION` / `START` | 看板位置（コマンドで自動保存） |
+
+!!! warning "既存サーバーを更新する場合（config自動マージなし）"
+    本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新セクションを自動追記しません**。旧バージョンから更新したサーバーでは `AFK` / `RECALL` / `VISION` / `NEUTRAL_CREEPS` / `SKILL_UNLOCK_LEVELS` / `SIGNS.CHAMPION`・`START` 等が無いままになります。コード側に既定値があるので落ちはしませんが、「クリープが湧かない」「2つ目以降のスキルがLv1で即解放」などの想定外動作になります。**新規インストール、または config を退避して再生成（手動マージ）を推奨** します。
 
 !!! note "設定変更後は必ず `/moba reload`"
-    `config.yml` を編集したら `/moba reload` を実行してください。マップ座標・経済・ショップなどの変更が反映されます。
+    `config.yml` を編集したら `/moba reload` を実行してください。マップ座標・経済・ショップ・クリープ・看板などの変更が反映されます。
 
 ## 権限ノード
 
@@ -158,8 +190,10 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `/moba start` | `moba.admin` | ゲームを開始する |
 | `/moba stop` | `moba.admin` | ゲームを停止する |
 | `/moba reload` | `moba.admin` | config.yml を再読み込み |
-| `/moba setup ...` | `moba.admin` | マップ座標の設定（前述） |
-| `/moba setsign <join\|leave\|shop>` | `moba.admin` | 視線先の看板を参加・退出・ショップ看板として登録する |
+| `/moba status` | `moba.admin` | 地点・看板・ゲーム状況の設定状況を確認する |
+| `/moba setup <core\|tower\|minion\|creep> ...` | `moba.admin` | コア・タワー・ミニオン経路・クリープ湧き地点の設定 |
+| `/moba setsign <join\|leave\|shop\|champion>` | `moba.admin` | 視線先の看板を参加・退出・ショップ・チャンピオン選択看板として登録 |
+| `/moba setstart` | `moba.admin` | 視線先の看板を開始看板として登録 |
 | `/moba stats` | 全員 | 統計を表示 |
 
 ## ゲームの運営
@@ -173,24 +207,33 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 ??? failure "プレイヤーがゲームに参加できない"
     参加導線は **ロビー看板** です。看板が正しく設置されているか、`/moba setlobby` でロビー座標が設定済みかを確認してください。
 
+??? failure "中立クリープが湧かない"
+    `NEUTRAL_CREEPS.<タイプ>.SPAWN_LOCATIONS` が空だと湧きません。`/moba setup creep <NORMAL|BUFF|BOSS>` で湧き地点を追加するか、config に座標を記載してください。旧configから更新したサーバーは `NEUTRAL_CREEPS` セクションごと無い場合があります（再生成推奨）。
+
+??? failure "2つ目以降のスキルが最初から使える / おかしい"
+    `EXPERIENCE.LEVEL_UP_REWARDS.SKILL_UNLOCK_LEVELS` が空（旧config）だと、2つ目以降のスキルがLv1で即解放されます。`[6, 11, 16]` を設定してください。
+
+??? failure "チャンピオンが選べない"
+    チャンピオン選択看板を `/moba setsign champion` で登録してください。`/moba status` の「チャンピオン看板」が設定済みか確認できます。
+
 ??? failure "ミニオンが進軍しない／挙動がおかしい"
-    既知の制約です。ミニオンのAI（Pathfinding）は簡易実装の段階で、`config.yml` の経路設定が正しくても期待通り動かない場合があります。
+    ミニオンのAI（Pathfinding）は簡易実装です。`config.yml` の `MINION_WAYPOINTS` の経路が正しくても期待通り動かない場合があります。既定は ARAM 想定で `LANE_MID` のみ有効です。
 
-??? failure "コアが破壊できない"
-    `STRUCTURES.CORE.ATTACKABLE_REQUIREMENT` が `ALL_TOWERS_DESTROYED` の場合、タワー5本破壊が前提です。なお勝敗判定自体は未実装です（下記参照）。
+## 実装状況
 
-## 実装状況（Phase 1）
+!!! success "実装済みの主要機能"
+    - チャンピオン/スキル制（5職・各スキル3種・パッシブ・マナ・CD・Lv6/11/16解放・レベルスケール）
+    - 中立クリープ（通常/バフ/ボス・報酬・バフ・リスポーン）
+    - ワード（敵の発光・上限3個）、リコール（拠点帰還）、AFK自動離脱
+    - HUDサイドバー（KDA/CS/Lv/マナ/エメラルド/コアHP/チームキル）、ルーン（スタッツ装備）
+    - 経済・経験値・ショップ、チーム管理・状態管理、看板（参加/退出/ショップ/チャンピオン/開始）
 
-!!! danger "未実装の主要機能"
-    以下は **未実装** です。本番イベントでの利用前に必ず把握してください。
-
-    - 戦闘・デス・リスポーンのイベント処理
-    - タワーの自動攻撃、コアへのダメージ・**勝敗判定**
-    - ミニオンの本格的なPathfinding AI
-    - リコール（帰還）、中立クリープの一部挙動
-    - スキルシステム、視界（戦場の霧）、アシスト判定
-
-実装済みは「プラグイン基本構造／config読み込み／チーム管理／ゲーム状態管理／経済・経験値・ショップの土台」までです。
+!!! warning "既知の制約・注意点"
+    - ミニオンの Pathfinding は簡易実装で、経路が正しくても期待通り動かない場合があります。
+    - ボスクリープのバフは現状 **力（STRENGTH）固定** で、`BUFF_EFFECT` の設定値を反映しません。
+    - クリープをスキル/投射物で倒した場合、撃破者の判定（報酬付与）が状況により外れることがあります。
+    - ショップのルーン・ワードの価格/効果はコードにハードコードされており、`SHOP` config の値とは連動しません。
+    - 既存サーバーは config の新セクションが自動追記されません（上記「既存サーバーを更新する場合」を参照）。
 
 ---
 

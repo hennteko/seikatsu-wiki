@@ -1,16 +1,16 @@
-# MinecraftMOBA <span class="badge dev">開発中 / Phase 1</span>
+# MinecraftMOBA <span class="badge dev">チャンピオン制MOBA</span>
 
-LOL風の **MOBA対戦ミニゲーム**。2チームに分かれ、ミニオンを率いて敵のタワーを攻略し、最終的に敵の **コア** を破壊したチームが勝利します。
+LOL風の **MOBA対戦ミニゲーム**。2チームに分かれ、**5チャンピオンから1つを選んでスキルで戦い**、ミニオンを率いて敵のタワーを攻略し、最終的に敵の **コア** を破壊したチームが勝利します。
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクション</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">最大10人 (5vs5)</span></div>
-  <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">最長60分</span></div>
+  <div class="quick-card"><span class="label">チャンピオン</span><span class="value">5職 (各スキル3種＋パッシブ)</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
-!!! warning "開発状況について"
-    MinecraftMOBA は現在 **Phase 1（基本構造のみ実装済み）** です。チーム管理・経済・経験値・ショップの土台はありますが、戦闘処理・タワー攻撃・勝敗判定などは未実装です。このWIKIは設計内容に基づくガイドのため、実際の挙動と異なる場合があります。
+!!! success "実装状況"
+    **チャンピオン/スキル制・中立クリープ・ワード・リコール・AFK対策・HUD・ルーン（スタッツ装備）** まで実装されています。プレイヤーは5チャンピオン（戦士・魔導士・暗殺者・狙撃手・支援）から選択し、マナとクールダウンを管理しながらスキルで戦います。ミニオンの Pathfinding は簡易実装のままなど一部に既知の制約があります（OP向けページ参照）。
 
 ## ページを選ぶ
 
