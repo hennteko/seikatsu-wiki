@@ -6,7 +6,7 @@ Terraria風の **2D宝探しミニゲーム** プラグインです。横スク�
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2人〜（既定の最低2人 / 看板表示は最大10人）</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">宝箱発見で即終了（マップ確認20秒＋探索）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Spigot/Paper 1.21.x</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Spigot/Paper 1.26.x（api-version 1.26）</span></div>
 </div>
 
 !!! note "ゲームの特徴"
