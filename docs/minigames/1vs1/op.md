@@ -12,8 +12,9 @@
 | プラグイン名 | 1vs1 |
 | バージョン | 1.1 |
 | api-version | 26.1.2 |
-| メインコマンド | `/pvp`（エイリアス `/1v1`、OP専用） |
-| プレイヤー操作 | `[PvP参加]`・`[PvP賭け]`・`[PvP開始]`・`[PvP観戦]`・`[ロビー]` の看板（右クリック） |
+| メインコマンド | `/pvp`（エイリアス `/1v1`） |
+| プレイヤー操作 | `/pvp <join\|leave\|spectate\|lobby\|bet>`（全員可）または各看板の右クリック |
+| 管理コマンド | `/pvp <start\|stop\|setrank\|ranklist\|setpoint…\|setsign…\|status>` 等（OP / `1vs1.admin`） |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/1vs1/config.yml`、`plugins/1vs1/ranks.yml` |
 
@@ -39,6 +40,7 @@
 | `points.chest2.{world,x,y,z}` | 装備リセット用チェスト2の位置 |
 | `points.spectate.{world,x,y,z}` | 観戦場所（`/pvp setspectate` で設定） |
 | `points.lobby.{world,x,y,z}` | ロビー（`/pvp setlobby` で設定） |
+| `points.startspawn.{world,x,y,z}` | 初期スポーン地点＝離脱・試合終了時の戻り先（`/pvp setstartspawn` で設定。未設定時は試合開始前の位置に戻る） |
 | `signs.join` | `[PvP参加]` 看板の位置リスト（`{world,x,y,z}` の配列） |
 | `signs.leave` | `[PvP離脱]` 看板の位置リスト（右クリックで待機キューから離脱・入場料返金） |
 | `signs.bet` | `[PvP賭け]` 看板の位置リスト |
@@ -98,12 +100,34 @@
 /pvp setlobby
 ```
 
-```text title="視線の先5ブロック以内の看板を登録"
-/pvp setsign <join|leave|bet|spectate|lobby>
+```text title="初期スポーン地点（離脱・試合終了時の戻り先。コマンド実行者の現在地）"
+/pvp setstartspawn
 ```
 
-```text title="視線の先5ブロック以内の看板を [PvP開始] 看板として登録"
-/pvp setstart
+看板の登録は `/pvp setsign <種別>` で行います。**視線の先5ブロック以内の看板** を見ながら、登録したい種別のコマンドを実行してください。
+
+```text title="参加看板 [PvP参加]（クリックで待機キューに参加）"
+/pvp setsign join
+```
+
+```text title="離脱看板 [PvP離脱]（クリックで待機キューから離脱・入場料返金）"
+/pvp setsign leave
+```
+
+```text title="賭け看板 [PvP賭け]（クリックで賭けGUIを開く）"
+/pvp setsign bet
+```
+
+```text title="開始看板 [PvP開始]（クリックで試合開始）"
+/pvp setsign start
+```
+
+```text title="観戦看板 [PvP観戦]（クリックで観戦場所へ）"
+/pvp setsign spectate
+```
+
+```text title="ロビー看板 [ロビー]（クリックでロビーへ）"
+/pvp setsign lobby
 ```
 
 ```text title="視線の先5ブロック以内の看板の登録を解除"
@@ -122,24 +146,36 @@
 
 ## 管理コマンド
 
-`/pvp`（エイリアス `/1v1`）はすべてOP（`1vs1.admin` 権限保持者）専用です。プレイヤー操作は看板で行います。
+`/pvp`（エイリアス `/1v1`）のうち、**参加系（join/leave/spectate/lobby/bet）は全員**、それ以外の管理系は **OP（`1vs1.admin`）専用** です。
 
-| コマンド | 権限 | 説明 |
-|---|---|---|
-| `/pvp start` | `1vs1.admin` | 待機キューが2人そろっているとき試合を開始する |
-| `/pvp stop` | `1vs1.admin` | 進行中の試合を強制終了し、選手を元の場所へ戻す（賭け金は払い戻し） |
-| `/pvp setrank <名前> <ランク>` | `1vs1.admin` | プレイヤーのバトルパスランクを設定する（1〜10に丸められる） |
-| `/pvp setpoint1` / `setpoint2` | `1vs1.admin` | 対戦開始地点を設定する |
-| `/pvp setchest1` / `setchest2` | `1vs1.admin` | 装備リセット用チェストを設定する |
-| `/pvp setspectate` | `1vs1.admin` | 観戦場所を設定する（実行時の立ち位置） |
-| `/pvp setlobby` | `1vs1.admin` | ロビーを設定する（実行時の立ち位置） |
-| `/pvp setsign <join\|leave\|bet\|spectate\|lobby>` | `1vs1.admin` | 視線の先の看板を指定種別のPvP看板として登録する |
-| `/pvp setstart` | `1vs1.admin` | 視線の先の看板を `[PvP開始]` 看板として登録する |
-| `/pvp removesign` | `1vs1.admin` | 視線の先の看板の登録を解除する |
-| `/pvp ranklist` | `1vs1.admin` | 全プレイヤーのバトルパスランク一覧を表示する |
+### プレイヤー用（全員可）
+
+| コマンド | 説明 |
+|---|---|
+| `/pvp join` | 待機キューに参加する（`[PvP参加]` 看板と同じ） |
+| `/pvp leave` | 待機キューから離脱する（入場料返金） |
+| `/pvp bet` | 賭けGUIを開く |
+| `/pvp spectate` | 観戦場所へ移動する |
+| `/pvp lobby` | ロビーへ移動する |
+
+### 管理用（`1vs1.admin`）
+
+| コマンド | 説明 |
+|---|---|
+| `/pvp start` | 待機キューが2人そろっているとき試合を開始する |
+| `/pvp stop` | 進行中の試合を強制終了し、選手を元の場所へ戻す（賭け金は払い戻し） |
+| `/pvp setrank <名前> <ランク>` | プレイヤーのバトルパスランクを設定する（1〜10に丸められる） |
+| `/pvp ranklist` | 全プレイヤーのバトルパスランク一覧を表示する |
+| `/pvp setpoint1` / `setpoint2` | 対戦開始地点を設定する |
+| `/pvp setchest1` / `setchest2` | 装備リセット用チェストを設定する |
+| `/pvp setspectate` / `setlobby` | 観戦場所／ロビーを設定する（実行時の立ち位置） |
+| `/pvp setstartspawn` | 初期スポーン（離脱・試合終了時の戻り先）を設定する（実行時の立ち位置） |
+| `/pvp setsign <join\|leave\|bet\|start\|spectate\|lobby>` | 視線の先の看板を指定種別のPvP看板として登録する（各サブコマンドは上の「看板の登録」を参照） |
+| `/pvp removesign` | 視線の先の看板の登録を解除する |
+| `/pvp status` | 現在の設定・ゲーム状態を確認する |
 
 !!! note "試合の進行は看板またはOPが手動で行います"
-    キューが2人そろっても試合は自動では始まりません。`[PvP開始]` 看板を右クリックするか、OPが `/pvp start` を実行する必要があります。異常時は `/pvp stop` で強制終了でき、賭け金は全額払い戻されます。
+    キューが2人そろっても試合は自動では始まりません。`[PvP開始]` 看板（`/pvp setsign start` で登録）を右クリックするか、OPが `/pvp start` を実行する必要があります。異常時は `/pvp stop` で強制終了でき、賭け金は全額払い戻されます。なお開始看板は `/pvp setstart` ではなく **`/pvp setsign start`** で登録します。
 
 ## 権限ノード
 
@@ -147,10 +183,10 @@
 
 | 権限 | デフォルト | 説明 |
 |---|---|---|
-| `1vs1.admin` | `op` | `/pvp`（`/1v1`）のすべてのサブコマンドの実行権限。OPに自動付与されます。 |
+| `1vs1.admin` | `op` | 管理系サブコマンド（start/stop/setrank/ranklist/setpoint・setchest・setsign・removesign・status 等）の実行権限。OPに自動付与されます。 |
 
-!!! warning "コマンドは全てOP専用です"
-    `join`・`bet`・`list` などのプレイヤー向けサブコマンドは存在しません。プレイヤーが入力すると権限エラーになります。プレイヤーが参加・賭け・開始を行うには、`/pvp setsign` で登録した看板を使ってもらう必要があります。
+!!! note "参加系コマンドは全員が使えます"
+    `/pvp join`・`leave`・`spectate`・`lobby`・`bet` は **権限不要で全プレイヤーが実行可能** です（看板の右クリックと同じ動作）。看板を設置していれば看板からでも、コマンドからでも参加できます。`1vs1.admin` が必要なのは会場設定・試合進行などの管理系コマンドだけです。
 
 ## トラブルシューティング
 
