@@ -33,7 +33,7 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 | `locations.lobby` | 未設定 | 待機ロビー（看板設置場所）。`/tntran setlobby` で設定 |
 | `locations.area.pos1` | 未設定 | ゲームエリアの角1。`/tntran setfield 1` で設定 |
 | `locations.area.pos2` | 未設定 | ゲームエリアの角2。`/tntran setfield 2` で設定 |
-| `signs.join` / `signs.leave` / `signs.start` | `[]` | 参加・退出・開始看板の位置リスト。`/tntran setsign <join\|leave>`・`/tntran setstart` で自動保存 |
+| `signs.join` / `signs.leave` / `signs.start` | `[]` | 参加・退出・開始看板の位置リスト。`/tntran setsign <join\|leave\|start>` で自動保存 |
 
 !!! note "座標はコマンドで設定"
     `locations` 配下の座標は手書きせず、後述の各設定コマンドで設定するのが確実です。実行したプレイヤーの立ち位置が保存されます。
@@ -74,7 +74,7 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 ```
 
 ```text title="開始看板を登録（表示: [Tntran]／start／▶クリックで開始。クリックでゲーム開始）"
-/tntran setstart
+/tntran setsign start
 ```
 
 ```text title="視線先の看板の登録を解除"
@@ -93,17 +93,20 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/tntran join [対象]` | なし（全員） | ゲームに参加する |
-| `/tntran leave [対象]` | なし（全員） | ゲームから離脱する |
+| `/tntran join` | `tntran.admin` | ゲームに参加する（参加看板と同等。プレイヤーは看板を使用） |
+| `/tntran leave` | `tntran.admin` | ゲームから離脱する（離脱看板と同等。プレイヤーは看板を使用） |
 | `/tntran start` | `tntran.admin` | ゲームを開始する（マップ生成・5秒カウントダウン後にスタート） |
 | `/tntran stop` | `tntran.admin` | ゲームを強制停止・リセットする |
 | `/tntran setstartspawn` | `tntran.admin` | 初期リスポーン地点を設定する |
 | `/tntran setlobby` | `tntran.admin` | 待機ロビーを設定する |
 | `/tntran setfield <1\|2>` | `tntran.admin` | ゲームエリアの角1または角2を設定する |
-| `/tntran setsign <join\|leave>` | `tntran.admin` | 視線先の看板を参加／退出看板として登録する |
-| `/tntran setstart` | `tntran.admin` | 視線先の看板をゲーム開始看板として登録する |
+| `/tntran setsign <join\|leave\|start>` | `tntran.admin` | 視線先の看板を参加／退出／開始看板として登録する |
 | `/tntran removesign` | `tntran.admin` | 視線先の看板の登録を解除する |
 | `/tntran reload` | `tntran.admin` | config.yml を再読み込みする |
+| `/tntran status` | `tntran.admin` | 設定・ゲーム状況を確認する |
+
+!!! note "コマンドはすべて `tntran.admin` 専用です"
+    `/tntran` コマンドは `plugin.yml` で `permission: tntran.admin` が設定されており、`join` / `leave` / `start` を含む **すべてのサブコマンドが OP（`tntran.admin`）専用** です。一般プレイヤーは **看板** から参加・離脱・開始します（看板クリックは権限不要）。
 
 !!! note "ゲームの運営"
     プレイヤーがロビー看板から参加するのを待ち、十分集まったら `/tntran start` または **開始看板のクリック** で開始します。自動開始の機能はありません。異常時は `/tntran stop` で強制終了・リセットできます。
@@ -112,7 +115,7 @@ Tntran の導入・エリアのセットアップ・config・権限・管理コ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `tntran.admin` | OP | 管理コマンド（start / stop / setstartspawn / setlobby / setfield / setsign / setstart / removesign / reload）を使用できる |
+| `tntran.admin` | OP | `/tntran` の全コマンド（join / leave / start / stop / setstartspawn / setlobby / setfield / setsign / removesign / reload / status）を使用できる |
 
 ## トラブルシューティング
 
