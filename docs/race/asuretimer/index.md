@@ -1,12 +1,12 @@
 # AsureTimer <span class="badge done">公開中</span>
 
-1000m アスレチックコースの **タイム計測＆ランキングプラグイン**。看板をクリックして計測を開始し、ゴール看板までのクリアタイムを競います。チェックポイント感圧板による復帰機能や、ドロッパーモードにも対応しています。
+1000m アスレチックコースの **タイム計測＆ランキングプラグイン**。看板をクリックして計測を開始し、ゴール看板までのクリアタイムを競います。チェックポイント感圧板による復帰機能、**通過済みチェックポイントへ戻れる「戻るアイテム」**、ドロッパーモードにも対応しています。
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🏁 レース・タイムアタック</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">1人（個人タイムアタック）</span></div>
   <div class="quick-card"><span class="label">コース</span><span class="value">アスレ（既定1000m）／ドロッパー</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.21.x</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! info "プラグインについて"

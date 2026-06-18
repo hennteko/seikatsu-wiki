@@ -36,7 +36,7 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 | `default-course` | `"1000m"` | コースIDを省略したとき（看板・コマンド）に使われる既定コース |
 | `actionbar-interval` | 5 | 計測中アクションバーの更新間隔（tick／20=1秒） |
 | `sign-update-interval` | 30 | ランキング看板の自動更新間隔（秒） |
-| `ranking-display-count` | 10 | ランキング表示件数の設定値 |
+| `ranking-display-count` | 10 | ランキング表示件数の設定値（※現状コードでは未使用。表示は常に10件固定） |
 
 ### コース設定（`courses`）
 
@@ -53,7 +53,7 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 
 ### メッセージ設定（`messages`）
 
-`messages` 以下でチャットメッセージを `&` カラーコード付きで編集できます。アスレ用（`start` / `giveup` / `clear` / `checkpoint` / `death-respawn` / `ranking-header` 等）とドロッパー用（`dropper-start` / `dropper-clear` / `dropper-giveup` / `dropper-ranking-header`）が用意されています。`{time}` `{distance}` `{rank}` `{player}` `{course}` などのプレースホルダーが使えます。
+`messages` 以下でチャットメッセージを `&` カラーコード付きで編集できます。アスレ用（`start` / `giveup` / `clear` / `checkpoint` / `death-respawn` / `ranking-header` 等）とドロッパー用（`dropper-start` / `dropper-clear` / `dropper-giveup` / `dropper-ranking-header`）に加え、**戻るアイテム用（`return-teleport` / `return-no-checkpoint` / `return-menu-start` / `return-menu-entry`）** が用意されています。`{time}` `{distance}` `{rank}` `{player}` `{course}` `{index}` などのプレースホルダーが使えます。
 
 ### ギブアップアイテム設定（`giveup-item`）
 
@@ -65,6 +65,20 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 
 !!! info "ギブアップアイテムの判定について"
     ギブアップ判定は **PersistentDataContainer（PDC）に専用タグが付いているか** で行われます。プラグインが配布したアイテムにだけ反応するため、同じ素材・同じ名前の通常アイテムを持っていても誤作動しません。`giveup-item.material` を別の素材（例: `BARRIER`）に変えても、配布されたアイテムが正しくギブアップアイテムとして機能します。素材変更後は `/asure reload` を実行してください（既存セッション中のアイテムは古い素材のままです）。
+
+### 戻るアイテム設定（`return-item`）
+
+アスレ計測中に配られる、通過済みチェックポイントへワープできるアイテムの設定です（**ドロッパーでは配られません**）。右クリックで通過済みCDの選択GUIが開き、選んだCPへワープします（消費されず、タイム・距離記録も減りません）。判定はギブアップ同様にPDCタグで行うため、同素材の通常アイテムには反応しません。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `return-item.material` | `RECOVERY_COMPASS` | 戻るアイテムの素材（不正値は警告を出し `RECOVERY_COMPASS` にフォールバック） |
+| `return-item.name` | `&b&l前のチェックポイントに戻る` | 表示名（`&` カラーコード対応） |
+| `return-item.menu-title` | `&8チェックポイント選択` | 選択GUIのタイトル |
+| `return-item.lore` | （2行） | アイテムの説明文（lore） |
+
+!!! warning "既存サーバーは config が自動追記されません"
+    本プラグインは `saveDefaultConfig()` のみのため、**旧バージョンから更新した場合 `return-item` ブロックは既存 `config.yml` に自動追記されません**。コード側に既定値（リカバリーコンパス・既定名/lore）があるため動作はしますが、素材やGUIタイトルをカスタマイズしたい場合は `return-item` ブロックを手動追記して `/asure reload` してください。
 
 ## コース・看板のセットアップ手順
 
@@ -124,7 +138,7 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 | `/asure course settype <ID> <asure\|dropper>` | コースの種別を変更 |
 | `/asure course delete <ID>` | コースを削除 |
 | `/asure ranking [コースID] [time\|distance]` | ランキングを表示 |
-| `/asure reload` | config.yml・コース定義・ギブアップアイテム素材を再読み込み |
+| `/asure reload` | config.yml・コース定義・ギブアップ／戻るアイテム素材を再読み込み |
 | `/asure stats` | 自分の全コース統計を表示 |
 | `/asure stats <プレイヤー>` | 指定プレイヤーの全コース統計を表示（他人指定は `asuretimer.admin` 必要） |
 | `/asure stats <プレイヤー> <コースID>` | 指定プレイヤー・コースの統計を表示 |

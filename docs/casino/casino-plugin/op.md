@@ -11,7 +11,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | プラグイン名 | CasinoPlugin |
 | api-version | 26.1.2 |
 | メインクラス | `jp.casinoplugin.CasinoPlugin` |
-| softdepend（任意連携） | WorldGuard（カート用）、Citizens（クイズの NPC 用） |
+| softdepend（任意連携） | WorldGuard（競馬・育成馬の領域用）、Citizens（クイズの NPC 用） |
 | 共通設定 | `plugins/CasinoPlugin/config.yml`（全体設定とモジュール有効フラグ） |
 | データ | `plugins/CasinoPlugin/accounts.yml`、各モジュール用ファイル |
 
@@ -21,7 +21,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 ## 導入手順
 
 1. ビルドした `CasinoPlugin-*.jar` をサーバーの `plugins/` フォルダに配置する。
-2. 必要に応じて `WorldGuard`・`Citizens` を導入する（softdepend。無くても本体は起動しますが、カートの一部機能・クイズの NPC 機能が使えません）。
+2. 必要に応じて `WorldGuard`・`Citizens` を導入する（softdepend。無くても本体は起動しますが、競馬・育成馬の領域機能やクイズの NPC 機能が使えません）。
 3. サーバーを起動すると `plugins/CasinoPlugin/config.yml` ほか、各モジュールが必要とするデータファイル（`accounts.yml` などモジュールごとに異なる）が自動生成される。
 4. `config.yml` の `modules:` ブロックで、使いたいモジュールだけを `enabled: true` にする。
 5. 各ゲームの個別設定（座標・配当・確率など）は、それぞれのモジュールが管理する yml ファイルで編集する（詳細は各ゲームの個別ページ参照）。
@@ -34,14 +34,17 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | モジュール ID | 内容 | 主なデータ／設定ファイル |
 |---|---|---|
 | `bank` | エメラルド銀行（経済基盤・共通通貨） | `accounts.yml`（残高） |
-| `kart` | カートレース（マリオカート風） | モジュール内部で複数の yml を生成 |
 | `poker` | ポーカー（テキサスホールデム） | `poker/` 配下 |
 | `slot` | スロットマシン | `slot/` 配下 |
 | `lottery` | 宝くじ | `lottery/` 配下 |
 | `tintiro` | チンチロ（サイコロ賭博） | `tintiro/` 配下 |
 | `blackjack` | ブラックジャック | `blackjack/` 配下 |
 | `horse` | 競馬（7種類の馬券） | `horse/` 配下 |
+| `emhorse` | 育成馬（EmeraldHorse・馬を育てて競馬に出走） | `emhorse_data.yml` / `modules/emhorse.yml` |
 | `quiz` | クイズ（デイリー＋タワー） | `quiz/` 配下 |
+
+!!! note "config.yml の modules に emhorse が無い場合"
+    同梱の `config.yml` の `modules:` には `emhorse` の項目が無いことがありますが、未記載のモジュールは **既定で有効（true）** として起動します。無効化したい場合のみ `modules.emhorse.enabled: false` を手動で追記してください。
 
 !!! note "各ゲームの詳細は個別ページへ"
     上記モジュールの個別設定（座標設定・配当率・確率調整など）は、このページでは深掘りしません。各ゲームの個別ページにまとめられています。
@@ -58,7 +61,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `debug.verbose` | `false` | true で各モジュールの詳細ログを出力（本番では false 推奨） |
 
 !!! tip "モジュールの ON / OFF"
-    `modules:` ブロックには `bank` / `kart` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` の9項目があります。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
+    `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` の8項目があります（`emhorse` は未記載ですが既定 true で起動します）。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
 
 ## 権限ノード
 
@@ -70,16 +73,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 |---|---|---|
 | `emerald.list` | 全員 | 全プレイヤーの残高リストを表示 |
 | `emerald.admin` | OP | 管理者用コマンド（ATM 看板設置など） |
-
-### カート（kart）
-
-| 権限 | 既定 | 用途 |
-|---|---|---|
-| `kartrace.play` | 全員 | レースに参加できる |
-| `kartrace.garage` | 全員 | ガレージを開ける |
-| `kartrace.shop` | 全員 | カートショップを利用できる |
-| `kartrace.admin` | OP | KartRace の管理コマンド全般 |
-| `kartrace.sign.create` | OP | 参加・退出看板を設置できる |
 
 ### ポーカー（poker）
 
@@ -94,13 +87,17 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `slot.use` | 全員 | スロットを利用できる |
+| `slot.admin` | OP | スロットの管理（設置・設定） |
 | `slot.remote` | OP | リモートスロットアイテムを取得できる |
+
+!!! note "スロットの利用権限について"
+    `slot.use` という権限は存在しません。プレイヤーは `[スロット]` 看板からスロットを利用します（看板操作に専用権限は不要）。
 
 ### 宝くじ（lottery）
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
+| `kuzi.admin` | OP | 宝くじの管理（看板設置など） |
 | `kuzi.reload` | OP | 宝くじ機能のリロード権限 |
 
 ### ブラックジャック（blackjack）
@@ -131,6 +128,15 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `horseracing.bet` | OP | `/horseracing bet` の実行権限（プレイヤーは getitem 看板で取得した馬券アイテムからベット） |
 | `horseracing.sign.create` | OP | 馬券販売所/結果掲示看板の設置 |
 
+### 育成馬（emhorse）
+
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `emhorse.admin` | OP | 育成馬の管理コマンド（`/emhorse ...`）全権限・看板設置 |
+
+!!! note "プレイヤーは看板・アイテムから操作"
+    `/emhorse` コマンドは OP 専用です。プレイヤーは `[馬ショップ]` / `[厩舎]` / `[出走受付]` 看板と、子馬券・呼び笛・エサのアイテムで育成・出走します。
+
 ### クイズ（quiz）
 
 | 権限 | 既定 | 用途 |
@@ -158,13 +164,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `/emerald` | `/eb` | Emerald Bank メインコマンド（book / money / deposit / withdraw / send / list / wallet / gui / ranking / blankbook / blankwallet） |
 | `/ed <金額>` | ― | `/emerald deposit` のエイリアス（預け入れ） |
 | `/ew <金額>` | ― | `/emerald withdraw` のエイリアス（引き出し） |
-
-### カート（kart）
-
-| コマンド | エイリアス | 説明 |
-|---|---|---|
-| `/kartrace <subcommand>` | `/kr` `/kart` `/race` | KartRace メインコマンド |
-| `/kartadmin <subcommand>` | `/kra` | KartRace 管理コマンド |
 
 ### ポーカー（poker）
 
@@ -202,6 +201,12 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 |---|---|---|
 | `/horseracing <subcommand>` | ― | 競馬プラグインコマンド |
 
+### 育成馬（emhorse）
+
+| コマンド | エイリアス | 説明 |
+|---|---|---|
+| `/emhorse <subcommand>` | ― | 育成馬の管理（OP専用。看板設置・子馬券/エサ付与・調整など。詳細は育成馬ページ） |
+
 ### クイズ（quiz）
 
 | コマンド | エイリアス | 説明 |
@@ -225,9 +230,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 ??? failure "クイズの NPC コマンドが使えない / NPC を作れない"
     クイズの NPC 機能（`/quiznpc`）は **Citizens** に依存します。Citizens が導入されているか確認してください。Citizens は softdepend なので、未導入でも CasinoPlugin 本体は起動しますが NPC 機能は使えません。
-
-??? failure "カートのエリア保護が効かない"
-    カートの一部機能は **WorldGuard** と連携します（softdepend）。WorldGuard が導入されているか確認してください。詳細はカートの個別ページを参照してください。
 
 ??? failure "プレイヤーがクイズを遊べない"
     `quiz.use` 系の権限は **既定 false** です。権限プラグインで `quiz.use` を付与してください。
