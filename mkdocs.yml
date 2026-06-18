@@ -164,6 +164,10 @@ nav:
           - casino/horseracing/index.md
           - 👤 プレイヤー向け: casino/horseracing/player.md
           - 🛠️ OP・運営向け: casino/horseracing/op.md
+      - 育成馬（EmeraldHorse）:
+          - casino/emhorse/index.md
+          - 👤 プレイヤー向け: casino/emhorse/player.md
+          - 🛠️ OP・運営向け: casino/emhorse/op.md
       - クイズ:
           - casino/quiz/index.md
           - 👤 プレイヤー向け: casino/quiz/player.md
@@ -229,6 +233,10 @@ nav:
           - utility/globalstorage/index.md
           - 👤 プレイヤー向け: utility/globalstorage/player.md
           - 🛠️ OP・運営向け: utility/globalstorage/op.md
+      - PersonalStorage（個人ストレージ）:
+          - utility/personalstorage/index.md
+          - 👤 プレイヤー向け: utility/personalstorage/player.md
+          - 🛠️ OP・運営向け: utility/personalstorage/op.md
       - Tutorial2:
           - utility/tutorial/index.md
           - 👤 プレイヤー向け: utility/tutorial/player.md
