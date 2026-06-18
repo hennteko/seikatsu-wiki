@@ -98,16 +98,16 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/yukicraft join [対象]` | `yukicraft.admin` | 対象をロビーに参加させる（管理者用） |
-| `/yukicraft leave [対象]` | `yukicraft.admin` | 対象をロビーから離脱させる（管理者用） |
-| `/yukicraft start` | `yukicraft.admin` | ゲームを開始する |
+| `/yukicraft join` / `leave` / `start` | 全員 | 参加 / 退出 / 開始（看板と同等。引数省略で自分） |
+| `/yukicraft join <対象>` / `leave <対象>` | `yukicraft.admin` | 対象を指定して参加／離脱させる |
 | `/yukicraft stop` | `yukicraft.admin` | ゲームを強制終了する |
 | `/yukicraft setstartspawn` | `yukicraft.admin` | 初期リスポーン地点を設定する |
 | `/yukicraft setlobby` | `yukicraft.admin` | ロビー地点を設定する |
 | `/yukicraft setspawn` | `yukicraft.admin` | ゲーム開始スポーン地点を設定する |
-| `/yukicraft setfield 1` | `yukicraft.admin` | ゲームエリアの角1を設定する |
-| `/yukicraft setfield 2` | `yukicraft.admin` | ゲームエリアの角2を設定する |
+| `/yukicraft setfield <1\|2>` | `yukicraft.admin` | ゲームエリアの角を設定する |
+| `/yukicraft setsign <join\|leave>` | `yukicraft.admin` | 視線先の看板を参加／離脱看板として登録する |
 | `/yukicraft setstart` | `yukicraft.admin` | 視線先の看板をゲーム開始看板として登録する |
+| `/yukicraft status` | `yukicraft.admin` | 設定状況・ゲーム状態を確認する |
 | `/yukicraft reload` | `yukicraft.admin` | config.yml を再読み込みする |
 
 !!! note "看板による参加導線"
@@ -121,7 +121,11 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
     /yukicraft setsign leave
     ```
 
-    コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config に保存します。手書きでのテキスト入力は不要です。
+    ```text title="開始看板として登録（クリックでゲーム開始）"
+    /yukicraft setstart
+    ```
+
+    コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config（`signs.join` / `signs.leave` / `signs.start`）に保存します。手書きでのテキスト入力は不要です。開始看板のみ `setstart`、参加・離脱は `setsign` で登録します。
 
 ## 権限ノード
 

@@ -54,9 +54,8 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 /fpb setsign leave
 ```
 
-```text title="視線先の看板をゲーム開始看板として登録（任意）"
-/fpb setstart
-```
+!!! note "開始看板（start）はコマンドで登録できません"
+    現バージョンの `setsign` は **join / leave の2種類のみ** で、開始看板を登録するコマンド（`setstart` 等）はありません。ゲーム開始は `/fpb start [分]`（全員可・人数充足で開始）で行ってください。
 
 !!! note "必須の座標と任意の座標"
     初期リスポーン（`setstartspawn`）・ロビー（`setlobby`）・ゲームエリアの角1/2（`setfield 1`・`setfield 2`）の4点はゲーム開始に **必須** です。すべて設定されていないと `/fpb start` を実行できません。`fishspot`（高ポイントゾーン）は **任意** で、未設定でもゲームは開始できます。設定した座標は config.yml の `locations` セクションに自動保存されます。
@@ -201,33 +200,39 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 !!! note "設定変更後は必ず `/fpb reload`"
     `config.yml` を編集したら `/fpb reload` を実行してください。ポイント配点・倍率・メッセージなどの変更が反映されます。
 
-## 管理コマンド
+## コマンド
 
-`/fpb` コマンド自体はすべてのプレイヤーが実行できますが、サブコマンドごとに権限が分かれています。`setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `setstart` / `start` / `stop` / `reload` は `fpb.admin` 権限が必要、`help` / `status` は誰でも実行可能です。地点・看板の設定系はプレイヤー（コンソール不可）として実行する必要があります。
+`/fpb` コマンド自体はすべてのプレイヤーが実行でき、サブコマンドごとに権限が分かれています。地点・看板の設定系はプレイヤー（コンソール不可）として実行する必要があります。
 
-| コマンド | 必要権限 | 説明 |
-|---|---|---|
-| `/fpb help` | なし | ヘルプを表示（管理者には管理者コマンド一覧も表示） |
-| `/fpb status` | なし | 現在の状態・参加人数・座標設定状況を表示 |
-| `/fpb setstartspawn` | `fpb.admin` | 初期リスポーン地点を設定 |
-| `/fpb setlobby` | `fpb.admin` | 待機ロビー地点を設定 |
-| `/fpb setfield <1\|2>` | `fpb.admin` | ゲームエリアの角1または2を設定 |
-| `/fpb setfishspot` | `fpb.admin` | 高ポイントゾーンを設定（任意） |
-| `/fpb setsign <join\|leave>` | `fpb.admin` | 視線先の看板を参加／退出看板として登録（テキストは自動書き込み） |
-| `/fpb setstart` | `fpb.admin` | 視線先の看板をゲーム開始看板として登録（看板の右クリックで既定時間で開始） |
-| `/fpb start [分]` | `fpb.admin` | ゲームを開始（分を省略すると `default-duration`。1〜60分の範囲で指定可） |
-| `/fpb stop` | `fpb.admin` | ゲームを強制終了 |
-| `/fpb reload` | `fpb.admin` | config.yml を再読み込み |
+### プレイヤー用（全員可）
+
+| コマンド | 説明 |
+|---|---|
+| `/fpb join` / `leave` | ロビーに参加 / 退出する（看板と同等。join は `fpb.play`＝既定全員） |
+| `/fpb start [分]` | ゲームを開始（最小人数を満たせば誰でも可。分を省略すると `default-duration`、1〜60分で指定可） |
+| `/fpb help` / `status` | ヘルプ表示 / 現在の状態・参加人数・座標設定状況を表示 |
+
+### 管理用（`fpb.admin`）
+
+| コマンド | 説明 |
+|---|---|
+| `/fpb setstartspawn` | 初期リスポーン地点を設定 |
+| `/fpb setlobby` | 待機ロビー地点を設定 |
+| `/fpb setfield <1\|2>` | ゲームエリアの角を設定 |
+| `/fpb setfishspot` | 高ポイントゾーンを設定（任意） |
+| `/fpb setsign <join\|leave>` | 視線先の看板を参加／退出看板として登録（テキストは自動書き込み） |
+| `/fpb stop` | ゲームを強制終了 |
+| `/fpb reload` | config.yml を再読み込み |
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `/fpb setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `setstart` / `start` / `stop` / `reload` の使用 |
-| `fpb.play` | 全員 | 参加看板からゲームに参加できる |
+| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用 |
+| `fpb.play` | 全員 | ゲームに参加できる（看板・`/fpb join`） |
 
 !!! note "コマンド権限の設計"
-    plugin.yml では `/fpb` コマンド自体への権限制限は外され、サブコマンドごとに権限チェックを行う実装になっています。`help` と `status` は権限不要なので、一般プレイヤーも遊び方や試合状況を確認できます。プレイヤーのゲーム参加・退出は引き続き看板（`fpb.play` 権限）から行う設計です。
+    `/fpb` コマンド自体に権限制限はなく、サブコマンドごとに権限チェックします。**`join`・`leave`・`start`・`help`・`status` は権限不要（全員可）** で、参加・退出・開始は看板でもコマンドでも行えます。会場設定・`stop`・`reload` のみ `fpb.admin` が必要です。`start` には管理者権限は不要な点に注意してください。
 
 ## ゲームの運営
 
