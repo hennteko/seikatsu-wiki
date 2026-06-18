@@ -90,6 +90,10 @@ nav:
           - minigames/aooni/index.md
           - 👤 プレイヤー向け: minigames/aooni/player.md
           - 🛠️ OP・運営向け: minigames/aooni/op.md
+      - Bomberman（ボンバーマン）:
+          - minigames/bomberman/index.md
+          - 👤 プレイヤー向け: minigames/bomberman/player.md
+          - 🛠️ OP・運営向け: minigames/bomberman/op.md
       - Battleroyale（バトルロイヤル）:
           - minigames/battleroyale/index.md
           - 👤 プレイヤー向け: minigames/battleroyale/player.md
