@@ -79,7 +79,7 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | ナワバリ | `turf` | 制限時間終了時、塗った床の合計のうち自チーム塗り割合が高い方が勝ち | なし（フィールド＋スポーンのみ） |
 | ガチエリア | `area` | 2つのゾーンを70%超で確保。両方を同時に確保している間だけカウントが減り、先に0でノックアウト | `setzone` でゾーン2つ×各2角 |
 | ガチホコ | `hoko` | 中央のホコを敵ゴール台へ運び到達でノックアウト。カウントは最接近距離で進む | `sethoko`＋`setgoal orange`＋`setgoal blue` |
-| ガチヤグラ | `tower` | ヤグラ（中点発進）を占有して敵ゴール端へ押し込めばノックアウト | `setgoal orange`＋`setgoal blue`（中間関門は任意） |
+| ガチヤグラ | `tower` | 各チームの番号付きCPを順に進み、自チームの最大番号CP（＝ゴール）に到達でノックアウト。スタートは両チームCP1の中点 | `settower checkpoint orange <番号>`＋`settower checkpoint blue <番号>`（**setgoalは使わない**） |
 
 ```text title="ガチエリアのゾーン設定（ゾーン番号1/2 と 角1/2）"
 /splatoon setzone <1|2> <1|2>
@@ -87,18 +87,21 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 ```text title="ガチホコの中央地点を設定"
 /splatoon sethoko
 ```
-```text title="ホコ/ヤグラのゴール台を設定（両チーム分）"
+```text title="ガチホコのゴール台を設定（両チーム分・ホコ専用）"
 /splatoon setgoal <orange|blue>
 ```
-```text title="ガチヤグラの経路ウェイポイント追加 / 関門追加 / 全消去"
-/splatoon settower <add|checkpoint <orange|blue>|clear>
+```text title="ガチヤグラのチェックポイントを番号付きで設定（最大番号がゴール）"
+/splatoon settower checkpoint <orange|blue> <番号>
+```
+```text title="ガチヤグラの経路・関門をすべて消去"
+/splatoon settower clear
 ```
 
 !!! warning "モード必須地点が未設定だとナワバリ進行になります"
-    ガチエリア/ガチホコ/ガチヤグラで必須地点が未設定の場合、試合開始時に警告を出した上で **ナワバリ判定にフォールバック** して進行します（試合は止まりません）。`/splatoon status` で各モードの設定状況を必ず確認してください。なお **オレンジのゴール台は青チームの目標、青のゴール台はオレンジの目標** です。
+    ガチエリア/ガチホコ/ガチヤグラで必須地点が未設定の場合、試合開始時に警告を出した上で **ナワバリ判定にフォールバック** して進行します（試合は止まりません）。`/splatoon status` で各モードの設定状況を必ず確認してください。なおガチホコでは **オレンジのゴール台は青チームの目標、青のゴール台はオレンジの目標** です。
 
-!!! note "ガチヤグラの関門（チェックポイント）"
-    `settower add` で経路ウェイポイント、`settower checkpoint <orange|blue>` で **チームごとの関門**（一時停止する地点）を追加します。中間関門は任意で、`settower clear` で経路・関門を全消去できます。ゴール台（両端）の2点があれば動作します。
+!!! note "ガチヤグラのチェックポイント設定（番号付き）"
+    ガチヤグラは `settower checkpoint <orange|blue> <番号>` で **各チームのCPを番号付きで設置** します。**最大番号のCPがそのチームのゴール**、番号1〜（最大-1）が **中間関門**（通過時に一時停止・既定5秒）です。**スタート(中央)はオレンジCP1と青CP1の中点** になります。両チームに最低1個ずつCPがあれば動作し、`setgoal` は使いません（ホコ専用）。`settower clear` で全消去します。`add` サブコマンドは廃止されました。
 
 ## config.yml 主要項目
 
@@ -112,7 +115,7 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `game.lobby-seconds` | 30 | 開始前カウントダウン（秒） |
 | `game.mode` | `turf` | 既定モード（`setmode` で上書き保存） |
 | `game.area.count` / `zone-threshold` | 100 / 0.70 | ガチエリアのカウント・確保しきい値（70%） |
-| `game.hoko.count` / `hold-seconds` / `goal-radius` 等 | 100 / 10 / 2.0 | ガチホコのカウント・最大保持秒（超過で自爆）・ゴール半径ほか |
+| `game.hoko.count` / `goal-radius` 等 | 100 / 2.0 | ガチホコのカウント・ゴール半径ほか（`hold-seconds` はconfigに残るが**保持超過の自爆は現在無効**） |
 | `game.tower.count` / `occupy-radius` / `advance-seconds` 等 | 100 / 3.0 / 25 | ガチヤグラのカウント・占有半径・前進/後退秒ほか |
 
 座標系（`arena.spawn.*` / `arena.field.*` / `arena.zone1/2` / `arena.hoko` / `arena.goal.*` / `arena.tower.*` / 各 `*-sign` / `lobby-spawn` / `default-spawn`）はコマンド実行時に自動保存されます。
@@ -146,8 +149,9 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `/splatoon setsign start <turf\|area\|hoko\|tower>` | 視線先の看板を **モード別の開始看板** に設定 |
 | `/splatoon setmode <turf\|area\|hoko\|tower>` | 既定の対戦モードを設定 |
 | `/splatoon setzone <1\|2> <1\|2>` | ガチエリアのゾーンを設定 |
-| `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定 |
-| `/splatoon settower <add\|checkpoint <orange\|blue>\|clear>` | ガチヤグラの経路・関門（チーム別）を設定 |
+| `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定（ゴール台はホコ専用） |
+| `/splatoon settower checkpoint <orange\|blue> <番号>` | ガチヤグラの番号付きCPを設定（最大番号がゴール） |
+| `/splatoon settower clear` | ガチヤグラの経路・関門を全消去 |
 
 ## 権限ノード
 
