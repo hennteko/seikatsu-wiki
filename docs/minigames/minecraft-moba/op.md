@@ -87,20 +87,18 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 ロビーの導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。看板は **参加 / 退出 / ショップ / チャンピオン選択 / 開始** の5種類です。
 
-```text title="参加・退出・ショップ・チャンピオン選択看板を登録"
-/moba setsign <join|leave|shop|champion>
+```text title="看板を登録（5種類いずれか・看板を見て実行）"
+/moba setsign <join|leave|shop|champion|start>
 ```
 
-```text title="開始看板を登録（クリックでゲーム開始）"
-/moba setstart
-```
+看板の種類は **join（参加）/ leave（退出）/ shop（ショップ）/ champion（チャンピオン選択）/ start（開始）** の5種類で、いずれも `setsign` で登録します。
 
 1. 看板を設置する。
 2. 看板を見た状態（5ブロック以内）で上記コマンドを実行する。
 3. テキストはプラグインが自動で書き込みます。
 
-!!! note "チャンピオン選択看板と開始看板が追加されました"
-    プレイヤーは **チャンピオン選択看板** をクリックしてGUIでチャンピオンを選びます。**開始看板**（`/moba setstart`）はクリックでゲームを開始できます。手書き登録は廃止済みで、必ずコマンドで登録してください。`/moba status` で5種すべての登録状況を確認できます。
+!!! note "開始看板は setsign start で登録します"
+    開始看板は **`/moba setsign start`** で登録します（独立した `setstart` コマンドは廃止されました）。プレイヤーは **チャンピオン選択看板** をクリックしてGUIでチャンピオンを選び、**開始看板** をクリックでゲームを開始できます。手書き登録は廃止済みで、必ずコマンドで登録してください。`/moba status` で5種すべての登録状況を確認できます。
 
 ## config.yml 主要項目
 
@@ -139,7 +137,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 |---|---|---|
 | `CORE.BASE_HEALTH` | 1000 | コアのHP |
 | `CORE.ATTACKABLE_REQUIREMENT` | ALL_TOWERS_DESTROYED | コア攻撃の条件 |
-| `TOWER.COUNT` | 5 | 1チームのタワー数 |
+| `TOWER.COUNT` | 2 | 1チームのタワー数（ARAM想定。既定マップは各2基。実際の数は `TOWERS` の設定数で決まる） |
 | `TOWER.BASE_HEALTH` | 300 | タワーのHP |
 | `TOWER.ATTACK_RANGE` | 15 | タワーの攻撃範囲（ブロック） |
 
@@ -153,7 +151,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 - `MINION` … スポーン間隔（30秒）、有効レーン（既定 `LANE_MID` のみのARAM想定）、構成（ゾンビ3＋スケルトン2）、時間強化係数を設定。
 - `NEUTRAL_CREEPS` … 通常（ゾンビ）／バフ（アイアンゴーレム・撃破で力）／ボス（ウィザー・チーム強化）の有効化・HP・報酬・`SPAWN_LOCATIONS`・`RESPAWN_TIME` を設定。**`SPAWN_LOCATIONS` が空だとクリープが湧きません**（`/moba setup creep` で追加）。
-- `SHOP` … 武器・防具・消耗品・ワードは `SHOP.ITEMS` で定義。**ただしルーン（攻撃/守り/俊足/賢者/加速）の価格・効果はコード側にハードコードされており、config非連動** です（価格変更にはコード修正が必要）。
+- `SHOP` … **現バージョンの店の品揃えはコード側にハードコード**されており、`config.yml` の `SHOP.ITEMS` は読み込まれていません。実際の店には **剣4種・鉄防具4種・金リンゴ・ルーン5種（攻撃の宝珠/守りの宝珠/俊足のブーツ/賢者のオーブ/加速のルーン）の計14品** のみが並びます。`SHOP.ITEMS` に書いた弓・矢・各ポーション・革防具・ワード等は店に反映されないため、品揃え変更にはコード修正が必要です。
 
 ### チャンピオン/スキル・AFK・リコール・ワード
 
@@ -178,23 +176,30 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `moba.admin` | OP | `/moba start` / `stop` / `reload` / `setup ...` および `[MOBA]` 看板の設置に必要 |
+| `moba.admin` | OP | `stop` / `reload` / `status` / `setup ...` / `setsign` などの設定・管理コマンド、および `/shop` の実行に必要 |
 
 !!! note "プレイヤー向け権限について"
-    `/shop`・`/moba stats` は権限チェックがありません（コマンドの実行制限なし）。プレイヤーに使わせたくない場合はサーバーの権限管理プラグインで `moba` / `shop` コマンド自体を制限してください。
+    `/moba join`・`leave`・`start`・`stats` は **権限不要で全員が使えます**。一方 **`/shop` は `plugin.yml` で `moba.admin` 限定** のため、一般プレイヤーは `/shop` コマンドを直接使えません（ショップ看板から開きます）。
 
-## 管理コマンド
+## コマンド
 
-| コマンド | 権限 | 説明 |
-|---|---|---|
-| `/moba start` | `moba.admin` | ゲームを開始する |
-| `/moba stop` | `moba.admin` | ゲームを停止する |
-| `/moba reload` | `moba.admin` | config.yml を再読み込み |
-| `/moba status` | `moba.admin` | 地点・看板・ゲーム状況の設定状況を確認する |
-| `/moba setup <core\|tower\|minion\|creep> ...` | `moba.admin` | コア・タワー・ミニオン経路・クリープ湧き地点の設定 |
-| `/moba setsign <join\|leave\|shop\|champion>` | `moba.admin` | 視線先の看板を参加・退出・ショップ・チャンピオン選択看板として登録 |
-| `/moba setstart` | `moba.admin` | 視線先の看板を開始看板として登録 |
-| `/moba stats` | 全員 | 統計を表示 |
+### プレイヤー用（全員可）
+
+| コマンド | 説明 |
+|---|---|
+| `/moba join` / `leave` | ロビーに参加 / 退出する（看板と同等） |
+| `/moba start` | ゲームを開始する（開始看板と同等・全員可） |
+| `/moba stats` | 自分の統計を表示する |
+
+### 管理用（`moba.admin`）
+
+| コマンド | 説明 |
+|---|---|
+| `/moba stop` | ゲームを停止する |
+| `/moba reload` | config.yml を再読み込み |
+| `/moba status` | 地点・看板・ゲーム状況の設定状況を確認する |
+| `/moba setup <core\|tower\|minion\|creep> ...` | コア・タワー・ミニオン経路・クリープ湧き地点の設定 |
+| `/moba setsign <join\|leave\|shop\|champion\|start>` | 視線先の看板を各種看板（開始看板含む）として登録 |
 
 ## ゲームの運営
 
