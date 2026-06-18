@@ -50,8 +50,8 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 ```text title="ブキ選択看板を設定（クリックで編成GUIを開く）"
 /splatoon setsign weapon
 ```
-```text title="開始看板を設定（クリックで試合開始）"
-/splatoon setstart
+```text title="開始看板を設定（モード別。クリックでそのモードの試合開始）"
+/splatoon setsign start <turf|area|hoko|tower>
 ```
 ```text title="ロビーのスポーン地点（任意・試合終了後の戻り先）"
 /splatoon setlobby
@@ -91,14 +91,14 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 /splatoon setgoal <orange|blue>
 ```
 ```text title="ガチヤグラの経路ウェイポイント追加 / 関門追加 / 全消去"
-/splatoon settower <add|checkpoint|clear>
+/splatoon settower <add|checkpoint <orange|blue>|clear>
 ```
 
 !!! warning "モード必須地点が未設定だとナワバリ進行になります"
     ガチエリア/ガチホコ/ガチヤグラで必須地点が未設定の場合、試合開始時に警告を出した上で **ナワバリ判定にフォールバック** して進行します（試合は止まりません）。`/splatoon status` で各モードの設定状況を必ず確認してください。なお **オレンジのゴール台は青チームの目標、青のゴール台はオレンジの目標** です。
 
 !!! note "ガチヤグラの関門（チェックポイント）"
-    `settower add` で経路ウェイポイント、`settower checkpoint` で一時停止する関門を追加します。中間関門は任意で、`settower clear` で全消去できます。ゴール台（両端）の2点があれば動作します。
+    `settower add` で経路ウェイポイント、`settower checkpoint <orange|blue>` で **チームごとの関門**（一時停止する地点）を追加します。中間関門は任意で、`settower clear` で経路・関門を全消去できます。ゴール台（両端）の2点があれば動作します。
 
 ## config.yml 主要項目
 
@@ -120,33 +120,43 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 !!! warning "既存サーバーを更新する場合（config自動マージなし）"
     本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新しいキー（`game.area` / `game.hoko` / `game.tower` など）を自動追記しません**。コード側に既定値があるため未記載でも既定値で動作しますが、**各モードのカウントや時間を調整したい場合は配布 `config.yml` を参照して手動で追記**してください。座標・看板・モードはコマンドで都度保存されるため問題ありません。
 
-## 管理コマンド
+## コマンド
 
-`/splatoon` のサブコマンドは `splatoon.admin`（既定OP）が必要です（`start` のみコマンドブロックからも実行可）。
+### プレイヤー用（全員可）
 
 | コマンド | 説明 |
 |---|---|
-| `/splatoon start` | 試合を強制開始（コマンドブロック可） |
+| `/splatoon join` | 試合（ロビー）に参加する |
+| `/splatoon leave` | 試合（ロビー）から離脱する |
+| `/splatoon status` | 自分のゲーム状態を確認する |
+| `/splatoon start <turf\|area\|hoko\|tower>` | 指定モードでモードを設定して試合開始（全員可・コマンドブロック/コンソール対応） |
+
+!!! note "join / leave / status / start は権限不要"
+    これらは全プレイヤーが使えます（看板と同等）。`start <モード>` は **そのモードに設定してから開始** します。運営のみで開始したい場合は開始看板を置かず運用してください。
+
+### 管理用（`splatoon.admin`）
+
+| コマンド | 説明 |
+|---|---|
 | `/splatoon stop` | 進行中の試合を強制終了 |
-| `/splatoon status` | 設定状況・ゲーム状態を一覧表示 |
 | `/splatoon setfield <1\|2>` | フィールド範囲の角を現在地に設定 |
 | `/splatoon setspawn <orange\|blue>` | チームの試合内スポーンを現在地に設定 |
 | `/splatoon setlobby` / `setstartspawn` | ロビー / ゲーム外スポーンを現在地に設定 |
 | `/splatoon setsign <join\|leave\|weapon>` | 視線先の看板を参加 / 離脱 / ブキ選択看板に設定 |
-| `/splatoon setstart` | 視線先の看板を開始看板に設定 |
-| `/splatoon setmode <turf\|area\|hoko\|tower>` | 対戦モードを設定 |
+| `/splatoon setsign start <turf\|area\|hoko\|tower>` | 視線先の看板を **モード別の開始看板** に設定 |
+| `/splatoon setmode <turf\|area\|hoko\|tower>` | 既定の対戦モードを設定 |
 | `/splatoon setzone <1\|2> <1\|2>` | ガチエリアのゾーンを設定 |
 | `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定 |
-| `/splatoon settower <add\|checkpoint\|clear>` | ガチヤグラの経路・関門を設定 |
+| `/splatoon settower <add\|checkpoint <orange\|blue>\|clear>` | ガチヤグラの経路・関門（チーム別）を設定 |
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `splatoon.admin` | OP | `/splatoon` のすべてのサブコマンド |
+| `splatoon.admin` | OP | 会場設定・看板設置・モード設定・stop などの管理コマンド |
 
-!!! note "プレイヤー用の権限はありません"
-    参加・離脱・ブキ選択・開始はすべて看板で行うため、一般プレイヤー向けの専用権限はありません。`/splatoon` コマンド自体が管理者専用です。
+!!! note "参加系コマンドは全員が使えます"
+    `join`・`leave`・`status`・`start <モード>` は **権限不要で全プレイヤーが実行可能** です（看板と同等）。`splatoon.admin` が必要なのは会場設定・看板設置・モード設定・`stop` などの管理コマンドだけです。
 
 ## トラブルシューティング
 
