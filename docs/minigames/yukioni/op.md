@@ -11,7 +11,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 | プラグイン名 | Yukioni |
 | 説明 | 雪鬼ごっこミニゲームプラグイン |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukioni <setstartspawn\|setlobby\|setfield\|setsign\|setstart\|start\|stop\|status\|reload>` |
+| メインコマンド | `/yukioni <join\|leave\|setstartspawn\|setlobby\|setfield\|setsign\|start\|stop\|status\|reload>`（join/leaveは全員可） |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Yukioni/config.yml` |
 | 座標保存ファイル | `plugins/Yukioni/locations.yml`（自動生成・自動保存） |
@@ -83,7 +83,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 ```
 
 ```text title="開始看板として登録（クリックでゲーム開始）"
-/yukioni setstart
+/yukioni setsign start
 ```
 
 ```text title="設定状況を確認"
@@ -93,7 +93,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を `locations.yml` の `sign.join` / `sign.leave` / `sign.start` に保存します。手書きでのテキスト入力は不要です。
 
 !!! note "開始看板はクリックで誰でも開始できます"
-    `/yukioni setstart` で設置した開始看板は、クリックするとゲームが始まります（内部で権限チェックを行わないため、設置すると一般プレイヤーもクリックで開始できます）。運営のみで開始したい場合は開始看板を設置せず、`/yukioni start` で開始してください。
+    `/yukioni setsign start` で設置した開始看板は、クリックするとゲームが始まります（内部で権限チェックを行わないため、設置すると一般プレイヤーもクリックで開始できます）。独立した `setstart` コマンドは廃止され、開始看板も `setsign start` で登録します。運営のみで開始したい場合は開始看板を設置せず、`/yukioni start` で開始してください。
 
 !!! tip "ゲームエリアについて"
     `setfield 1` / `setfield 2` の2点で囲まれた直方体がゲームエリアになります。プレイヤーはこの範囲外に出られず、開始時はこの範囲内のランダムな位置にテレポートされます。エリア未設定の場合は、エリア判定が無効になりロビー地点が代替に使われます。
@@ -106,8 +106,8 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 | `/yukioni setlobby` | `yukioni.admin` | ロビー地点を設定 |
 | `/yukioni setfield 1` | `yukioni.admin` | ゲームエリアの角1を設定 |
 | `/yukioni setfield 2` | `yukioni.admin` | ゲームエリアの角2を設定 |
-| `/yukioni setsign <join\|leave>` | `yukioni.admin` | 視線先の看板を参加／離脱看板に登録 |
-| `/yukioni setstart` | `yukioni.admin` | 視線先の看板を開始看板に登録 |
+| `/yukioni join` / `leave` | 全員 | ロビーに参加／退出する（看板と同等） |
+| `/yukioni setsign <join\|leave\|start>` | `yukioni.admin` | 視線先の看板を参加／離脱／開始看板に登録 |
 | `/yukioni start` | `yukioni.admin` | ゲームを開始する |
 | `/yukioni stop` | `yukioni.admin` | ゲームを強制終了する |
 | `/yukioni status` | `yukioni.admin` | 設定状況を確認する |
