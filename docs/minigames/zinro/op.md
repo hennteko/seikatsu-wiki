@@ -94,7 +94,11 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 /zinro setsign shop
 ```
 
-登録するとプラグインが `[人狼]` / `▶クリックで参加`（参加看板）や `[人狼]` / `▶クリックで退出`（退出看板）などのテキストを自動で書き込みます。手書きによる自動登録は廃止されています。
+```text title="開始看板として登録（クリックでゲーム開始。/zinro setstart でも可）"
+/zinro setsign start
+```
+
+登録するとプラグインが `[人狼]` / `▶クリックで参加`（参加看板）や `[人狼]` / `▶クリックで退出`（退出看板）などのテキストを自動で書き込みます。手書きによる自動登録は廃止されています。開始看板は `/zinro setstart` でも登録できます。
 
 ### 5. 設定の保存
 
@@ -165,26 +169,27 @@ role_distribution:
 | `zinro.admin` | OP | 管理・セットアップコマンドすべて |
 
 !!! note "プレイヤー向けの権限"
-    参加・退出はゲート看板で行うため、一般プレイヤーはコマンド権限なしで遊べます。`/zinro shop` は `zinro.admin` 権限が必要です。一般プレイヤーはショップ看板またはショップの杖からショップを開きます。
+    `/zinro join`・`/zinro leave`・`/zinro start` は **権限不要で全プレイヤーが使えます**（ゲート看板と同等）。ショップを開くコマンドはなく、ショップは看板またはショップの杖から開きます。それ以外の設定・管理コマンドは `zinro.admin`（OP）が必要です。
 
 ## 管理コマンド
 
-すべて `zinro.admin` 権限が必要です。`/zinro shop` も `zinro.admin` 権限が必要で、一般プレイヤーはショップ看板またはショップの杖から開きます。
+設定・管理コマンドは `zinro.admin` 権限が必要です（`join` / `leave`（自己離脱）/ `start` は全員可）。
 
-| コマンド | 説明 |
-|---|---|
-| `/zinro` | コマンドのヘルプを表示 |
-| `/zinro start` | ゲームを開始する（最低2人の参加が必要） |
-| `/zinro stop` | ゲームを強制終了する |
-| `/zinro setstartspawn` | 初期スポーン地点を現在地に設定 |
-| `/zinro setlobby` | ロビー地点を現在地に設定 |
-| `/zinro setspawn` | ゲームスポーン地点を現在地に設定 |
-| `/zinro setfield <1\|2>` | フィールド範囲を現在地に設定 |
-| `/zinro setboard <1-20>` | 見ている看板を占い看板として登録 |
-| `/zinro setsign <join\|leave\|shop>` | 視線先の看板をゲート看板として登録 |
-| `/zinro leave <player>` | 指定プレイヤーをロビーから強制離脱させる |
-| `/zinro save` | 設定を保存する |
-| `/zinro reload` | 設定を再読み込みする |
+| コマンド | 権限 | 説明 |
+|---|---|---|
+| `/zinro join` / `leave` / `start` | 全員 | 参加 / 退出 / 開始（ゲート看板と同等） |
+| `/zinro stop` | admin | ゲームを強制終了する |
+| `/zinro setstartspawn` | admin | 初期スポーン地点を現在地に設定 |
+| `/zinro setlobby` | admin | ロビー地点を現在地に設定 |
+| `/zinro setspawn` | admin | ゲームスポーン地点を現在地に設定 |
+| `/zinro setfield <1\|2>` | admin | フィールド範囲を現在地に設定 |
+| `/zinro setboard <1-20>` | admin | 見ている看板を占い看板として登録 |
+| `/zinro setsign <join\|leave\|shop\|start>` | admin | 視線先の看板をゲート／開始看板として登録 |
+| `/zinro setstart` | admin | 視線先の看板を開始看板として登録（`setsign start` と同等） |
+| `/zinro leave <player>` | admin | 指定プレイヤーをロビーから強制離脱させる |
+| `/zinro status` | admin | 設定状況を確認する |
+| `/zinro save` | admin | 設定を保存する |
+| `/zinro reload` | admin | 設定を再読み込みする |
 
 ## 運営の流れ
 
@@ -215,7 +220,7 @@ role_distribution:
 !!! warning "同梱ドキュメントとコマンド体系の差異"
     Zinroには複数の同梱ドキュメント（README.md・SETUP_GUIDE.md・QUICKSTART.md・各種PHASEレポートなど）が含まれていますが、内容が古く現行バージョンと食い違う箇所があります。**このWIKIは現行コード（v1.4.0）の実装を正としています。** 特に次の点に注意してください。
 
-    - `/zinro join`・`/zinro leave`（自己参加）・`/zinro vote`・`/zinro config`・`/zinro setup ...` といったコマンドは、現行コードには **存在しません**。参加・退出はゲート看板、投票は投票用紙GUIで行います。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。
+    - `/zinro vote`・`/zinro config`・`/zinro setup ...` といったコマンドは、現行コードには **存在しません**。投票は投票用紙GUIで行います。参加・退出・開始は `/zinro join`・`/zinro leave`・`/zinro start`（全員可）またはゲート看板で行えます。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。
     - 一部ドキュメントに「死神（REAPER）削除済み」とありますが、現行の役職定義には未使用の死神が残っています。実際の配役には登場しないため通常プレイへの影響はありません。
     - 価格変更コマンドや `shop_prices` 設定は現行の同梱 `config.yml` には含まれません。ショップ価格は固定です。
 
