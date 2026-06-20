@@ -40,16 +40,17 @@
 
 ## tintiro.yml 設定項目
 
-個別設定ファイルは `plugins/CasinoPlugin/modules/tintiro.yml` です。設定項目はごく少なく、看板や `/tintiro setup` で書き込まれる座標が中心です。
+個別設定ファイルは `plugins/CasinoPlugin/modules/tintiro.yml` です。設定項目はごく少なく、看板や地点設定コマンドで書き込まれる座標が中心です。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `shonben-probability-percent` | `5` | サイコロ1つあたりに「ションベン」（出目0）が出る確率（パーセント）。3つのサイコロそれぞれに独立で判定される |
-| `locations.spawn` | （未設定） | スポーン地点（離脱時の転送先）。`/tintiro setup spawn` で書き込まれる |
-| `locations.lobby` | （未設定） | ロビー地点（参加時・ゲーム終了時の転送先）。`/tintiro setup lobby` で書き込まれる |
+| `locations.spawn` | （未設定） | スポーン地点（離脱時の転送先）。`/tintiro setstartspawn` で書き込まれる |
+| `locations.lobby` | （未設定） | ロビー地点（参加時・ゲーム終了時の転送先）。`/tintiro setlobby` で書き込まれる |
+| `locations.field1` / `field2` | （未設定） | ゲームエリアの対角2点。`/tintiro setfield <1\|2>` で書き込まれる |
 
-!!! note "座標は手動編集より /tintiro setup を推奨"
-    `locations.spawn` / `locations.lobby` は `world` / `x` / `y` / `z` / `yaw` / `pitch` を持つ座標ブロックです。ゲーム内で `/tintiro setup spawn` ・ `/tintiro setup lobby` を実行すると、実行時の立ち位置が自動で書き込まれます。手動で編集する場合は tintiro.yml 内のコメントに記載された形式に従ってください。
+!!! note "座標は手動編集より設定コマンドを推奨"
+    `locations.spawn` / `locations.lobby` / `locations.field1` / `locations.field2` は `world` / `x` / `y` / `z` / `yaw` / `pitch` を持つ座標ブロックです。ゲーム内で `/tintiro setstartspawn` ・ `/tintiro setlobby` ・ `/tintiro setfield <1|2>` を実行すると、実行時の立ち位置が自動で書き込まれます。手動で編集する場合は tintiro.yml 内のコメントに記載された形式に従ってください。
 
 !!! tip "役の倍率は設定では変更できません"
     役の判定ロジックと配当倍率（役のランク差 × ベット額）は実装に組み込まれており、`tintiro.yml` で個別に変更する項目はありません。調整できるのは `shonben-probability-percent`（ションベン確率）のみです。
@@ -61,28 +62,36 @@
 **② 地点を設定** — OP権限を持った状態で、設定したい場所に立って以下を実行する。
 
 ```text title="ロビー地点（参加者の集合・ゲーム進行地点）を現在地に設定"
-/tintiro setup lobby
+/tintiro setlobby
 ```
 
 ```text title="離脱時の転送先を現在地に設定"
-/tintiro setup spawn
+/tintiro setstartspawn
 ```
 
-```text title="spawn / lobby の設定状況を確認"
-/tintiro setup status
+```text title="ゲームエリアの角1を現在地に設定"
+/tintiro setfield 1
+```
+
+```text title="ゲームエリアの角2を現在地に設定"
+/tintiro setfield 2
+```
+
+```text title="設定状況を確認"
+/tintiro status
 ```
 
 **③ 看板を設置** — プレイヤーが参加できるよう、後述の **チンチロ看板** を設置する。
 
 !!! warning "ロビー地点が未設定だと看板から参加できません"
-    `lobby` 地点が未設定の場合、`lobby` 看板を右クリックしても「ロビー地点が設定されていません」と表示され参加できません。モジュール起動時に座標が未設定だと、コンソールにも警告が出ます。必ず `/tintiro setup lobby` を実行してください。
+    `lobby` 地点が未設定の場合、`lobby` 看板を右クリックしても「ロビー地点が設定されていません」と表示され参加できません。モジュール起動時に座標が未設定だと、コンソールにも警告が出ます。必ず `/tintiro setlobby` を実行してください。
 
 ## チンチロ看板の設置
 
 看板を設置し、看板を見ながら（6ブロック以内）以下のコマンドを実行すると、テキストが自動で整形されます（実行には **OP権限が必要**）。
 
-```text title="参加看板"
-/tintiro setsign lobby
+```text title="参加看板（join / lobby どちらでも可）"
+/tintiro setsign join
 ```
 
 ```text title="退出看板"
@@ -93,24 +102,24 @@
 /tintiro setsign open
 ```
 
-```text title="ベット額看板（例: 100エメラルド）"
-/tintiro setsign bet 100
+```text title="掛け金変更GUI看板"
+/tintiro setsign bet
 ```
 
 ```text title="開始看板"
-/tintiro setstart
+/tintiro setsign start
 ```
 
 | 看板の種類 | 右クリック時の動作 |
 |---|---|
-| 参加看板（`lobby`） | チンチロロビーに参加し、ロビー地点へ転送 |
+| 参加看板（`join` / `lobby`） | チンチロロビーに参加し、ロビー地点へ転送 |
 | 退出看板（`leave`） | チンチロロビーから離脱し、スポーン地点へ転送 |
 | 振りGUI看板（`open`） | 自分の番にサイコロGUIを開く（`/tintiro open` 相当） |
-| ベット額看板（`bet <金額>`） | ロビー全員のベット額をその金額に設定 |
-| 開始看板（`setstart`） | ゲームを開始する（OP専用。クリックした人が親になる） |
+| 掛け金看板（`bet`） | クリックで掛け金変更GUIを開く |
+| 開始看板（`start`） | ゲームを開始する（OP専用。クリックした人が親になる） |
 
-!!! note "手書き設置もサポート"
-    看板の **1行目に `[チンチロ]`**、2行目に種類（`lobby` / `leave` / `open` / `start` / 金額）を記入して設置する方法も引き続き使えます（設置にはOP権限が必要）。
+!!! note "看板の自動整形について"
+    `setsign` は **視線先の看板（6ブロック以内）** を種別に応じて自動整形します。1行目は `[チンチロ]`、2〜4行目は種別ごとの説明・人数表示などに書き換わります。参加看板は `join` と `lobby` のどちらの種別名でも同じ参加看板になります。`bet` 看板は金額引数を取らず、クリックすると掛け金変更GUIが開きます（旧仕様の `setsign bet <金額>` ・ `setstart` は廃止）。
 
 !!! note "看板からの参加上限は6人"
     `lobby` 看板からの参加は最大6人までです（満員になると参加を断られます）。3行目・4行目は設置時に自動で説明文・参加人数表示に書き換わります。金額看板は末尾の `E` を付けても付けなくても認識されます。
@@ -153,14 +162,14 @@
 | `/tintiro start` | ゲームを開始する（実行者が親になる） |
 | `/tintiro open` | 自分の番にサイコロGUIを開く |
 | `/tintiro stop` | ゲームを強制終了する（全体にアナウンスされる） |
-| `/tintiro setup spawn` | 初期リスポーン地点を現在地に設定する |
-| `/tintiro setup lobby` | ロビー地点を現在地に設定する |
-| `/tintiro setup status` | spawn / lobby の設定状況を表示する |
-| `/tintiro setsign <lobby\|leave\|open\|bet> [金額]` | 視線先の看板をチンチロ看板として登録する（`bet` は金額必須） |
-| `/tintiro setstart` | 視線先の看板を開始看板として登録する |
+| `/tintiro setstartspawn` | 初期リスポーン地点を現在地に設定する |
+| `/tintiro setlobby` | ロビー地点を現在地に設定する |
+| `/tintiro setfield <1\|2>` | ゲームエリアの角1/角2を現在地に設定する |
+| `/tintiro status` | 地点の設定状況を表示する |
+| `/tintiro setsign <join\|leave\|open\|bet\|start>` | 視線先の看板をチンチロ看板として登録する（`bet` は掛け金変更GUI看板になり金額引数は不要） |
 
-!!! note "/tintiro setup はプレイヤー専用"
-    `setup` サブコマンドは立ち位置を座標として保存するため、コンソールからは実行できません（プレイヤーが実行する必要があります）。`stop` は進行中のゲームを強制終了し、全体に「○○ がゲームを強制終了しました」とアナウンスします。
+!!! note "地点設定コマンドはプレイヤー専用"
+    `setstartspawn` / `setlobby` / `setfield` は立ち位置を座標として保存するため、コンソールからは実行できません（プレイヤーが実行する必要があります）。`stop` は進行中のゲームを強制終了し、全体に「○○ がゲームを強制終了しました」とアナウンスします。
 
 ## 権限ノード
 
@@ -169,7 +178,7 @@
 | `tintiro.admin` | OP | `/tintiro` コマンド全般の実行権限 |
 
 !!! info "/tintiro コマンドは原則 OP 専用"
-    `/tintiro` 系のコマンド（`join` / `leave` / `bet` / `start` / `stop` / `setup` / `open`）はすべて `tintiro.admin` 権限（または OP）を必要とします。一般プレイヤーは `[チンチロ]` 看板（`lobby` / `leave` / 金額 / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
+    `/tintiro` 系のコマンド（`join` / `leave` / `bet` / `start` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `status` / `setsign`）はすべて OP（または `tintiro.admin` 権限）を必要とします。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
 
 ## トラブルシューティング
 
@@ -180,10 +189,10 @@
     tintiro は `bank` モジュール（EmeraldAPI）に依存します。`modules.bank.enabled` が true になっているか確認してください。bank が無効・未起動だと「EmeraldAPI not bound; bank module required before tintiro」で起動に失敗します。
 
 ??? failure "looby 看板を右クリックしても参加できない"
-    `lobby` 地点が未設定の可能性があります。OP権限で `/tintiro setup lobby` を実行し、`/tintiro setup status` で「設定済み」になっているか確認してください。また、ゲーム進行中や満員（6人）のときも参加できません。
+    `lobby` 地点が未設定の可能性があります。OP権限で `/tintiro setlobby` を実行し、`/tintiro status` で「設定済み」になっているか確認してください。また、ゲーム進行中や満員（6人）のときも参加できません。
 
 ??? failure "チンチロ看板が設置できない"
-    看板1行目に `[チンチロ]` と記入した看板の設置には **OP権限** が必要です。OPでないと「チンチロ看板を設置するにはOP権限が必要です」と表示され設置がキャンセルされます。2行目は `lobby` / `leave` / 金額 のいずれかを記入してください。
+    看板の設置（`/tintiro setsign`）には **OP権限** が必要です。視線先（6ブロック以内）に看板がある状態で `/tintiro setsign <join|leave|open|bet|start>` を実行してください。看板が見つからない場合は「看板を見ながら実行してください」と表示されます。
 
 ??? failure "ゲームが開始できない"
     `/tintiro start` には、親（コマンド実行者）以外に **最低1人の子** が必要です。また、各プレイヤーがベット額を設定し、**ベット額の最大支払額ぶんの残高** を持っている必要があります。残高不足のプレイヤーは自動でロビーから退出させられます。

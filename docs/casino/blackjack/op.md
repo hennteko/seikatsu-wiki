@@ -10,7 +10,7 @@
 |---|---|
 | モジュール ID | `blackjack` |
 | 親プラグイン | CasinoPlugin（`jp.casinoplugin.CasinoPlugin`） |
-| メインコマンド | `/blackjack <join\|leave\|bet\|start\|stop\|setup>` |
+| メインコマンド | `/blackjack <join\|leave\|bet\|start\|stop\|setstartspawn\|setlobby\|setfield\|setsign>` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/blackjack.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.blackjack.enabled` |
 | 依存モジュール | `bank`（エメラルド口座・共通通貨。必須） |
@@ -41,7 +41,7 @@
 
 ## blackjack.yml 設定項目
 
-`plugins/CasinoPlugin/modules/blackjack.yml` には **地点情報（spawn / lobby）** が保存されます。これらは手書きせず、後述の `/blackjack setup` コマンドで設定してください（コマンド実行で自動的に書き込まれます）。
+`plugins/CasinoPlugin/modules/blackjack.yml` には **地点情報（spawn / lobby / field1 / field2）** が保存されます。これらは手書きせず、後述の地点設定コマンドで設定してください（コマンド実行で自動的に書き込まれます）。
 
 | キー | 内容 |
 |---|---|
@@ -51,27 +51,41 @@
 | `locations.lobby.world` | lobby 地点のワールド名 |
 | `locations.lobby.x` / `y` / `z` | lobby 地点の座標 |
 | `locations.lobby.yaw` / `pitch` | lobby 地点の向き |
+| `locations.field1` / `field2` | ゲームエリアの対角2点（`/blackjack setfield <1\|2>` で設定） |
+| `bet_options` | （任意）掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1〜1,000,000）を使用 |
 
 | 地点 | 役割 |
 |---|---|
 | `spawn` | ロビー退出時・ゲーム中の途中離脱時のテレポート先 |
 | `lobby` | 看板でのロビー参加時、およびゲーム終了後のテレポート先 |
+| `field1` / `field2` | ゲームエリア（卓）の範囲を表す対角2点 |
 
 !!! note "地点はコマンドで設定します"
-    `blackjack.yml` の初期状態では `locations` の中身はコメントアウトされた空の状態です。`/blackjack setup spawn` / `/blackjack setup lobby` を実行すると、その地点が自動的にファイルへ書き込まれます。座標を手書きする必要はありません。賭け金・配当などの数値設定はモジュール側で固定で、`blackjack.yml` に項目はありません。
+    `blackjack.yml` の初期状態では `locations` の中身はコメントアウトされた空の状態です。`/blackjack setstartspawn` / `/blackjack setlobby` / `/blackjack setfield <1|2>` を実行すると、その地点が自動的にファイルへ書き込まれます。座標を手書きする必要はありません。賭け金・配当などの数値設定はモジュール側で固定で、`blackjack.yml` に項目はありません。
+
+!!! tip "掛け金GUIの金額を変えるには bet_options"
+    `bet` 看板をクリックすると共通の **掛け金変更GUI** が開きます。並べる金額を変えたい場合は `blackjack.yml` に `bet_options`（数値リスト）を追加してください。未設定なら既定の18段階（1 / 5 / 10 / 25 / 50 / 100 / 250 / 500 / 1000 / 2500 / 5000 / 10000 / 25000 / 50000 / 100000 / 250000 / 500000 / 1000000）が使われます。
 
 ## セットアップ手順
 
 **① モジュールを有効化** — 上記「有効化」の手順で `modules.blackjack.enabled: true` にする。
 
-**② spawn / lobby 地点を設定** — 設定したい場所に立って以下を実行する。
+**② spawn / lobby / field 地点を設定** — 設定したい場所に立って以下を実行する。
 
 ```text title="spawn 地点（退出・離脱時の戻り先）を現在地に設定"
-/blackjack setup spawn
+/blackjack setstartspawn
 ```
 
 ```text title="lobby 地点（参加者の集合場所）を現在地に設定"
-/blackjack setup lobby
+/blackjack setlobby
+```
+
+```text title="ゲームエリアの角1を現在地に設定"
+/blackjack setfield 1
+```
+
+```text title="ゲームエリアの角2を現在地に設定"
+/blackjack setfield 2
 ```
 
 **③ 看板を設置する** — 会場に参加用の看板を設置する（下記「看板の作り方」を参照）。
@@ -79,40 +93,40 @@
 **④ 動作確認** — `/blackjack join` でロビー参加、`/blackjack bet` でベット、`/blackjack start` で開始してテストする。
 
 !!! tip "地点設定はその場の座標が保存されます"
-    `/blackjack setup spawn` / `setup lobby` は、**コマンドを実行したプレイヤーの現在位置・向き** をそのまま地点として保存します。設定したい場所に正しい向きで立ってから実行してください。
+    `/blackjack setstartspawn` / `setlobby` / `setfield <1|2>` は、**コマンドを実行したプレイヤーの現在位置・向き** をそのまま地点として保存します。設定したい場所に正しい向きで立ってから実行してください。
 
 ### 看板の作り方
 
 看板を設置し、看板を見ながら（6ブロック以内）以下のコマンドを実行すると、自動で色付け・整形されます。看板の作成には OP 権限（または `blackjack.setup`）が必要です。
 
-```text title="参加看板"
-/blackjack setsign lobby
+```text title="参加看板（join / lobby どちらでも可）"
+/blackjack setsign join
 ```
 
 ```text title="退出看板"
 /blackjack setsign leave
 ```
 
-```text title="ベット看板（例: 100エメラルド）"
-/blackjack setsign bet 100
+```text title="掛け金変更GUI看板"
+/blackjack setsign bet
 ```
 
 ```text title="開始看板"
-/blackjack setstart
+/blackjack setsign start
 ```
 
 | 看板の種類 | はたらき |
 |---|---|
-| 参加看板（lobby） | クリックでロビー参加。lobby 地点へテレポート。人数表示（`0/6人`）が自動付与 |
+| 参加看板（join / lobby） | クリックでロビー参加。lobby 地点へテレポート。人数表示（`0/6人`）が自動付与 |
 | 退出看板（leave） | クリックでロビー退出。spawn 地点へテレポート |
-| ベット看板（bet） | クリックでロビー参加者全員のベット額を変更 |
-| 開始看板（setstart） | クリックでゲームを開始（OP専用） |
+| 掛け金看板（bet） | クリックで掛け金変更GUIを開き、ロビー参加者全員のベット額を変更 |
+| 開始看板（start） | クリックでゲームを開始（OP専用） |
 
-!!! note "手書き設置もサポート"
-    1行目に `[BlackJack]`、2行目に種類（`lobby` / `leave` / `bet`、bet は3行目に金額）を手書きして設置する方法も引き続き使えます。
+!!! note "bet 看板は掛け金変更GUIになりました"
+    `setsign bet` は金額引数を取りません。設置した `bet` 看板をクリックすると共通の **掛け金変更GUI**（金額一覧）が開き、選んだ金額がロビー全員のベット額になります（旧仕様の `setsign bet <金額>` ・ `setstart` は廃止）。GUI に並ぶ金額は `blackjack.yml` の `bet_options` で変更できます。
 
 !!! note "看板の挙動メモ"
-    参加看板（lobby）は4行目に現在の参加人数を表示し、人数が変わると自動更新されます。看板からの参加は **最大6人** で、満員時はクリックしても参加できません。ベット看板は3行目に数字（ベット額）を入力します。看板タグは大文字小文字を区別しません（`[BlackJack]`）。
+    参加看板（join / lobby）は4行目に現在の参加人数を表示し、人数が変わると自動更新されます。看板からの参加は **最大6人** で、満員時はクリックしても参加できません。看板タグは大文字小文字を区別しません（`[BlackJack]`）。
 
 ## ゲーム運営コマンド
 
@@ -142,13 +156,13 @@
 |---|---|---|
 | `/blackjack start` | OP または `blackjack.start` | 待機中のゲームを開始する。ロビーに1人以上必要 |
 | `/blackjack stop` | OP または `blackjack.stop` | 進行中のゲームを強制終了する |
-| `/blackjack setup spawn` | OP または `blackjack.setup` | 現在地を spawn 地点に設定する |
-| `/blackjack setup lobby` | OP または `blackjack.setup` | 現在地を lobby 地点に設定する |
+| `/blackjack setstartspawn` | OP または `blackjack.setup` | 現在地を spawn 地点に設定する |
+| `/blackjack setlobby` | OP または `blackjack.setup` | 現在地を lobby 地点に設定する |
+| `/blackjack setfield <1\|2>` | OP または `blackjack.setup` | ゲームエリアの角1/角2を現在地に設定する |
 | `/blackjack join [プレイヤー名]` | OP（`blackjack.start`/`stop`/`setup` のいずれか） | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
 | `/blackjack leave [プレイヤー名]` | OP（同上） | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
 | `/blackjack bet <金額>` | OP（同上） | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
-| `/blackjack setsign <lobby\|leave\|bet> [金額]` | OP | 視線先の看板を指定種別の看板として登録する |
-| `/blackjack setstart` | OP | 視線先の看板を開始看板として登録する |
+| `/blackjack setsign <join\|leave\|bet\|start>` | OP | 視線先の看板を指定種別の看板として登録する（`bet` は掛け金変更GUI看板、金額引数なし） |
 
 !!! note "ゲーム開始時の挙動"
     `/blackjack start` を実行すると、ロビー参加者ごとに「ベット額が設定されているか」「口座残高が足りているか」を確認します。未設定・残高不足のプレイヤーは自動的にロビーから外され、有効な参加者の賭け金がポット（サーバー口座）へ集められてゲームが始まります。有効な参加者が0人の場合はゲームが中止されます。
@@ -164,7 +178,7 @@
 | `blackjack.setup` | op | ブラックジャックの地点設定・看板作成を行う |
 
 !!! note "/blackjack は原則 OP 専用"
-    `/blackjack` 系のサブコマンド（`join` / `leave` / `bet` / `start` / `stop` / `setup`）は、すべて `blackjack.start` / `blackjack.stop` / `blackjack.setup` のいずれか、もしくは OP 権限を持っていないと実行できません。プレイヤーは `[BlackJack]` 看板（`lobby` / `leave` / `bet`）を経由して参加・退出・ベットを行います。
+    `/blackjack` 系のサブコマンド（`join` / `leave` / `bet` / `start` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `setsign`）は、すべて `blackjack.start` / `blackjack.stop` / `blackjack.setup` のいずれか、もしくは OP 権限を持っていないと実行できません。プレイヤーは `[BlackJack]` 看板（`join` / `leave` / `bet`）を経由して参加・退出・ベットを行います。
 
 ## トラブルシューティング
 
@@ -175,7 +189,7 @@
     blackjack は `bank` モジュール（エメラルド口座）に依存します。`modules.bank.enabled` が `true` になっているか確認してください。bank が無効だと blackjack の起動は失敗します。
 
 ??? failure "看板を設置しても自動整形されない / 「権限がありません」と出る"
-    看板の作成には OP 権限または `blackjack.setup` が必要です。また、1行目は `[BlackJack]`、2行目は `lobby` / `leave` / `bet` のいずれかを正しく入力してください。bet 看板は3行目に有効な数字（正の整数）が必要です。
+    看板の作成には OP 権限または `blackjack.setup` が必要です。視線先（6ブロック以内）に看板がある状態で `/blackjack setsign <join|leave|bet|start>` を実行してください。`bet` 看板は金額引数を取らず、クリックすると掛け金変更GUIが開きます。
 
 ??? failure "看板や `/blackjack join` でロビーに参加できない"
     ゲームが進行中（IN_GAME）の場合、ロビーへの新規参加はできません。`/blackjack stop` で現在のゲームを終了させてから参加してください。また、看板参加は最大6人で、満員時は参加できません。
@@ -184,7 +198,7 @@
     ロビーに有効な参加者が1人以上必要です。各参加者は **ベット額が設定済み** かつ **口座残高がベット額以上** である必要があります。条件を満たさないプレイヤーは開始時に自動でロビーから外され、全員外れるとゲームは中止されます。
 
 ??? failure "退出・終了時にプレイヤーがテレポートされない"
-    spawn 地点 / lobby 地点が未設定の可能性があります。`/blackjack setup spawn` と `/blackjack setup lobby` で両方を設定してください。地点が未設定の場合はテレポートがスキップされます（ログ・チャットに通知されます）。
+    spawn 地点 / lobby 地点が未設定の可能性があります。`/blackjack setstartspawn` と `/blackjack setlobby` で両方を設定してください。地点が未設定の場合はテレポートがスキップされます（ログ・チャットに通知されます）。
 
 ??? failure "賭け金や配当が口座に反映されない"
     賭け金処理は `bank` モジュールの `EmeraldAPI` を経由します。`bank` モジュールが有効か確認してください。賭け金はゲーム開始時にサーバー口座へ集められ、終了時に勝者へ支払われます（端数はサーバー側に残ります）。

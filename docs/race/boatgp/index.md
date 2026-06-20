@@ -4,7 +4,7 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🏁 レース・タイムアタック</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">最大12人 (最少2人)</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">最大12人 (最少1〜2人・設定依存)</span></div>
   <div class="quick-card"><span class="label">1レースの長さ</span><span class="value">既定3周 (1周30〜60秒目安)</span></div>
   <div class="quick-card"><span class="label">アイテム</span><span class="value">6種 (こうら・バナナ・スター等)</span></div>
 </div>
