@@ -29,8 +29,11 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 ```text title="出走受付看板（次のレースへ出走登録）"
 /emhorse setsign entry
 ```
+```text title="看板の設定を解除"
+/emhorse setsign remove
+```
 
-看板1行目に `[馬ショップ]` / `[厩舎]` / `[出走受付]` と手書きしても、権限者のみ設置できます。
+看板1行目に `[馬ショップ]` / `[厩舎]` / `[出走受付]` と手書きしても、権限者のみ設置できます。`/emhorse setsign remove` で視線先の看板設定を解除できます。
 
 ## 管理コマンド
 
@@ -38,7 +41,7 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 | コマンド | 説明 |
 |---|---|
-| `/emhorse setsign <shop\|stable\|entry>` | 視線先の看板を各種看板に設定する |
+| `/emhorse setsign <shop\|stable\|entry\|remove>` | 視線先の看板を各種看板に設定/解除する |
 | `/emhorse givefoal <player> [bronze\|silver\|gold] [個数]` | 子馬券を付与（既定 bronze・1個） |
 | `/emhorse givewhistle <player>` | 呼び笛を付与 |
 | `/emhorse givefeed <player> <feedId> [個数]` | エサを付与（feedId: hay / carrot / goldcarrot / sugar / apple / goldapple） |

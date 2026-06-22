@@ -12,7 +12,7 @@
 | 所属プラグイン | CasinoPlugin（`jp.casinoplugin.CasinoPlugin`） |
 | メインコマンド | `/quiz`（エイリアス `/q`）、`/qd`、`/qt`、`/quiznpc`、`/quizsign` |
 | モジュール設定ファイル | `plugins/CasinoPlugin/modules/quiz.yml` |
-| データファイル | `plugins/CasinoPlugin/quiz/`（`questions.yml` / `players.yml` / `signs.yml`） |
+| データファイル | `plugins/CasinoPlugin/quiz/`（`questions.yml` / `players.yml` / `signs.yml` / `questions/` フォルダ） |
 | softdepend（任意連携） | Citizens（NPC 機能に必要） |
 | 依存モジュール | `bank`（報酬・参加費にエメラルド口座を使用。必須） |
 
@@ -62,10 +62,22 @@ modules:
 | `tower.total_floors` | `100` | タワーの総階数 |
 | `tower.entry_cost` | `100` | 参加費（エメラルド） |
 | `tower.max_failures` | `10` | この回数失敗するとゲームオーバー |
+| `tower.answer_time_seconds` | `30` | 1問あたりの回答制限時間（秒）。`0` 以下で無制限 |
 | `tower.checkpoint_rewards.<階>` | 100階のみ `emeralds: 1000` | 10階ごとのチェックポイント報酬（`emeralds` / `command` / `message`） |
 | `tower.retreat_reward_enabled` | `true` | チェックポイントでの撤退報酬を有効にするか |
 
 撤退報酬は固定値ではなく **`entry_cost × 到達階 ÷ 10`** で計算されます。チェックポイント報酬の `command` を指定すると、`{player}` をプレイヤー名に置換してコンソールから実行されます（カスタムアイテム配布などに利用可能）。
+
+!!! warning "回答制限時間のキーに注意"
+    タワーの回答制限時間は **`tower.answer_time_seconds`**（既定30秒）で制御されます。同梱の `quiz.yml` に書かれている `tower.time_limit_per_question` は **現在のコードでは参照されていません**（旧仕様の名残）。時間を変えたい場合は `tower.answer_time_seconds` を追記してください（キーが無い場合は既定30秒で動作します）。
+
+### 練習モード（`practice`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `practice.questions_per_round` | `10` | 練習モードで1回に出題する問題数 |
+
+練習モードは参加費・報酬がなく、選択した難易度（easy / medium / hard / expert）から `questions_per_round` 問を出題します。回答数・正解数はランキングに合算されます。このキーは同梱 `quiz.yml` には記載されていないため、変更したい場合は追記してください（未記載なら既定10問）。
 
 ### ランキング（`rankings`）
 
@@ -103,7 +115,7 @@ questions:
       - "岩盤"
       - "エンダーチェスト"
     correct: 2          # 0=A, 1=B, 2=C, 3=D（正解の選択肢のインデックス）
-    difficulty: "easy"  # easy / medium / hard
+    difficulty: "easy"  # easy / medium / hard / expert
     category: "minecraft"
 ```
 
@@ -112,14 +124,73 @@ questions:
 | `text` | 問題文 |
 | `choices` | 選択肢。**ちょうど4つ** 必要（A〜D に対応） |
 | `correct` | 正解の番号。`0`〜`3`（A〜D） |
-| `difficulty` | 難易度。`easy` / `medium` / `hard` |
+| `difficulty` | 難易度。`easy` / `medium` / `hard` / `expert` の4段階 |
 | `category` | カテゴリ（現状は内部分類用） |
+
+!!! tip "questions/ フォルダで追加するのが簡単（リスト形式対応）"
+    `questions.yml` のマップ形式（ID 指定）のほか、`plugins/CasinoPlugin/quiz/questions/` フォルダ内の `.yml` ファイルも自動で読み込まれます。初回起動時にサンプル `quiz/questions/sample.yml` が展開されます。このフォルダ内のファイルは **ID 不要のリスト形式** でも記述でき（自動採番）、まとめて問題を追加する用途に向いています。マップ形式・リスト形式の両方に対応しています。
+
+    ```yaml
+    # quiz/questions/ 内のファイル（リスト形式の例）
+    questions:
+      - text: "問題文"
+        choices: ["A", "B", "C", "D"]
+        correct: 0
+        difficulty: "expert"
+        category: "general"
+    ```
 
 !!! warning "問題フォーマットの注意"
     選択肢が4つでない、または `correct` が 0〜3 の範囲外の問題は、読み込み時に無視されます（起動ログに警告が出ます）。問題が1問も読み込めないとクイズモジュールは停止します。
 
 !!! tip "難易度と階の対応"
-    クイズタワーは階に応じて難易度を選びます（1〜30階＝easy、31〜60階＝easy+medium、61〜90階＝medium+hard、91〜100階＝hard）。デイリークイズは easy 問題から出題されます。各難易度の問題をバランスよく用意してください。
+    クイズタワーは階に応じて難易度を選びます（1〜30階＝easy、31〜60階＝easy+medium、61〜90階＝medium+hard、91〜100階＝hard）。デイリークイズは easy 問題から出題されます。`expert` 難易度はタワーでは使われず、**練習モードの「最難関」専用** です。各難易度の問題をバランスよく用意してください。
+
+## 参加看板・タワーロビーの設置
+
+プレイヤーがコマンドを使わずにクイズを始められるよう、**参加看板** を設置できます。看板は OP（または `quiz.admin`）のみ設置でき、1行目を `[Quiz]` にして手書きすると自動整形されます。`/quiz setsign` を使うと、見ている看板（6ブロック以内）に自動で内容を書き込めます。
+
+```text title="見ている看板をデイリークイズ看板にする"
+/quiz setsign daily
+```
+
+```text title="見ている看板を練習モード看板にする（難易度選択GUIを開く）"
+/quiz setsign practice
+```
+
+```text title="見ている看板をタワーロビー移動看板にする"
+/quiz setsign tower
+```
+
+```text title="見ている看板をレンジ看板にする（レンジ: 1-30 / 31-60 / 61-90 / 91-100）"
+/quiz setsign range <レンジ>
+```
+
+```text title="見ている看板の設定を解除する"
+/quiz setsign remove
+```
+
+| 看板タイプ | 右クリック時の動作 |
+|---|---|
+| `daily` | デイリークイズを開始 |
+| `practice` | 練習モードの難易度選択 GUI を開く |
+| `tower` | タワーロビーへテレポート |
+| `1-30` / `31-60` / `61-90` / `91-100` | 該当レンジの物理エリアへテレポートしてタワーを開始/再開（自分の現在階がそのレンジに入っているときのみ） |
+
+### タワーのロビー・レンジエリアの設定
+
+クイズタワーは 30階ごとのレンジ（1-30 / 31-60 / 61-90 / 91-100）に分かれ、レンジ境界（31・61・91階）でいったん区切られます。レンジごとに物理スポーン地点を設定すると、看板を通じてプレイヤーを各エリアへ誘導できます。
+
+```text title="現在地をタワーロビー地点に設定する"
+/quiz settowerlobby
+```
+
+```text title="現在地を指定レンジのスポーン地点に設定する（レンジ: 1-30 / 31-60 / 61-90 / 91-100）"
+/quiz setrange <レンジ>
+```
+
+!!! note "看板・ロビーは任意設定"
+    ロビーやレンジ看板を設置しなくても、`/qt`・`/qd`・NPC からクイズを開始できます。物理エリアを使った演出を行いたい場合のみ、`settowerlobby` と各レンジの `setrange`、`[Quiz] tower`・レンジ看板を組み合わせて設置してください。レンジスポーンが未設定の場合はテレポートを行わず、GUI のみ開きます。
 
 ## NPC・ランキング看板の設置
 
@@ -190,6 +261,9 @@ NPC の **タイプ** は3種類です。
 |---|---|---|
 | `/quiz admin reload` | `quiz.admin.reload` | `quiz.yml` と `questions.yml` を再読み込み |
 | `/quiz admin stats` | `quiz.admin.reload` | 登録プレイヤー数・総問題数を表示 |
+| `/quiz setsign <daily\|practice\|tower\|range <レンジ>\|remove>` | OP または `quiz.admin` | 参加看板の設置・解除 |
+| `/quiz settowerlobby` | OP または `quiz.admin` | 現在地をタワーロビー地点に設定 |
+| `/quiz setrange <レンジ>` | OP または `quiz.admin` | 現在地を指定レンジのスポーン地点に設定 |
 | `/quiznpc <create\|remove\|settype>` | `quiz.admin.npc` | クイズ NPC の管理（Citizens 必須） |
 | `/quizsign <create\|remove\|update\|list>` | `quiz.admin.sign` | ランキング看板の管理 |
 

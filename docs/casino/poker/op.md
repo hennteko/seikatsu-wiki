@@ -182,7 +182,7 @@ modules:
 | `/poker leave [プレイヤー名]` | `poker.admin.control` または OP | プレイヤーを待機リスト／ゲームから離脱させる |
 | `/poker debug hand <カード7枚>` | `poker.admin.debug` | 7枚のカードで役判定をテスト（例: `SA SK SQ SJ ST H2 D3`） |
 
-!!! note "start / stop はコンソールからも実行可能"
+!!! note "start / stop はコマンドブロックからも実行可能"
     `/poker start` と `/poker stop` は、コマンドブロックからも実行できます（コマンドブロック実行時は権限チェックが省略されます）。プレイヤー・コンソールから実行する場合は `poker.admin.control` 権限が必要です。`/poker bet` はゲーム進行中は実行できません。
 
 ## 権限ノード
@@ -192,7 +192,7 @@ modules:
 | 権限 | 既定 | 用途 |
 |---|---|---|
 | `poker.admin` | OP | ポーカー管理コマンドの全権限（下記3つを子に持つ） |
-| `poker.admin.setup` | OP | セットアップ系コマンド（setup / sign / bet / raisemoney） |
+| `poker.admin.setup` | OP | セットアップ系コマンド（setlobby / setstartspawn / setfield / setsign / bet / raisemoney） |
 | `poker.admin.control` | OP | ゲーム制御系コマンド（start / stop） |
 | `poker.admin.debug` | OP | デバッグ系コマンド（debug hand） |
 

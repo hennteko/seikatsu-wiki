@@ -110,6 +110,10 @@
 /tintiro setsign start
 ```
 
+```text title="看板の設定を解除"
+/tintiro setsign remove
+```
+
 | 看板の種類 | 右クリック時の動作 |
 |---|---|
 | 参加看板（`join` / `lobby`） | チンチロロビーに参加し、ロビー地点へ転送 |
@@ -166,7 +170,7 @@
 | `/tintiro setlobby` | ロビー地点を現在地に設定する |
 | `/tintiro setfield <1\|2>` | ゲームエリアの角1/角2を現在地に設定する |
 | `/tintiro status` | 地点の設定状況を表示する |
-| `/tintiro setsign <join\|leave\|open\|bet\|start>` | 視線先の看板をチンチロ看板として登録する（`bet` は掛け金変更GUI看板になり金額引数は不要） |
+| `/tintiro setsign <join\|leave\|open\|bet\|start\|remove>` | 視線先の看板をチンチロ看板として登録/解除する（`bet` は掛け金変更GUI看板になり金額引数は不要） |
 
 !!! note "地点設定コマンドはプレイヤー専用"
     `setstartspawn` / `setlobby` / `setfield` は立ち位置を座標として保存するため、コンソールからは実行できません（プレイヤーが実行する必要があります）。`stop` は進行中のゲームを強制終了し、全体に「○○ がゲームを強制終了しました」とアナウンスします。
@@ -175,10 +179,10 @@
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `tintiro.admin` | OP | `/tintiro` コマンド全般の実行権限 |
+| `tintiro.admin` | OP | plugin.yml に定義される管理権限ノード |
 
-!!! info "/tintiro コマンドは原則 OP 専用"
-    `/tintiro` 系のコマンド（`join` / `leave` / `bet` / `start` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `status` / `setsign`）はすべて OP（または `tintiro.admin` 権限）を必要とします。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
+!!! info "/tintiro コマンドは OP 専用（判定は OP かどうか）"
+    `/tintiro` 系のコマンド（`join` / `leave` / `bet` / `start` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `status` / `setsign`）は **OP（またはコマンドブロック）のみ** 実行できます。判定は実際には「OP かどうか」で行われるため、`tintiro.admin` 権限を非 OP プレイヤーに付与してもコマンドは実行できません。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
 
 ## トラブルシューティング
 

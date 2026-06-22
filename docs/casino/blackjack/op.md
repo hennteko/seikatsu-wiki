@@ -115,6 +115,10 @@
 /blackjack setsign start
 ```
 
+```text title="看板の設定を解除"
+/blackjack setsign remove
+```
+
 | 看板の種類 | はたらき |
 |---|---|
 | 参加看板（join / lobby） | クリックでロビー参加。lobby 地点へテレポート。人数表示（`0/6人`）が自動付与 |
@@ -162,7 +166,7 @@
 | `/blackjack join [プレイヤー名]` | OP（`blackjack.start`/`stop`/`setup` のいずれか） | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
 | `/blackjack leave [プレイヤー名]` | OP（同上） | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
 | `/blackjack bet <金額>` | OP（同上） | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
-| `/blackjack setsign <join\|leave\|bet\|start>` | OP | 視線先の看板を指定種別の看板として登録する（`bet` は掛け金変更GUI看板、金額引数なし） |
+| `/blackjack setsign <join\|leave\|bet\|start\|remove>` | OP | 視線先の看板を指定種別の看板として登録/解除する（`bet` は掛け金変更GUI看板、金額引数なし） |
 
 !!! note "ゲーム開始時の挙動"
     `/blackjack start` を実行すると、ロビー参加者ごとに「ベット額が設定されているか」「口座残高が足りているか」を確認します。未設定・残高不足のプレイヤーは自動的にロビーから外され、有効な参加者の賭け金がポット（サーバー口座）へ集められてゲームが始まります。有効な参加者が0人の場合はゲームが中止されます。

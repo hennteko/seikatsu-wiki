@@ -27,7 +27,16 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 5. 設定を変更したら `/race reload` で再読み込みする。
 
 !!! warning "既存サーバーを更新する場合の注意（messages.yml）"
-    `messages.yml` は **既存ファイルがあると新しいメッセージキーが自動追記されません**。アップデートで `sign:`（看板。`join-created` / `leave-created` / `start-created` / `info-created` / `look-at-sign` / `no-circuit` / `invalid-type`）・`admin.startspawn-set` / `finish-a-set` / `checkpoint-a-set`・`lobby.rejoin` / `lobby.waiting-next`（連続プレイ）・`show:`（チェックポイント表示）・`admin.checkpoint-deleted` / `finish-deleted` / `checkpoints-cleared` / `spawn-deleted` / `spawn-cleared`（削除系）が追加されています。特に **情報看板を使う場合は `sign.info-created` / `sign.invalid-type` が必須** です。これらが空欄表示になる場合は、既存の `messages.yml` を一度退避してサーバー再起動で再生成するか、不足キーを追記してください。`config.yml`・`items.yml`・`surfaces.yml` の項目は今回変更ありません。
+    `messages.yml` は **既存ファイルがあると新しいメッセージキーが自動追記されません**。アップデートで `sign:`（看板。`join-created` / `leave-created` / `start-created` / `info-created` / `look-at-sign` / `no-circuit` / `invalid-type`）・`admin.startspawn-set` / `finish-a-set` / `checkpoint-a-set`・`lobby.rejoin` / `lobby.waiting-next`（連続プレイ）・`show:`（チェックポイント表示）・`admin.checkpoint-deleted` / `finish-deleted` / `checkpoints-cleared` / `spawn-deleted` / `spawn-cleared`（削除系）が追加されています。特に **情報看板を使う場合は `sign.info-created` / `sign.invalid-type` が必須** です。これらが空欄表示になる場合は、既存の `messages.yml` を一度退避してサーバー再起動で再生成するか、不足キーを追記してください。`items.yml`・`surfaces.yml` の項目は今回変更ありません。
+
+!!! info "config.yml に新キーが追加されました（入力ベース操舵）"
+    今回 `config.yml` の `kart` セクションに **`input-steering`（既定 `true`）** と **`turn-rate`（既定 `4.5`）** が追加されました。`config.yml` は **既存ファイルがあると新キーが自動追記されません**。ただしプラグイン内部の既定値も `input-steering=true` / `turn-rate=4.5` のため、**キーが無くても入力ベース操舵で動作します**。挙動を調整したい場合や従来のネイティブ操舵に戻したい場合は、既存の `config.yml` に手動で追記してください（記述例は下記）。
+
+    ```text title="config.yml の kart セクションへ追記する例"
+    kart:
+      input-steering: true
+      turn-rate: 4.5
+    ```
 
 !!! tip "サーバー実装について"
     エンティティ（ボート）を多用するミニゲームのため、設計上は **Paper の採用が推奨** されています。Spigot でも動作しますが、イベント処理・最適化の面で Paper が有利です。
@@ -56,7 +65,9 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `kart.stuck-ticks` | 60 | スタックと判定するまでの継続tick数 |
 | `kart.off-track-reset` | true | コース外・危険路面・落下・スタック時にチェックポイントへ復帰させるか |
 | `kart.void-y` | 0 | このY座標を下回ったら落下とみなし復帰 |
-| `kart.corner-speed` | 0.72 | 操舵中（パドル左右入力中）の速度倍率。小さいほどコーナーで減速して曲がりが詰まる（推奨 0.6〜0.85） |
+| `kart.corner-speed` | 0.72 | 操舵中（左右入力中）の速度倍率。小さいほどコーナーで減速して曲がりが詰まる（推奨 0.6〜0.85） |
+| `kart.input-steering` | true | **入力ベース操舵**を有効にするか。`true` でプレイヤーの左右移動キー（A/D）で旋回し、Java版・統合版（Geyser）で操作が統一される。`false` で従来のネイティブ操舵（プレイヤーがボートを直接運転）に戻る |
+| `kart.turn-rate` | 4.5 | 入力操舵時の旋回速度（度/tick）。大きいほどキビキビ曲がる（推奨 3.0〜6.0）。`input-steering: false` のときは無効 |
 
 ### ワールド・HUD・報酬
 
@@ -113,7 +124,8 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `effects.spinout-ticks` | 32 | 命中時のスピンアウト継続tick |
 | `effects.hit-radius` | 2.2 | 弾・トラップ・体当たりの命中半径 |
 
-!!! note "アイテムの操作仕様"
+!!! note "操舵・アイテムの操作仕様"
+    ステアリングは **入力ベース操舵**（`Player#getCurrentInput()` の左右入力を毎tick読み取り、サーバー側でボートを `setRotation` で旋回）で実装されています。これにより Java版・統合版（Geyser）で同一の挙動になります。`config.yml` の `kart.input-steering` を `false` にすると、従来のネイティブ操舵（プレイヤーがボートを直接運転し、ボートの向きで進む）に戻せます。
     アイテムの発動は **降車操作（`VehicleExitEvent`）の再利用** で実装されています。レース中の降車ボタン押下＝所持アイテムの発動、カウントダウン中の降車ボタン押下＝ロケットスタート判定になります。Java版・統合版の双方で同じ操作になるよう設計されています。
 
 ### 路面定義（`surfaces.yml`）
@@ -318,7 +330,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 
 ## 実装状況（Phase 2）
 
-実装済みは **Phase 2（アイテムバトル）** までです。具体的には「カート物理（オート加速・路面システム）／**ライン（A→B 2点）方式のチェックポイント・ラップ判定**／**チェックポイントのパーティクル可視化（レース中は自動・OPは `/race show` でプレビュー）**／順位計算・サイドバーHUD／スタート演出（3-2-1-GO）／コース外・スタック復帰／順位連動の簡易報酬／サーキット作成・**削除**コマンド（フラット化・**自動保存**）／**看板での参加・離脱・開始**／**初期スポーン（離脱時の戻り先）**／**レース終了後の自動ロビー帰還・連続プレイ**／アイテムシステム6種・アイテムボックス・ラバーバンド抽選・ボスバー表示・ロケットスタート」が動作します。
+実装済みは **Phase 2（アイテムバトル）** までです。具体的には「カート物理（オート加速・路面システム）／**入力ベース操舵（左右移動キー A/D・Java/統合版で統一、`kart.input-steering`/`turn-rate` で調整）**／**ライン（A→B 2点）方式のチェックポイント・ラップ判定**／**チェックポイントのパーティクル可視化（レース中は自動・OPは `/race show` でプレビュー）**／順位計算・サイドバーHUD／スタート演出（3-2-1-GO）／コース外・スタック復帰／順位連動の簡易報酬／サーキット作成・**削除**コマンド（フラット化・**自動保存**）／**看板での参加・離脱・開始**／**初期スポーン（離脱時の戻り先）**／**レース終了後の自動ロビー帰還・連続プレイ**／アイテムシステム6種・アイテムボックス・ラバーバンド抽選・ボスバー表示・ロケットスタート」が動作します。
 
 !!! danger "未実装の主要機能（Phase 3 以降予定）"
     以下は **未実装** です。本番イベントでの利用前に必ず把握してください。
