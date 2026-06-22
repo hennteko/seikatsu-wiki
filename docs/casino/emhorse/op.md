@@ -12,6 +12,7 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 | メインコマンド | `/emhorse`（OP / `emhorse.admin`） |
 | 前提モジュール | `bank`（必須・EmeraldAPI）、`horse`（出走連携） |
 | 設定ファイル | `modules/emhorse.yml`（数値設定）、`emhorse_data.yml`（馬データ・自動保存） |
+| 所有頭数 | 1人最大 `max_horses` 頭（既定5。複数頭所有・厩舎で選択中を切り替え） |
 
 !!! info "モジュールの有効化"
     `emhorse` は CasinoPlugin の `config.yml` の `modules.emhorse.enabled` で ON/OFF します。**`modules` に項目が無い場合は既定で有効** として起動します。無効化したいときのみ `modules.emhorse.enabled: false` を手動追記してください。
@@ -45,15 +46,15 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 | `/emhorse givefoal <player> [bronze\|silver\|gold] [個数]` | 子馬券を付与（既定 bronze・1個） |
 | `/emhorse givewhistle <player>` | 呼び笛を付与 |
 | `/emhorse givefeed <player> <feedId> [個数]` | エサを付与（feedId: hay / carrot / goldcarrot / sugar / apple / goldapple） |
-| `/emhorse give <player> [grade]` | 全素質一律グレード（既定C）の馬を直接付与＋呼び笛 |
-| `/emhorse setcondition <player> <値>` | 体調を直接設定（0〜100） |
-| `/emhorse setrating <player> <値>` | レーティングを直接設定 |
-| `/emhorse setlevel <player> <stat> <Lv>` | 指定ステータス（SPEED/ACCEL/STAMINA/BURST/GUTS）のレベルを設定 |
+| `/emhorse give <player> [grade]` | 全素質一律グレード（既定C）の馬を **1頭追加** 付与し、追加した馬を選択中にする（最初の1頭目のみ呼び笛も付与） |
+| `/emhorse setcondition <player> <値>` | 選択中の馬の体調を直接設定（0〜100） |
+| `/emhorse setrating <player> <値>` | 選択中の馬のレーティングを直接設定 |
+| `/emhorse setlevel <player> <stat> <Lv>` | 選択中の馬の指定ステータス（SPEED/ACCEL/STAMINA/BURST/GUTS）のレベルを設定 |
 | `/emhorse reload` | `modules/emhorse.yml` を再読み込み |
-| `/emhorse status [player]` | 馬の状態を確認（自分対象なら厩舎GUI、他者ならテキスト） |
+| `/emhorse status [player]` | 馬の状態を確認（自分対象なら厩舎GUI、他者なら選択中の馬をテキスト表示） |
 
-!!! warning "`/emhorse give` は既存の馬を上書きします"
-    `give` は対象がすでに愛馬を持っていても確認なく置き換えます。プレイヤーの育成済みの馬が消えるため、運用時は注意してください。
+!!! warning "`/emhorse give` は所有上限を無視して追加します"
+    `give` は対象がすでに馬を持っていても **上書きせず新しい1頭を追加** し、その馬を選択中にします。`max_horses`（既定5）を超えても付与できるため、配りすぎに注意してください。`setcondition` / `setrating` / `setlevel` はいずれも **選択中の馬** に作用します。
 
 ## 権限ノード
 
@@ -67,6 +68,7 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 | キー | 既定値 | 説明 |
 |---|---|---|
+| `max_horses` | 5 | 1人が所有できる馬の最大数（子馬券の引き換え上限） |
 | `train.levels_per_grade` | 5 | グレード1段あたりの育成レベル上限（S＝rank8なら×5でLv40） |
 | `train.base_exp` | 100 | レベルアップ必要経験値の基準（Lv N→N+1 は `base_exp×(N+1)`） |
 | `mount.base_speed` / `speed_per_level` / `speed_cap` | 0.20 / 0.0015 / 0.32 | 騎乗速度（速度Lvで上昇・上限あり） |
@@ -90,8 +92,9 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 ## 注意・既知の制限
 
 !!! note "実装状況・留意点"
-    - 馬は永続データ（`emhorse_data.yml`）で管理され、召喚馬が消えても育成内容は失われません。
-    - **脚質（逃げ／先行／差し／追込）と天候は現状フレーバー** で、レースの計算にはほぼ反映されません（専門化と馬場適性は反映）。
+    - 馬は永続データ（`emhorse_data.yml`）で管理され、召喚馬が消えても育成内容は失われません。**複数頭所有に対応**し、所有者ごとに「馬の一覧」と「選択中の馬」を保存します。旧フォーマット（1人1頭）のデータは初回ロード時に自動で新フォーマットへ移行されます。
+    - 召喚・給餌・出走・各種変更はつねに **選択中の馬** が対象です。同時に召喚できる馬は1体まで。
+    - **脚質（逃げ／先行／差し／追込）と天候は現状フレーバー** で、レースの計算にはほぼ反映されません（専門化＝距離適性と馬場適性は反映）。
     - 出走登録は最大 `race.max_entries`（既定4）まで。超過分は先着順で、落選通知はありません。
     - 競馬（horse）モジュールが無効なときは通常の自動生成馬レースにフォールバックします。
     - 子馬券・エサ・呼び笛は PDC タグ付きアイテムで、外部の取引・露店プラグインで売買・流通させる運用も可能です。
