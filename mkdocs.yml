@@ -65,19 +65,11 @@ markdown_extensions:
 
 nav:
   - ホーム: index.md
-  - 対戦・アクションミニゲーム:
+  - 01 対戦・アクションゲーム（チーム戦）:
       - MinecraftMOBA:
           - minigames/minecraft-moba/index.md
           - 👤 プレイヤー向け: minigames/minecraft-moba/player.md
           - 🛠️ OP・運営向け: minigames/minecraft-moba/op.md
-      - 1vs1:
-          - minigames/1vs1/index.md
-          - 👤 プレイヤー向け: minigames/1vs1/player.md
-          - 🛠️ OP・運営向け: minigames/1vs1/op.md
-      - Tntran（TNT Run）:
-          - minigames/tntran/index.md
-          - 👤 プレイヤー向け: minigames/tntran/player.md
-          - 🛠️ OP・運営向け: minigames/tntran/op.md
       - SplatoonPlugin（スプラトゥーン）:
           - minigames/splatoon/index.md
           - 👤 プレイヤー向け: minigames/splatoon/player.md
@@ -90,22 +82,10 @@ nav:
           - minigames/aooni/index.md
           - 👤 プレイヤー向け: minigames/aooni/player.md
           - 🛠️ OP・運営向け: minigames/aooni/op.md
-      - Bomberman（ボンバーマン）:
-          - minigames/bomberman/index.md
-          - 👤 プレイヤー向け: minigames/bomberman/player.md
-          - 🛠️ OP・運営向け: minigames/bomberman/op.md
       - Kakurenbo（かくれんぼ）:
           - minigames/kakurenbo/index.md
           - 👤 プレイヤー向け: minigames/kakurenbo/player.md
           - 🛠️ OP・運営向け: minigames/kakurenbo/op.md
-      - Battleroyale（バトルロイヤル）:
-          - minigames/battleroyale/index.md
-          - 👤 プレイヤー向け: minigames/battleroyale/player.md
-          - 🛠️ OP・運営向け: minigames/battleroyale/op.md
-      - Zinro（人狼）:
-          - minigames/zinro/index.md
-          - 👤 プレイヤー向け: minigames/zinro/player.md
-          - 🛠️ OP・運営向け: minigames/zinro/op.md
       - Zankipvp（残機制PvP）:
           - minigames/zankipvp/index.md
           - 👤 プレイヤー向け: minigames/zankipvp/player.md
@@ -118,6 +98,27 @@ nav:
           - minigames/yukioni/index.md
           - 👤 プレイヤー向け: minigames/yukioni/player.md
           - 🛠️ OP・運営向け: minigames/yukioni/op.md
+  - 02 対戦・アクションゲーム（個人戦）:
+      - 1vs1:
+          - minigames/1vs1/index.md
+          - 👤 プレイヤー向け: minigames/1vs1/player.md
+          - 🛠️ OP・運営向け: minigames/1vs1/op.md
+      - Tntran（TNT Run）:
+          - minigames/tntran/index.md
+          - 👤 プレイヤー向け: minigames/tntran/player.md
+          - 🛠️ OP・運営向け: minigames/tntran/op.md
+      - Bomberman（ボンバーマン）:
+          - minigames/bomberman/index.md
+          - 👤 プレイヤー向け: minigames/bomberman/player.md
+          - 🛠️ OP・運営向け: minigames/bomberman/op.md
+      - Battleroyale（バトルロイヤル）:
+          - minigames/battleroyale/index.md
+          - 👤 プレイヤー向け: minigames/battleroyale/player.md
+          - 🛠️ OP・運営向け: minigames/battleroyale/op.md
+      - Zinro（人狼）:
+          - minigames/zinro/index.md
+          - 👤 プレイヤー向け: minigames/zinro/player.md
+          - 🛠️ OP・運営向け: minigames/zinro/op.md
       - TwoDTreasure（2D宝探し）:
           - minigames/twodtreasure/index.md
           - 👤 プレイヤー向け: minigames/twodtreasure/player.md
@@ -130,7 +131,6 @@ nav:
           - minigames/fishingpointbattle/index.md
           - 👤 プレイヤー向け: minigames/fishingpointbattle/player.md
           - 🛠️ OP・運営向け: minigames/fishingpointbattle/op.md
-  - レース・タイムアタック:
       - BoatGP（マリカー）:
           - race/boatgp/index.md
           - 👤 プレイヤー向け: race/boatgp/player.md
@@ -139,11 +139,7 @@ nav:
           - race/asuretimer/index.md
           - 👤 プレイヤー向け: race/asuretimer/player.md
           - 🛠️ OP・運営向け: race/asuretimer/op.md
-  - カジノ・ギャンブル:
-      - CasinoPlugin:
-          - casino/casino-plugin/index.md
-          - 👤 プレイヤー向け: casino/casino-plugin/player.md
-          - 🛠️ OP・運営向け: casino/casino-plugin/op.md
+  - 03 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
           - 👤 プレイヤー向け: casino/poker/player.md
@@ -168,7 +164,7 @@ nav:
           - casino/horseracing/index.md
           - 👤 プレイヤー向け: casino/horseracing/player.md
           - 🛠️ OP・運営向け: casino/horseracing/op.md
-      - 育成馬（EmeraldHorse）:
+      - 育成競馬（EmeraldHorse）:
           - casino/emhorse/index.md
           - 👤 プレイヤー向け: casino/emhorse/player.md
           - 🛠️ OP・運営向け: casino/emhorse/op.md
@@ -176,63 +172,34 @@ nav:
           - casino/quiz/index.md
           - 👤 プレイヤー向け: casino/quiz/player.md
           - 🛠️ OP・運営向け: casino/quiz/op.md
-  - 経済・ランキング:
-      - EmeraldBank:
-          - economy/emeraldbank/index.md
-          - 👤 プレイヤー向け: economy/emeraldbank/player.md
-          - 🛠️ OP・運営向け: economy/emeraldbank/op.md
+  - 04 サバイバルOP向け:
       - Ranking:
           - economy/ranking/index.md
           - 👤 プレイヤー向け: economy/ranking/player.md
           - 🛠️ OP・運営向け: economy/ranking/op.md
-  - エンチャント・アイテム:
-      - EnchantPack（統合）:
-          - items/enchantpack/index.md
-          - 👤 プレイヤー向け: items/enchantpack/player.md
-          - 🛠️ OP・運営向け: items/enchantpack/op.md
-      - Effectsaidan: items/effectsaidan.md
-      - Uncraft2:
-          - items/uncraft/index.md
-          - 👤 プレイヤー向け: items/uncraft/player.md
-          - 🛠️ OP・運営向け: items/uncraft/op.md
-  - 整地・地形改変:
       - WorldEdit: terrain/worldedit.md
-      - TerrainTools（統合）: terrain/terraintools.md
-  - 村人・モブ:
-      - MobBall（統合）:
-          - mobs/mobball/index.md
-          - 👤 プレイヤー向け: mobs/mobball/player.md
-          - 🛠️ OP・運営向け: mobs/mobball/op.md
       - CustomVillagerTrade:
           - mobs/customvillagertrade/index.md
           - 👤 プレイヤー向け: mobs/customvillagertrade/player.md
           - 🛠️ OP・運営向け: mobs/customvillagertrade/op.md
+      - LuckPerms（権限管理）: utility/luckperms.md
+      - Multiverse-Core: utility/multiverse-core.md
+      - Multiverse-Inventories: utility/multiverse-inventories.md
+      - Multiverse-Portals: utility/multiverse-portals.md
+  - 05 サバイバルプレイヤー向け:
+      - TerrainTools（統合）: terrain/terraintools.md
+      - MobBall（統合）:
+          - mobs/mobball/index.md
+          - 👤 プレイヤー向け: mobs/mobball/player.md
+          - 🛠️ OP・運営向け: mobs/mobball/op.md
       - BossPlugin:
           - mobs/bossplugin/index.md
           - 👤 プレイヤー向け: mobs/bossplugin/player.md
           - 🛠️ OP・運営向け: mobs/bossplugin/op.md
-  - 移動・乗り物・テレポート:
-      - TravelTools（統合）:
-          - transport/traveltools/index.md
-          - 👤 プレイヤー向け: transport/traveltools/player.md
-          - 🛠️ OP・運営向け: transport/traveltools/op.md
       - CustomRailway:
           - transport/customrailway/index.md
           - 👤 プレイヤー向け: transport/customrailway/player.md
           - 🛠️ OP・運営向け: transport/customrailway/op.md
-      - CustomVehicles:
-          - transport/customvehicles/index.md
-          - 👤 プレイヤー向け: transport/customvehicles/player.md
-          - 🛠️ OP・運営向け: transport/customvehicles/op.md
-  - ユーティリティ・基盤:
-      - LuckPerms（権限管理）: utility/luckperms.md
-      - LWC（チェスト保護）:
-          - utility/lwc/index.md
-          - 👤 プレイヤー向け: utility/lwc/player.md
-          - 🛠️ OP・運営向け: utility/lwc/op.md
-      - Multiverse-Core: utility/multiverse-core.md
-      - Multiverse-Inventories: utility/multiverse-inventories.md
-      - Multiverse-Portals: utility/multiverse-portals.md
       - GlobalStorage2:
           - utility/globalstorage/index.md
           - 👤 プレイヤー向け: utility/globalstorage/player.md
@@ -245,3 +212,12 @@ nav:
           - utility/tutorial/index.md
           - 👤 プレイヤー向け: utility/tutorial/player.md
           - 🛠️ OP・運営向け: utility/tutorial/op.md
+      - クラフト戻し（Uncraft2）:
+          - items/uncraft/index.md
+          - 👤 プレイヤー向け: items/uncraft/player.md
+          - 🛠️ OP・運営向け: items/uncraft/op.md
+      - エフェクト祭壇: items/effectsaidan.md
+      - エンチャントパック（統合）:
+          - items/enchantpack/index.md
+          - 👤 プレイヤー向け: items/enchantpack/player.md
+          - 🛠️ OP・運営向け: items/enchantpack/op.md
