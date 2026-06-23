@@ -94,6 +94,10 @@ nav:
           - minigames/bomberman/index.md
           - 👤 プレイヤー向け: minigames/bomberman/player.md
           - 🛠️ OP・運営向け: minigames/bomberman/op.md
+      - Kakurenbo（かくれんぼ）:
+          - minigames/kakurenbo/index.md
+          - 👤 プレイヤー向け: minigames/kakurenbo/player.md
+          - 🛠️ OP・運営向け: minigames/kakurenbo/op.md
       - Battleroyale（バトルロイヤル）:
           - minigames/battleroyale/index.md
           - 👤 プレイヤー向け: minigames/battleroyale/player.md
