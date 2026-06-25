@@ -11,7 +11,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | プラグイン名 | CasinoPlugin |
 | api-version | 26.1.2 |
 | メインクラス | `jp.casinoplugin.CasinoPlugin` |
-| softdepend（任意連携） | WorldGuard（競馬・育成馬の領域用）、Citizens（クイズの NPC 用） |
+| softdepend（任意連携） | WorldGuard（競馬・育成馬の領域用） |
 | 共通設定 | `plugins/CasinoPlugin/config.yml`（全体設定とモジュール有効フラグ） |
 | データ | `plugins/CasinoPlugin/accounts.yml`、各モジュール用ファイル |
 
@@ -21,7 +21,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 ## 導入手順
 
 1. ビルドした `CasinoPlugin-*.jar` をサーバーの `plugins/` フォルダに配置する。
-2. 必要に応じて `WorldGuard`・`Citizens` を導入する（softdepend。無くても本体は起動しますが、競馬・育成馬の領域機能やクイズの NPC 機能が使えません）。
+2. 必要に応じて `WorldGuard` を導入する（softdepend。無くても本体は起動しますが、競馬・育成馬の領域機能が使えません）。
 3. サーバーを起動すると `plugins/CasinoPlugin/config.yml` ほか、各モジュールが必要とするデータファイル（`accounts.yml` などモジュールごとに異なる）が自動生成される。
 4. `config.yml` の `modules:` ブロックで、使いたいモジュールだけを `enabled: true` にする。
 5. 各ゲームの個別設定（座標・配当・確率など）は、それぞれのモジュールが管理する yml ファイルで編集する（詳細は各ゲームの個別ページ参照）。
@@ -147,7 +147,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `quiz.ranking` | false | クイズランキングを利用できる |
 | `quiz.admin` | false | クイズ管理コマンド全権限 |
 | `quiz.admin.reload` | false | クイズの reload |
-| `quiz.admin.npc` | false | クイズ NPC の管理 |
 | `quiz.admin.sign` | false | ランキング看板の管理 |
 
 !!! warning "クイズの権限は既定 false"
@@ -169,7 +168,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 | コマンド | エイリアス | 説明 |
 |---|---|---|
-| `/poker <setup\|bet\|sign1-5\|start\|stop\|status>` | `/pk` | テキサスホールデムポーカー |
+| `/poker <join\|leave\|setlobby\|setstartspawn\|setfield\|setsign\|bet\|raisemoney\|start\|stop\|status>` | `/pk` | テキサスホールデムポーカー（join/leave は全員可、その他は OP） |
 
 ### スロット（slot）
 
@@ -214,7 +213,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `/quiz [daily\|tower\|ranking\|admin]` | `/q` | クイズメインコマンド（権限 `quiz.use`） |
 | `/qd` | ― | デイリークイズの直接起動（権限 `quiz.use`） |
 | `/qt` | ― | クイズタワーの直接起動（権限 `quiz.use`） |
-| `/quiznpc [create\|remove\|settype]` | ― | クイズ NPC 管理（Citizens 必須、権限 `quiz.admin`） |
 | `/quizsign [create\|remove\|update\|list]` | ― | ランキング看板の管理（権限 `quiz.admin`） |
 
 !!! note "各ゲームのサブコマンドの詳細"
@@ -227,9 +225,6 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 ??? failure "起動ログに「module [<id>] の有効化に失敗しました」と出る"
     そのモジュールの onEnable で例外が発生しています。`ModuleRegistry` は例外を捕捉してログに残すため、他モジュールは動き続けますが、該当モジュールは停止状態です。スタックトレースを確認し、`modules/<name>.yml` の設定不備などを疑ってください。
-
-??? failure "クイズの NPC コマンドが使えない / NPC を作れない"
-    クイズの NPC 機能（`/quiznpc`）は **Citizens** に依存します。Citizens が導入されているか確認してください。Citizens は softdepend なので、未導入でも CasinoPlugin 本体は起動しますが NPC 機能は使えません。
 
 ??? failure "プレイヤーがクイズを遊べない"
     `quiz.use` 系の権限は **既定 false** です。権限プラグインで `quiz.use` を付与してください。

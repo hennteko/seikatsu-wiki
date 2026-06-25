@@ -10,7 +10,7 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 |---|---|
 | プラグイン名 | TwoDTreasure |
 | バージョン | 1.1 |
-| api-version | 1.26 |
+| api-version | 26.1.2（plugin.yml 表記は `'1.26'`） |
 | メインコマンド | `/2dtreasure`（エイリアス `/2dt`・`/treasure2d`） |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/TwoDTreasure/config.yml` |
@@ -101,12 +101,13 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 /2dtreasure setstart
 ```
 
-登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。
+登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` / `signs.start` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。
 
 | 種別 | 表示（自動書き込み） | 用途 |
 |---|---|---|
 | 参加看板 | `[2DT]` ／ `lobby` ／ `クリックで参加` ／ 参加人数 | クリックでロビーに参加。参加人数（`現在/最大人数`）が表示される |
 | 退出看板 | `[2DT]` ／ `leave` ／ `クリックで離脱` | クリックでロビー／ゲームから離脱 |
+| 開始看板 | `2D宝探し` ／ `▶クリックで開始` | クリックでゲームを開始（`/2dtreasure start` と同じ） |
 
 !!! note "参加看板の人数表示"
     参加看板には現在のロビー参加人数が `現在/最大人数` の形式で表示され、参加・退出に応じて自動更新されます。最大人数は `config.yml` の `game.max-players` の値です。
@@ -122,6 +123,8 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 | `/2dtreasure setfield <1\|2>` | ゲームエリアの角1／角2を設定する |
 | `/2dtreasure setsign <join\|leave>` | 視線先の看板を参加／退出看板として登録する |
 | `/2dtreasure setstart` | 視線先の看板をゲーム開始看板として登録する（右クリックで試合開始） |
+| `/2dtreasure join` | ロビーに参加する（参加看板クリックと同じ。`twodtreasure.play` 権限で全員可） |
+| `/2dtreasure leave` | ロビー／ゲームから離脱する（退出看板クリックと同じ。全員可） |
 | `/2dtreasure start` | ゲームを開始する（コマンドブロック対応） |
 | `/2dtreasure stop` | 進行中のゲームを強制終了する |
 | `/2dtreasure reload` | config.yml を再読み込みする（待機中のみ可） |

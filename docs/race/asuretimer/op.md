@@ -132,6 +132,7 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
 | コマンド | 説明 |
 |---|---|
+| `/asure join [コースID]` | スタート看板クリックと同じ処理でコースに参加・計測開始（`asuretimer.play` 必要） |
 | `/asure setup <spawn\|start> [コースID]` | 現在地をスポーン／スタート地点に設定 |
 | `/asure course list` | 登録済みコースの一覧（種別・距離・設定状況）を表示 |
 | `/asure course create <ID> <asure\|dropper> [距離]` | コースを新規作成 |
@@ -166,6 +167,7 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
     - `setup` / `reload` / `course` … `asuretimer.admin` を実装側でチェック
     - `stats <他プレイヤー>` … `asuretimer.admin` を実装側でチェック
+    - `join` … `asuretimer.play` を実装側でチェック（既定全員可）
     - `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
     - `ranking` … 権限チェックなし（誰でも実行可）
 

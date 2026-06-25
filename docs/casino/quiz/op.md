@@ -2,7 +2,7 @@
 
 # クイズ ― OP・運営ガイド { .page-op #quiz-op }
 
-クイズ（quiz モジュール）の有効化・設定・問題の追加・NPC や看板の設置・権限・管理コマンドをまとめます。クイズは CasinoPlugin の1モジュールなので、専用 jar の導入は不要です。
+クイズ（quiz モジュール）の有効化・設定・問題の追加・看板の設置・権限・管理コマンドをまとめます。クイズは CasinoPlugin の1モジュールなので、専用 jar の導入は不要です。
 
 ## 基本情報
 
@@ -10,10 +10,9 @@
 |---|---|
 | モジュール ID | `quiz` |
 | 所属プラグイン | CasinoPlugin（`jp.casinoplugin.CasinoPlugin`） |
-| メインコマンド | `/quiz`（エイリアス `/q`）、`/qd`、`/qt`、`/quiznpc`、`/quizsign` |
+| メインコマンド | `/quiz`（エイリアス `/q`）、`/qd`、`/qt`、`/quizsign` |
 | モジュール設定ファイル | `plugins/CasinoPlugin/modules/quiz.yml` |
 | データファイル | `plugins/CasinoPlugin/quiz/`（`questions.yml` / `players.yml` / `signs.yml` / `questions/` フォルダ） |
-| softdepend（任意連携） | Citizens（NPC 機能に必要） |
 | 依存モジュール | `bank`（報酬・参加費にエメラルド口座を使用。必須） |
 
 !!! info "quiz モジュールの位置づけ"
@@ -25,8 +24,7 @@
 
 1. CasinoPlugin が `plugins/` に導入されていることを確認する。
 2. `plugins/CasinoPlugin/config.yml` を開き、`modules.quiz.enabled` を `true` にする。
-3. NPC 機能を使う場合は `Citizens` プラグインを導入する（softdepend。無くても本体は起動しますが NPC コマンドが無効になります）。
-4. サーバーを起動（または再起動）する。起動時に `plugins/CasinoPlugin/modules/quiz.yml` と `plugins/CasinoPlugin/quiz/questions.yml` / `players.yml` が自動生成される。
+3. サーバーを起動（または再起動）する。起動時に `plugins/CasinoPlugin/modules/quiz.yml` と `plugins/CasinoPlugin/quiz/questions.yml` / `players.yml` が自動生成される。
 
 ```yaml
 # plugins/CasinoPlugin/config.yml
@@ -158,6 +156,10 @@ questions:
 /quiz setsign practice
 ```
 
+```text title="見ている看板を個人成績看板にする（成績GUIを開く）"
+/quiz setsign stats
+```
+
 ```text title="見ている看板をタワーロビー移動看板にする"
 /quiz setsign tower
 ```
@@ -174,6 +176,7 @@ questions:
 |---|---|
 | `daily` | デイリークイズを開始 |
 | `practice` | 練習モードの難易度選択 GUI を開く |
+| `stats` | 個人成績 GUI（回答数・正答数・正答率・連続参加・タワー記録・累計獲得エメラルド）を開く |
 | `tower` | タワーロビーへテレポート |
 | `1-30` / `31-60` / `61-90` / `91-100` | 該当レンジの物理エリアへテレポートしてタワーを開始/再開（自分の現在階がそのレンジに入っているときのみ） |
 
@@ -190,39 +193,15 @@ questions:
 ```
 
 !!! note "看板・ロビーは任意設定"
-    ロビーやレンジ看板を設置しなくても、`/qt`・`/qd`・NPC からクイズを開始できます。物理エリアを使った演出を行いたい場合のみ、`settowerlobby` と各レンジの `setrange`、`[Quiz] tower`・レンジ看板を組み合わせて設置してください。レンジスポーンが未設定の場合はテレポートを行わず、GUI のみ開きます。
+    ロビーやレンジ看板を設置しなくても、`/qt`・`/qd` や参加看板からクイズを開始できます。物理エリアを使った演出を行いたい場合のみ、`settowerlobby` と各レンジの `setrange`、`[Quiz] tower`・レンジ看板を組み合わせて設置してください。レンジスポーンが未設定の場合はテレポートを行わず、GUI のみ開きます。
 
-## NPC・ランキング看板の設置
-
-### クイズ NPC（`/quiznpc`）
-
-Citizens プラグインが導入されている場合、NPC を右クリックしてクイズを開始させられます。NPC コマンドは Citizens が無いと登録されません。
-
-```text title="現在地に指定タイプのクイズNPCを作成（タイプ: daily / tower / menu）"
-/quiznpc create <タイプ> <名前>
-```
-
-```text title="選択中（右クリックで選択）のNPCを削除"
-/quiznpc remove
-```
-
-```text title="選択中のNPCのタイプを変更"
-/quiznpc settype <タイプ>
-```
-
-NPC の **タイプ** は3種類です。
-
-| タイプ | 右クリック時の動作 |
-|---|---|
-| `daily` | デイリークイズを開始 |
-| `tower` | クイズタワーを開始 |
-| `menu` | クイズのメニュー（コマンド案内）をチャット表示 |
+## ランキング看板の設置
 
 ### ランキング看板（`/quizsign`）
 
 設置済みの看板をランキング表示看板として登録できます。看板は **5分ごとに自動更新** されます。
 
-```text title="見ている看板（5ブロック以内）をランキング看板として登録（タイプ: daily / tower）"
+```text title="見ている看板（5ブロック以内）をランキング看板として登録（タイプ: answers / correct / tower）"
 /quizsign create <タイプ> <順位>
 ```
 
@@ -238,12 +217,13 @@ NPC の **タイプ** は3種類です。
 /quizsign list
 ```
 
-看板の **タイプ** は2種類です。
+看板の **タイプ** は3種類です。
 
 | タイプ | 表示内容 |
 |---|---|
-| `daily` | デイリー正解数ランキング |
-| `tower` | クイズタワー到達階ランキング |
+| `answers` | クイズ回答数ランキング |
+| `correct` | クイズ正答数ランキング |
+| `tower` | クイズタワー記録ランキング（100階制覇者はクリアタイム、未制覇者は到達階） |
 
 `<順位>` には 1・2・3… のように表示したい順位を指定します（1看板につき1順位）。登録情報は `plugins/CasinoPlugin/quiz/signs.yml` に保存されます。
 
@@ -261,10 +241,9 @@ NPC の **タイプ** は3種類です。
 |---|---|---|
 | `/quiz admin reload` | `quiz.admin.reload` | `quiz.yml` と `questions.yml` を再読み込み |
 | `/quiz admin stats` | `quiz.admin.reload` | 登録プレイヤー数・総問題数を表示 |
-| `/quiz setsign <daily\|practice\|tower\|range <レンジ>\|remove>` | OP または `quiz.admin` | 参加看板の設置・解除 |
+| `/quiz setsign <daily\|practice\|stats\|tower\|range <レンジ>\|remove>` | OP または `quiz.admin` | 参加看板の設置・解除 |
 | `/quiz settowerlobby` | OP または `quiz.admin` | 現在地をタワーロビー地点に設定 |
 | `/quiz setrange <レンジ>` | OP または `quiz.admin` | 現在地を指定レンジのスポーン地点に設定 |
-| `/quiznpc <create\|remove\|settype>` | `quiz.admin.npc` | クイズ NPC の管理（Citizens 必須） |
 | `/quizsign <create\|remove\|update\|list>` | `quiz.admin.sign` | ランキング看板の管理 |
 
 ## 権限ノード
@@ -275,13 +254,12 @@ NPC の **タイプ** は3種類です。
 | `quiz.daily` | false | デイリークイズを利用できる |
 | `quiz.tower` | false | クイズタワーを利用できる |
 | `quiz.ranking` | false | クイズランキングを表示できる |
-| `quiz.admin` | false | クイズ管理コマンド全権限。子に `quiz.use` / `quiz.admin.reload` / `quiz.admin.npc` / `quiz.admin.sign` を含む |
+| `quiz.admin` | op | クイズ管理コマンド全権限（既定で OP に付与）。子に `quiz.use` / `quiz.admin.reload` / `quiz.admin.sign` を含む |
 | `quiz.admin.reload` | false | `/quiz admin reload` ・`stats` を使える |
-| `quiz.admin.npc` | false | `/quiznpc` を使える |
 | `quiz.admin.sign` | false | `/quizsign` を使える |
 
-!!! warning "quiz.* の権限はすべて既定 false"
-    `quiz.*` 系の権限は **すべて既定値が false** です。OP であっても自動では付与されません。プレイヤーにクイズを遊ばせるには、権限プラグイン（LuckPerms 等）で `quiz.use` を付与してください。運営スタッフには `quiz.admin` を付与すると、利用権限と管理権限がまとめて有効になります。
+!!! warning "プレイヤー用の quiz.* は既定 false"
+    `quiz.use`（および子の `quiz.daily` / `quiz.tower` / `quiz.ranking`）は **既定値が false** で、OP であっても自動では付与されません。プレイヤーにクイズを遊ばせるには、権限プラグイン（LuckPerms 等）で `quiz.use` を付与してください。一方 `quiz.admin` は **既定で OP に付与**（`default: op`）され、子として `quiz.use` も含むため、OP はそのままクイズを利用・管理できます。運営スタッフ（非 OP）には `quiz.admin` を付与すると、利用権限と管理権限がまとめて有効になります。
 
 ## トラブルシューティング
 
@@ -292,10 +270,7 @@ NPC の **タイプ** は3種類です。
     クイズはエメラルド口座（bank モジュール）に依存します。`modules.bank.enabled` が `true` であることを確認してください。
 
 ??? failure "プレイヤーがクイズを遊べない"
-    `quiz.use` 系の権限は既定 false です。権限プラグインで `quiz.use` を付与してください。OP でも自動では付与されません。
-
-??? failure "/quiznpc が使えない / NPC を作れない"
-    NPC 機能は **Citizens** に依存します。Citizens が導入されていないと `/quiznpc` コマンド自体が登録されません。Citizens を導入してサーバーを再起動してください。起動ログに「Citizens フック成功」が出ているか確認します。
+    `quiz.use` 系の権限は既定 false です。権限プラグインで `quiz.use` を付与してください（OP は `quiz.admin` 経由で利用できます）。
 
 ??? failure "問題が出題されない / 起動時に quiz が停止する"
     `questions.yml` に有効な問題が1問も無いと quiz モジュールは停止します。選択肢が4つでない、`correct` が範囲外などの不正な問題は無視されます。起動ログの警告を確認し、`/quiz admin reload` で再読み込みしてください。

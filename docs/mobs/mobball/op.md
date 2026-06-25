@@ -2,167 +2,215 @@
 
 # MobBall ― OP・運営ガイド { .page-op #mobball-op }
 
-MobBall の導入・モジュール構成・`config.yml`・コマンド・権限・旧プラグインからの移行手順をまとめます。
+MobBall の導入・モジュール構成・`config.yml`・capture モジュール設定・コマンド・権限をまとめます。
 
 ## 基本情報
 
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | MobBall |
-| バージョン | 1.0.0 |
-| api-version | 26.1.2 |
+| api-version | 26.1.2（Paper 1.26.x） |
 | メインクラス | `jp.henry.mobball.MobBall` |
 | 依存プラグイン | なし（`softdepend: [CasinoPlugin]`） |
-| 設定ファイル | `plugins/MobBall/config.yml` ＋ `plugins/MobBall/modules/<id>.yml` |
-| 配布 jar | `MobBall-1.0.0.jar` |
+| 設定ファイル | `plugins/MobBall/config.yml` ＋ `plugins/MobBall/modules/capture.yml` |
 
 !!! info "統合プラグインです"
-    MobBall は、生活鯖で別々に動いていた **VillagerBall**（村人をエンダーパール/エンダーアイ風ボールに収納）と **Monsterball**（村人をスライムボール風ボールに収納＋手動 restore で取引復元）の 2 プラグインを 1 つの jar に統合したものです。`ModuleRegistry` パターンで内部を **villager / monster の 2 モジュール** に分割しており、`config.yml` のフラグで個別に ON / OFF できます。旧 plugin.yml のコマンドと権限はそのまま維持しているため、**既存のサーバー運用・LuckPerms 設定は無修正でそのまま動きます**。
+    MobBall は、生活鯖で別々に動いていた **VillagerBall** と **Monsterball** を 1 つの jar に統合し、さらに **全モブ対応の単一捕獲ボール** へと一新したものです。内部は `ModuleRegistry` パターンで **capture モジュール** 1 つに集約されており、`config.yml` のフラグで ON / OFF できます（TerrainTools / CasinoPlugin と同じ ModuleRegistry パターン）。捕獲時にエンティティの全 NBT をバイト列で保存するため、村人の取引データを含むあらゆる情報がそのまま保持され、旧 Monsterball の手動 restore は不要になりました。
 
 ## 導入手順
 
-1. ビルドした `MobBall-1.0.0.jar` をサーバーの `plugins/` フォルダに配置する。
-2. サーバーを起動すると `plugins/MobBall/config.yml` と `plugins/MobBall/modules/villager.yml`・`monster.yml` が自動生成される。
-3. `config.yml` の `modules:` ブロックで、使いたいモジュールだけを `enabled: true` にする（既定はどちらも `true`）。
-4. 各モジュールの個別設定（村人ボールの素材・成功率・クールダウンなど）は `modules/villager.yml` を編集する（monster には config なし）。
-5. 設定を変更したら `/villagerball reload`（villager モジュール）または `/mb reload`（メイン config）で再読み込みする。
+1. ビルドした `MobBall` の jar をサーバーの `plugins/` フォルダに配置する。
+2. サーバーを起動すると `plugins/MobBall/config.yml` と `plugins/MobBall/modules/capture.yml` が自動生成される。
+3. `config.yml` の `modules.capture.enabled` でモジュールを ON / OFF する（既定 `true`）。
+4. ボールの素材・成功率・クールダウン・メッセージなどの詳細は `modules/capture.yml` を編集する。
+5. 設定を変更したら `/mb reload` で再読み込みする（`config.yml` と `modules/capture.yml` の両方が再読込されます）。
 
-!!! tip "旧プラグインを併用していた場合"
-    旧 VillagerBall と Monsterball の **両方を併用**していたサーバーでは、ボールが「素材」と「PDC キー」で区別されているため、両モジュールを `enabled: true` にしたままで併用できます。混乱を避けたい場合は、片方を `enabled: false` にして運用を統一してください。
+!!! note "config の自動生成について"
+    `config.yml` は `saveDefaultConfig()` で初回展開されます。`modules/capture.yml` は capture モジュール起動時に `ConfigUtil` が jar 同梱のデフォルトをコピーし、未指定キーには jar 内デフォルトをフォールバックとして設定します。そのため、既存の `modules/capture.yml` に新キーが無くても、コード側は既定値で動作します。
 
 ## モジュール一覧
 
-| モジュール ID | 由来プラグイン | 内容 | 個別設定ファイル |
-|---|---|---|---|
-| `villager` | VillagerBall | 村人をエンダーパール/エンダーアイ風のボールに収納。取引データは捕獲時に JSON 保存 → 解放時に自動復元 | `modules/villager.yml` |
-| `monster` | Monsterball | 村人をスライムボール風のボールに収納。取引データは捕獲時に保存 → 解放後 `/monsterball restore` で復元 | `modules/monster.yml`（空・元プラグインに config なし） |
+| モジュール ID | 内容 | 個別設定ファイル |
+|---|---|---|
+| `capture` | `ENDER_PEARL` ベースの単一ボールで、あらゆるモブ（ボス・プレイヤー除く）を捕獲・解放。全 NBT を保存し解放時に復元 | `modules/capture.yml` |
 
 ## config.yml 主要項目
 
-`config.yml` は **モジュール有効フラグと全体設定のみ** を扱います。各モジュールの個別設定は `modules/<id>.yml` に分離されています。
+`config.yml` は **モジュール有効フラグと全体設定のみ** を扱います。capture モジュールの個別設定は `modules/capture.yml` に分離されています。
 
-| キー | 既定値 | 説明 |
-|---|---|---|
-| `modules.villager.enabled` | `true` | villager モジュールの有効化フラグ |
-| `modules.monster.enabled` | `true` | monster モジュールの有効化フラグ |
-| `debug.verbose` | `false` | 詳細ログ出力（現状未使用、将来拡張用） |
+```text title="modules.capture.enabled（既定: true） ― capture モジュールの有効化フラグ"
+modules:
+  capture:
+    enabled: true
+```
+
+```text title="debug.verbose（既定: false） ― 詳細ログ出力（現状未使用・将来拡張用）"
+debug:
+  verbose: false
+```
 
 !!! note "モジュールを止めるとどうなるか"
-    `modules.<id>.enabled: false` にしたモジュールは `onEnable` が呼ばれず、**コマンドもリスナーも一切登録されません**。例えば monster だけを停止すれば `/monsterball` は「不明なコマンド」になり、モンスターボールでの捕獲・解放も無効になります。既存配布済みのモンスターボールアイテムが残っていても、そのモジュールが OFF なら反応しません。
+    `modules.capture.enabled: false` にすると `onEnable` が呼ばれず、**リスナーが一切登録されません**。捕獲・解放が無効になり、既存配布済みの捕獲ボールも反応しなくなります。なお `/mb give` は capture モジュールが無効だと「capture モジュールが無効です。」と表示され付与できません。
 
-### villager モジュール（`modules/villager.yml`）
+## capture モジュール設定（`modules/capture.yml`）
 
-旧 `plugins/VillagerBall/config.yml` と **完全互換** のフォーマットです。既存サーバーから移行する場合、旧ファイルをリネームコピーするだけで済みます。
+### アイテム設定
 
-| キー | 既定値 | 説明 |
-|---|---|---|
-| `messages.*` | 旧 VillagerBall そのまま | プレフィックスと各種メッセージ（`&` カラーコード） |
-| `item.empty.material` | `ENDER_PEARL` | 空のボールの素材 |
-| `item.empty.name` | `&6村人ボール &7(空)` | 表示名 |
-| `item.empty.custom-model-data` | `0` | カスタムモデルデータ |
-| `item.empty.glow` | `true` | エンチャント光沢 |
-| `item.filled.material` | `ENDER_EYE` | 村人入りボールの素材 |
-| `item.filled.name` | `&6村人ボール &a(村人入り)` | 表示名 |
-| `item.filled.custom-model-data` | `1` | カスタムモデルデータ |
-| `gameplay.capture-success-rate` | `1.0` | 捕獲成功率（0.0〜1.0） |
-| `gameplay.profession-rates.enabled` | `false` | 職業別成功率の有効化 |
-| `gameplay.profession-rates.rates.<JOB>` | 0.8〜1.0 | 職業別成功率（大文字キー：`FARMER`, `LIBRARIAN` 等） |
-| `gameplay.allow-capture-while-trading` | `false` | 取引中の村人を捕獲できるか |
-| `gameplay.effects.capture.sound` | `ENTITY_ENDERMAN_TELEPORT` | 捕獲時のサウンド |
-| `gameplay.effects.capture.particle` | `PORTAL` | 捕獲時のパーティクル |
-| `gameplay.cooldown.enabled` | `false` | クールダウン機能の有効化 |
-| `gameplay.cooldown.capture` | `3` | 捕獲後クールダウン（秒） |
-| `gameplay.cooldown.release` | `1` | 解放後クールダウン（秒） |
-| `data.save-trades` | `true` | 取引内容を保存 |
-| `data.save-experience` | `true` | 経験値を保存 |
-| `data.save-health` | `true` | 体力を保存 |
-| `data.save-custom-name` | `true` | カスタム名を保存 |
-| `data.save-profession` | `true` | 職業を保存 |
-| `data.save-villager-level` | `true` | 村人レベルを保存 |
-| `data.save-villager-type` | `true` | バイオームタイプを保存 |
+```text title="item.material（既定: ENDER_PEARL） ― 捕獲ボールの素材（空・中身入り共通）"
+item:
+  material: ENDER_PEARL
+```
+
+```text title="item.glow（既定: true） ― エンチャント風の光沢を付与するか"
+item:
+  glow: true
+```
+
+```text title="item.empty.* ― 空ボールの表示名・カスタムモデルデータ・lore"
+item:
+  empty:
+    name: "&6捕獲ボール &7(空)"
+    custom-model-data: 0
+    lore:
+      - "&7モブに右クリックで捕獲"
+```
+
+```text title="item.filled.* ― 中身入りボールの表示名プレフィックス・カスタムモデルデータ・lore"
+item:
+  filled:
+    name-prefix: "&6捕獲ボール: &f"
+    custom-model-data: 1
+    lore:
+      - "&7右クリックで解放"
+```
+
+!!! note "アイテム判定の仕組み"
+    空・中身入りは **同一素材** で、PDC（`mobball:capture_ball_type` = `empty` / `filled`）で区別します。中身入りボールは捕獲エンティティの全 NBT を `mobball:capture_entity_data`（BYTE_ARRAY）、表示名を `mobball:capture_entity_name`（STRING）として保持します。素材を揃えただけの自作アイテムは捕獲ボールと判定されません。`custom-model-data` は 0 より大きい値のときのみ付与されます。`name-prefix` の後ろに捕獲したモブ名が連結されて表示名になります。
+
+### ゲームプレイ設定
+
+```text title="gameplay.capture-success-rate（既定: 1.0） ― 捕獲成功率（1.0 = 100%）"
+gameplay:
+  capture-success-rate: 1.0
+```
+
+```text title="gameplay.allow-capture-while-trading（既定: false） ― 取引中の村人を捕獲できるか"
+gameplay:
+  allow-capture-while-trading: false
+```
+
+```text title="gameplay.exclude-bosses（既定: true） ― ボス（Boss）を捕獲対象から除外するか"
+gameplay:
+  exclude-bosses: true
+```
+
+```text title="gameplay.cooldown.* ― 捕獲/解放クールダウン（秒）。enabled が false の間は無効"
+gameplay:
+  cooldown:
+    enabled: false
+    capture: 3
+    release: 1
+```
+
+```text title="gameplay.effects.capture.* ― 捕獲時のサウンド・パーティクル"
+gameplay:
+  effects:
+    capture:
+      sound: ENTITY_ENDERMAN_TELEPORT
+      particle: PORTAL
+```
+
+```text title="gameplay.effects.release.* ― 解放時のサウンド・パーティクル"
+gameplay:
+  effects:
+    release:
+      sound: ENTITY_ENDERMAN_TELEPORT
+      particle: PORTAL
+```
 
 !!! tip "サウンド・パーティクル名の表記"
-    旧形式（`ENTITY_ENDERMAN_TELEPORT`）も新形式（`entity.enderman.teleport`）も受け付けます。内部で大文字／アンダースコアを小文字／ドットに変換し、Paper 26.1.2 の Registry 経由で解決されます。不明な名前を指定するとサーバーログに警告が出ます。
+    サウンドは旧形式（`ENTITY_ENDERMAN_TELEPORT`）も新形式（`entity.enderman.teleport`）も受け付けます。内部で大文字／アンダースコアを小文字／ドットに変換し、Paper 1.26.x の Registry 経由で解決します。パーティクルは小文字キー（例: `portal`）として Registry で解決されます。不明な名前を指定するとサーバーログに警告が出ます。
 
-### monster モジュール（`modules/monster.yml`）
+### メッセージ設定
 
-旧 Monsterball には設定ファイルがありませんでした。MobBall でも **monster モジュールには調整可能な設定項目はありません**（空ファイルが自動生成されるのみ）。挙動はコードに直書きされた値で動作します。
+```text title="messages.* ― プレフィックスと各種メッセージ（&カラーコード対応・%name% はモブ名に置換）"
+messages:
+  prefix: "&6[MobBall] &r"
+  capture-success: "&a%name% を捕獲しました！"
+  capture-failed: "&c%name% の捕獲に失敗しました。"
+  release-success: "&a%name% を解放しました！"
+  release-failed: "&c%name% の解放に失敗しました。"
+  no-permission: "&cこのアクションを実行する権限がありません。"
+  invalid-target: "&cこのエンティティは捕獲できません。"
+  boss-target: "&cボスは捕獲できません。"
+  cannot-capture-trading: "&c取引中の村人は捕獲できません。"
+  inventory-full: "&cインベントリがいっぱいだったため、アイテムをドロップしました。"
+  ball-given: "&a捕獲ボールを受け取りました！"
+```
 
 ## コマンド体系
 
-| コマンド | エイリアス | 必要権限 | 役割 |
-|---|---|---|---|
-| `/mobball` | `/mb` | `mobball.admin`（modules / reload） | 統合管理（`modules` / `reload` / `version`） |
-| `/villagerball give [プレイヤー] [個数]` | `/vb`, `/vball` | `villagerball.admin` | 空の村人ボールを配布 |
-| `/villagerball reload` | `/vb`, `/vball` | `villagerball.admin` | villager モジュールの config をリロード |
-| `/villagerball help` | `/vb`, `/vball` | なし | コマンドヘルプ |
-| `/monsterball give` | ― | `monsterball.admin` | 空のモンスターボールを 1 個取得 |
-| `/monsterball restore` | ― | `monsterball.admin` | ターゲットしている村人（5 ブロック以内、視線内積 > 0.99）の取引データを復元 |
-| `/monsterball` | ― | なし | サブコマンドのヘルプを表示 |
+```text title="/mobball give [プレイヤー] [個数] ― 空の捕獲ボールを付与（mobball.give）"
+/mobball give [プレイヤー] [個数]
+```
 
-!!! info "既存コマンド体系は維持"
-    `/villagerball`・`/monsterball` は旧プラグインと同じ名前・同じエイリアス・同じ権限ノードで動きます。プレイヤー向けマクロ・アナウンス・サーバー設定はそのまま使えます。新規追加されたのは統合管理用の `/mobball`（`/mb`）だけです。
+```text title="/mobball modules ― モジュール一覧（ENABLED/DISABLED）を表示（mobball.admin）"
+/mobball modules
+```
+
+```text title="/mobball reload ― config.yml と modules/capture.yml をリロード（mobball.admin）"
+/mobball reload
+```
+
+```text title="/mobball version ― バージョンを表示"
+/mobball version
+```
+
+!!! info "コマンド仕様の補足"
+    - エイリアスは `/mb` です。
+    - `give` の `[プレイヤー]` 省略時は、実行者自身が対象になります（コンソールからはプレイヤー名の指定が必須）。
+    - `[個数]` は **1〜64** の範囲。インベントリが満杯のときは足元にドロップします。
+    - タブ補完: 第 1 引数は `give` / `modules` / `reload` / `version`、`give` の第 2 引数はオンラインプレイヤー名、第 3 引数は `1` / `8` / `16` / `32` / `64` を候補表示します。
 
 ## 権限ノード
 
-| 権限 | 既定 | 用途 | 由来 |
-|---|---|---|---|
-| `mobball.admin` | op | `/mb modules`・`/mb reload`（統合管理） | 新規追加 |
-| `villagerball.admin` | op | `/villagerball give`・`/villagerball reload` | VillagerBall 既存 |
-| `villagerball.use` | true | 基本利用（plugin.yml に定義） | VillagerBall 既存 |
-| `villagerball.capture` | true | 空のボールで村人を捕獲 | VillagerBall 既存 |
-| `villagerball.release` | true | 村人入りボールから解放 | VillagerBall 既存 |
-| `monsterball.admin` | op | `/monsterball give`・`/monsterball restore` | Monsterball 既存 |
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `mobball.admin` | op | `/mb modules`・`/mb reload`（統合管理） |
+| `mobball.give` | op | `/mb give`（捕獲ボールの付与） |
+| `mobball.capture` | true | 空のボールでモブを捕獲 |
+| `mobball.release` | true | 中身入りボールから解放 |
 
-!!! note "monster モジュールの権限判定について（旧仕様からの修正）"
-    旧 Monsterball では `MonsterballCommand` 内部で `player.isOp()` で判定していたため、LuckPerms 等で `monsterball.admin` を付与しても通らないという食い違いがありました。MobBall ではコマンド実装も `player.hasPermission("monsterball.admin")` に修正されており、**plugin.yml の宣言どおりに権限プラグインから付与できます**。
+!!! note "権限判定はサブコマンド単位"
+    `plugin.yml` ではコマンド自体に `permission` を付けず、各サブコマンドの実装内で `hasPermission(...)` を判定しています。LuckPerms 等で上記の権限ノードを付与すれば、宣言どおりに制御できます。
 
-## 既存サーバーからの移行
+## 捕獲・解放の挙動（内部仕様）
 
-!!! warning "既存サーバーからの移行手順"
-    旧 VillagerBall / Monsterball が稼働しているサーバーに導入する場合は、以下の手順で **配布済みのボールアイテムを壊さずに** 差し替えできます。
-
-    1. **旧 jar を削除** ― `plugins/VillagerBall.jar` と `plugins/Monsterball.jar` を削除する。
-    2. **MobBall-1.0.0.jar を配置** ― `plugins/` に `MobBall-1.0.0.jar` を置く。
-    3. **既存 config を継承（任意）** ― 旧 `plugins/VillagerBall/config.yml` を `plugins/MobBall/modules/villager.yml` に **リネームコピー** すれば、旧設定がそのまま継承されます（フォーマット完全互換）。Monsterball は元から config がないため作業不要。
-    4. **サーバー再起動** ― `/villagerball`・`/monsterball` がそのまま動くこと、`/mb modules` で両モジュールが ENABLED になっていることを確認。
-    5. **既存配布済みボールの動作確認**（重要） ― 既存プレイヤーが持っている村人ボール／モンスターボールが、**捕獲・解放ともそのまま動くか** 必ず確認する。
-
-    🟢 **既存配布済みのボールアイテムは PDC owner（`villagerball:*` / `monsterball:*`）を維持したまま無修正で動作します**。MobBall 側で legacy fallback として旧 NamespacedKey を読みに行く実装になっているため、サーバー在庫・チェスト・プレイヤーインベントリ内のボールを再配布する必要はありません。
-
-    🟢 **LuckPerms 等の権限設定は無修正で OK**。`villagerball.*` / `monsterball.*` の権限ノードは旧プラグインと同名・同既定値で残っています。
-
-!!! tip "ロールバック"
-    万一トラブルがあれば旧プラグインに戻せます。旧 2 つの jar はビルド成果物として残っており、`plugin.yml.bak_20260526` / `.bak_20260527` のバックアップも各プラグインフォルダに退避されています。
+!!! info "API バージョン差異の吸収"
+    捕獲は `Entity#serializeAsBytes()`、無ければ `UnsafeValues#serializeEntity(Entity)` を使い、解放は `Server#deserializeEntity(...)` 系（3 引数 → 2 引数）→ `UnsafeValues#deserializeEntity(...)` 系の順にリフレクションで探索して呼び分けます。どちらも見つからない環境では起動ログに「利用可能なエンティティ全 NBT 保存 API がありません」と severe を出力し、捕獲・解放は機能しません。解放時は復元したエンティティを `spawnAt(..., SpawnReason.CUSTOM)`（旧 API 互換時は `teleport`）で出現させます。
 
 ## トラブルシューティング
 
-??? failure "あるモジュールのコマンドが「不明なコマンド」になる"
-    そのモジュールが `config.yml` の `modules.<id>.enabled: false` で無効化されている可能性があります。無効モジュールはコマンド・リスナーが一切登録されません。`/mb modules` または起動ログで状態を確認してください。
+??? failure "コマンドが「不明なコマンド」になる / 捕獲・解放が反応しない"
+    `config.yml` の `modules.capture.enabled` が `false` になっていないか確認してください。無効モジュールはリスナーが登録されず、既存配布済みのボールも反応しません。`/mb modules` または起動ログで状態を確認できます。
 
-??? failure "起動ログに「module [<id>] の有効化に失敗しました」と出る"
-    そのモジュールの `onEnable` で例外が発生しています。`ModuleRegistry` は例外を捕捉してログに残すため、もう一方のモジュールは動き続けますが、該当モジュールは停止状態です。スタックトレースを確認し、`modules/<id>.yml` の設定不備などを疑ってください。
+??? failure "起動ログに「module [capture] の有効化に失敗しました」と出る"
+    capture モジュールの `onEnable` で例外が発生しています。`ModuleRegistry` は例外を捕捉してログに残します。スタックトレースと `modules/capture.yml` の設定不備を確認してください。
 
-??? failure "村人を右クリックしてもボールに入らない（villager モジュール）"
-    手に持っているのが **空の村人ボール**（PDC `ball_type=empty`、新キー `mobball:ball_type` または旧キー `villagerball:ball_type`）か確認してください。素材だけ揃えた自作エンダーパールでは判定されません。必ず `/villagerball give` で配布されたボールを使ってください。また、`villagerball.capture` 権限・捕獲クールダウン・取引中の村人かどうか・捕獲成功率も確認してください。
+??? failure "起動ログに「エンティティ全 NBT 保存 API がありません」と出る"
+    そのサーバー種別／バージョンに、利用可能なエンティティ保存 API（`serializeAsBytes` / `deserializeEntity` 系）が存在しません。Paper 1.26.x 系での運用を確認してください。この状態では捕獲・解放は機能しません。
 
-??? failure "村人入りボールを右クリックしても解放されない（villager モジュール）"
-    解放は **空中またはブロックへの右クリック** で発動します。村人や他のエンティティへの右クリックでは発動しません。`villagerball.release` 権限・解放クールダウンも確認してください。村人データが破損している場合は「&c村人の解放に失敗しました。」と表示され、サーバーログに復元失敗のエラーが出力されます。
+??? failure "モブを右クリックしてもボールに入らない"
+    手に持っているのが **空の捕獲ボール**（PDC `mobball:capture_ball_type=empty`）か確認してください。素材だけ揃えた自作エンダーパールでは判定されません。`/mb give` で配布されたボールを使い、`mobball.capture` 権限・捕獲クールダウン・取引中かどうか（村人）・捕獲成功率・ボス除外設定も確認してください。
 
-??? failure "解放した村人の取引がバニラと違う／空になっている（villager モジュール）"
-    保存される取引材料は `Material` と数量のみで、カスタム NBT・エンチャント・カスタムモデルデータは復元されません。エンチャント本など複雑なアイテムを売る村人は、解放時にプレーンな本など別のアイテムに置き換わる可能性があります。`data.save-trades: false` で取引保存を無効化し、解放後にゼロから再構築する運用も検討してください。
+??? failure "中身入りボールを右クリックしても解放されない"
+    解放は **空中またはブロックへの右クリック** で発動します。モブや他のエンティティへの右クリックでは発動しません。`mobball.release` 権限・解放クールダウンも確認してください。保存データが破損している場合は「解放に失敗しました。」と表示され、サーバーログに復元失敗のエラーが出力されます。
 
-??? failure "モンスターボールで捕獲はできたが、解放後の取引が初期化される（monster モジュール）"
-    仕様です。Minecraft 側が解放直後にデフォルト取引で上書きするため、**5 ブロック以内で村人を直視**しながら `/monsterball restore` を実行して復元してください。それでも復元されない場合、サーバー起動時ログに `Full data capture reflection failed.` が出ていないか確認します（リフレクション失敗時は取引・職業データが保存されません）。
+??? failure "OP なのに `/mb give` が使えない"
+    `mobball.give`（既定 `op`）の権限が必要です。OP 権限を付与しているか、LuckPerms 等で `mobball.give` を直接付与しているか確認してください。
 
-??? failure "OPなのに `/villagerball give` / `/monsterball give` が使えない"
-    `plugin.yml` でコマンドに `permission: villagerball.admin` / `monsterball.admin`（既定 `op`）が設定されています。OP 権限を付与しているか、LuckPerms 等で対応する権限ノードを直接付与しているか確認してください。monster モジュールについては、旧 `isOp()` 判定から `hasPermission("monsterball.admin")` 判定に **修正済み** です。
-
-??? failure "職業別の成功率が反映されない（villager モジュール）"
-    `gameplay.profession-rates.enabled: true` に変更し、`gameplay.profession-rates.rates.<JOB>` を **大文字キー**（例: `FARMER`, `LIBRARIAN`, `NITWIT`）で設定してください。設定変更後は `/villagerball reload` を実行します。
-
-??? failure "既存配布済みのボールが反応しない"
-    `/mb modules` で該当モジュールが ENABLED になっているか確認してください。MobBall は legacy fallback として旧 PDC キー（`villagerball:*` / `monsterball:*`）も読みに行きますが、モジュール自体が無効ならリスナーが登録されていないので反応しません。それでも反応しない場合は、サーバーログにアイテム判定のエラーが出ていないか確認してください。
+??? failure "捕獲ボールが投げられてしまう / テレポートする"
+    本来は MobBall が捕獲ボールの右クリック投擲を抑止します。投擲が起きる場合は、手に持っているアイテムが MobBall の PDC を持つ正規の捕獲ボールか（自作のただのエンダーパールでないか）を確認してください。
 
 ---
 

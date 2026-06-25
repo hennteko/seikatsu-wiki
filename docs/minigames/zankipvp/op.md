@@ -34,7 +34,7 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 | `settings.respawn-protection` | 10 | リスポーン保護時間（秒）。この間、**すべてのダメージが無効化**される（耐性付与ではなく完全無敵・発光表示） |
 
 !!! note "locations / signs セクションについて"
-    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign`・`/zankipvp setstart` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
+    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign <join|leave|start>` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
 
 !!! note "残機・保護・人数の設定は config に保存されます"
     `/zankipvp setzanki <数字>`・`/zankipvp setprotection <秒>`・`/zankipvp maxplayers <数字>` で設定した値は **`config.yml` に即保存され、サーバー再起動後も維持** されます。`config.yml` の `settings.*` を直接編集して `/zankipvp reload` で反映することもできます。
@@ -85,7 +85,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 ### 看板の設置
 
-ロビーには参加・退出用の看板を設置します。看板を見ながら以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。`zankipvp.admin` 権限が必要です。
+ロビーには参加・退出・開始用の看板を設置します。看板を見ながら（5ブロック以内）以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。`zankipvp.admin` 権限が必要です。**開始看板は `setstart` ではなく `setsign start` で登録します。**
 
 ```text title="参加看板として登録"
 /zankipvp setsign join
@@ -93,6 +93,10 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 ```text title="退出看板として登録"
 /zankipvp setsign leave
+```
+
+```text title="開始看板として登録"
+/zankipvp setsign start
 ```
 
 ```text title="視線先の看板の登録を解除"
@@ -105,34 +109,42 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 |---|---|
 | 参加看板 | クリックでゲームに参加。現在人数が表示される |
 | 退出看板 | クリックでゲームから退出 |
-| 開始看板 | クリックでゲーム開始（`/zankipvp setstart` で登録） |
+| 開始看板 | クリックでゲーム開始（`/zankipvp setsign start` で登録） |
 
 登録済みの看板を破壊するには `zankipvp.admin` 権限が必要で、破壊すると登録も解除されます。
 
-## 管理コマンド
+## コマンド
 
-すべて `zankipvp.admin` 権限が必要です（`start`・`stop` はコマンドブロック・コンソールからも実行可能）。
+### プレイヤー用（全員可・看板と同等）
+
+| コマンド | 説明 |
+|---|---|
+| `/zankipvp join` | ゲーム（受付ロビー）に参加する（参加看板と同等） |
+| `/zankipvp leave` | ゲームから退出する（退出看板と同等） |
+| `/zankipvp start` | ゲームを開始する（開始看板と同等・コマンドブロック対応） |
+
+!!! note "join / leave / start は全員が使えます"
+    これら3つは権限不要で全プレイヤーが実行できます（看板の右クリックと同じ動作）。`/zankipvp start` も誰でも実行できる点に注意してください（運営のみで開始したい場合は開始看板を設置せず、運営が管理する形で運用してください）。
+
+### 管理用（`zankipvp.admin`）
 
 | コマンド | 説明 |
 |---|---|
 | `/zankipvp setspawn <red\|blue\|yellow\|green>` | チーム別スポーン地点を設定 |
 | `/zankipvp setlobby` | 受付ロビー地点を設定 |
-| `/zankipvp setfield 1` | ゲームエリアの角1を設定 |
-| `/zankipvp setfield 2` | ゲームエリアの角2を設定 |
+| `/zankipvp setfield <1\|2>` | ゲームエリアの角を設定 |
 | `/zankipvp setstartspawn` | 初期リスポーン地点（退出先）を設定 |
-| `/zankipvp start` | ゲームを開始する（コマンドブロック対応） |
+| `/zankipvp setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録 |
+| `/zankipvp removesign` | 視線先の看板の登録を解除 |
 | `/zankipvp stop` | ゲームを強制終了する（コマンドブロック対応） |
 | `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上・config保存） |
 | `/zankipvp setprotection <秒>` | リスポーン保護時間を設定（0以上・config保存） |
 | `/zankipvp maxplayers <数字>` | 最大参加人数を設定（2以上・config保存） |
 | `/zankipvp status` | 現在の地点・ゲーム設定の状況を表示 |
-| `/zankipvp setsign <join\|leave>` | 視線先の看板をゲート看板として登録 |
-| `/zankipvp setstart` | 視線先の看板を開始看板として登録 |
-| `/zankipvp removesign` | 視線先の看板の登録を解除 |
 | `/zankipvp reload` | config.yml を再読み込み |
 
 !!! note "ゲーム開始の条件"
-    `/zankipvp start` は、ロビーに **2人以上** が参加し、かつ4チームのスポーン地点がすべて設定されている場合に開始できます。条件を満たさない場合はエラーメッセージが表示されます。
+    `/zankipvp start`（または開始看板）は、ロビーに **2人以上** が参加し、かつ4チームのスポーン地点がすべて設定されている場合に開始できます。条件を満たさない場合はエラーメッセージが表示されます。
 
 ## 権限ノード
 
@@ -140,12 +152,12 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `zankipvp.user` | OP | コマンド基本使用権限。参加・退出は看板で行うためOP既定 |
+| `zankipvp.user` | OP | 設定・管理コマンドの使用権限（join/leave/start を除く） |
 | `zankipvp.admin` | OP | ゲーム管理・セットアップコマンドの使用権限、看板の設置・破壊 |
 | `zankipvp.all` | false | `zankipvp.user` + `zankipvp.admin` をまとめた親権限 |
 
-!!! warning "実装と権限の対応について"
-    プレイヤーが `/zankipvp` を実行する際にはまず `zankipvp.user` が必要で、各サブコマンドの実行可否はさらに `zankipvp.admin` でチェックされます（`setup`・`start`・`stop`・`zanki`・`maxplayers`・`status`・`reload` のすべてが `zankipvp.admin` 必須）。一般プレイヤーに参加・退出用のコマンドは用意されていないため、`zankipvp.user` だけを持つプレイヤーが実行できるのはヘルプ表示のみです（参加・退出は看板で行います）。`start`・`stop` はコマンドブロック／コンソールからも実行可能で、それらの場合は権限チェックを通過します。
+!!! note "実装と権限の対応について"
+    `join`・`leave`・`start` は **権限不要で全プレイヤーが実行可能** です（看板の右クリックと同等）。それ以外の設定・管理コマンド（`setspawn`・`setlobby`・`setfield`・`setstartspawn`・`setsign`・`removesign`・`stop`・`setzanki`・`setprotection`・`maxplayers`・`status`・`reload`）は `zankipvp.user`／`zankipvp.admin` が必要です。`stop` 等はコマンドブロック／コンソールからも実行できます。
 
 ## ゲームの運営
 

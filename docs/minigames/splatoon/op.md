@@ -53,6 +53,9 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 ```text title="開始看板を設定（モード別。クリックでそのモードの試合開始）"
 /splatoon setsign start <turf|area|hoko|tower>
 ```
+```text title="看板の登録を解除（視線先の参加/離脱/ブキ/開始看板）"
+/splatoon removesign
+```
 ```text title="ロビーのスポーン地点（任意・試合終了後の戻り先）"
 /splatoon setlobby
 ```
@@ -152,6 +155,7 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定（ゴール台はホコ専用） |
 | `/splatoon settower checkpoint <orange\|blue> <番号>` | ガチヤグラの番号付きCPを設定（最大番号がゴール） |
 | `/splatoon settower clear` | ガチヤグラの経路・関門を全消去 |
+| `/splatoon removesign` | 視線先の看板（参加 / 離脱 / ブキ / 開始）の登録を解除 |
 
 ## 権限ノード
 
