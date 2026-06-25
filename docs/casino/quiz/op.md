@@ -148,6 +148,14 @@ questions:
 
 プレイヤーがコマンドを使わずにクイズを始められるよう、**参加看板** を設置できます。看板は OP（または `quiz.admin`）のみ設置でき、1行目を `[Quiz]` にして手書きすると自動整形されます。`/quiz setsign` を使うと、見ている看板（6ブロック以内）に自動で内容を書き込めます。
 
+```text title="見ている看板をタワーロビー移動看板にする（join / tower どちらでも同じ動作）"
+/quiz setsign join
+```
+
+```text title="見ている看板を退出看板にする（退出地点へテレポート）"
+/quiz setsign leave
+```
+
 ```text title="見ている看板をデイリークイズ看板にする"
 /quiz setsign daily
 ```
@@ -174,10 +182,11 @@ questions:
 
 | 看板タイプ | 右クリック時の動作 |
 |---|---|
+| `join` / `tower` | タワーロビーへテレポート（両者は同じ動作） |
+| `leave` | 退出地点（`setexit` 未設定ならワールドスポーン）へテレポート |
 | `daily` | デイリークイズを開始 |
 | `practice` | 練習モードの難易度選択 GUI を開く |
 | `stats` | 個人成績 GUI（回答数・正答数・正答率・連続参加・タワー記録・累計獲得エメラルド）を開く |
-| `tower` | タワーロビーへテレポート |
 | `1-30` / `31-60` / `61-90` / `91-100` | 該当レンジの物理エリアへテレポートしてタワーを開始/再開（自分の現在階がそのレンジに入っているときのみ） |
 
 ### タワーのロビー・レンジエリアの設定
@@ -190,6 +199,10 @@ questions:
 
 ```text title="現在地を指定レンジのスポーン地点に設定する（レンジ: 1-30 / 31-60 / 61-90 / 91-100）"
 /quiz setrange <レンジ>
+```
+
+```text title="現在地を退出地点に設定する（/quiz leave・leave 看板のテレポート先）"
+/quiz setexit
 ```
 
 !!! note "看板・ロビーは任意設定"
@@ -241,9 +254,10 @@ questions:
 |---|---|---|
 | `/quiz admin reload` | `quiz.admin.reload` | `quiz.yml` と `questions.yml` を再読み込み |
 | `/quiz admin stats` | `quiz.admin.reload` | 登録プレイヤー数・総問題数を表示 |
-| `/quiz setsign <daily\|practice\|stats\|tower\|range <レンジ>\|remove>` | OP または `quiz.admin` | 参加看板の設置・解除 |
+| `/quiz setsign <join\|leave\|daily\|practice\|stats\|tower\|range <レンジ>\|remove>` | OP または `quiz.admin` | 参加看板の設置・解除 |
 | `/quiz settowerlobby` | OP または `quiz.admin` | 現在地をタワーロビー地点に設定 |
 | `/quiz setrange <レンジ>` | OP または `quiz.admin` | 現在地を指定レンジのスポーン地点に設定 |
+| `/quiz setexit` | OP または `quiz.admin` | 現在地を退出地点（`/quiz leave`・leave 看板の移動先）に設定 |
 | `/quizsign <create\|remove\|update\|list>` | `quiz.admin.sign` | ランキング看板の管理 |
 
 ## 権限ノード

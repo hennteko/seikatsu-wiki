@@ -188,7 +188,7 @@ modules:
 | `/horseracing getbetitem [対象]` | OP（対象指定時は `horseracing.admin` または `horseracing.giveitem`） | 競馬ベット券を入手。プレイヤー名を指定すると配布 |
 | `/horseracing givebetitem <対象> [枚数]` | OP（`horseracing.admin` または `horseracing.giveitem`） | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
 | `/horseracing bet [対象]` | OP（`horseracing.admin`） | ベット画面を開く。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックして開く |
-| `/horseracing setsign <lobby\|leave\|getitem\|start\|remove>` | `horseracing.admin` または `horseracing.sign.create` | 視線先の看板を競馬看板として登録/解除する |
+| `/horseracing setsign <join\|lobby\|leave\|getitem\|start\|remove>` | `horseracing.admin` または `horseracing.sign.create` | 視線先の看板を競馬看板として登録/解除する（`join` は `lobby` の別名） |
 
 !!! note "レース進行と緊急停止"
     レースの基本フローは「`start`（ベット期間開始）→ `start`（発走）→ 自動でゴール・配当」です。途中でやめたいときは `/horseracing stop` を使うと、馬が撤去され、購入済みの馬券の賭け金が全プレイヤーへ全額返金されます。CasinoPlugin の無効化時にも自動で緊急停止が走ります。
@@ -218,13 +218,13 @@ CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノード�
     出走頭数ぶんのスタート地点が登録されていない可能性があります。`/horseracing sethorse <頭数>` で設定した頭数すべてについて、`/horseracing sethousepoint <番号>` でスタート地点を登録してください。地点のワールドが読み込まれていない場合もスポーンに失敗します。
 
 ??? failure "看板を作成できない"
-    `[HorseRacing]` 看板の作成には `horseracing.admin` 権限が必要です。1行目に `[HorseRacing]`、2行目に `lobby` または `leave` を正しく入力しているかも確認してください。
+    `[HorseRacing]` 看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。1行目に `[HorseRacing]`、2行目に `lobby` / `leave` / `getitem` / `start` のいずれかを正しく入力しているかも確認してください。
 
 ??? failure "ロビー／離脱看板を押しても移動しない"
     ロビー地点・スポーン地点が未設定の可能性があります。それぞれ `/horseracing setup lobby`・`/horseracing setup spawn` を、目的の地点に立った状態で実行してください。
 
 ??? failure "オッズの幅が極端 / 配当を調整したい"
-    `horse.yml` の `betting.virtual_bet_amount` を大きくするとオッズの変動が緩やかになり、`betting.takeout_rate` で控除率を調整できます。馬の実力差は `horse_stats` の各 min / max で調整します。設定変更後はサーバーの再起動で反映してください。
+    `horse.yml` の **`race.virtual_bet_amount`** を大きくするとオッズの変動が緩やかになります（実際に読み込まれるのは `betting.virtual_bet_amount` ではなく `race.virtual_bet_amount` です）。馬の実力差は `horse_stats` の各 min / max で調整します。設定変更後はサーバーの再起動で反映してください。なお `betting.takeout_rate`・`betting.minimum_odds` は現状のコードでは参照されないため、編集しても挙動は変わりません。
 
 ??? failure "ベットを受け付けない"
     ベットできるのは `/horseracing start` でベット期間を開始してから、発走（2回目の `start`）までの間だけです。レース中・停止中はベット画面を開けません。プレイヤーはコマンドではなく `[HorseRacing] getitem` 看板から馬券アイテムを受け取り、右クリックでベット画面を開く流れです。

@@ -63,6 +63,9 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 !!! tip "モジュールの ON / OFF"
     `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` の8項目があります（`emhorse` は未記載ですが既定 true で起動します）。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
 
+!!! warning "config.yml の新キーは自動追記されません"
+    本体は起動時に `saveDefaultConfig()` を呼びますが、これは `config.yml` が **存在しない場合のみ** 同梱版を書き出す動作です（`copyDefaults` は使っていません）。そのため、プラグイン更新で新しい設定キーが増えても、既存サーバーの `config.yml` には自動で追記されません。新キー（例: `modules.emhorse.enabled`）を使いたい場合は手動で追記するか、一度 `config.yml` を退避してから再生成してください。
+
 ## 権限ノード
 
 ゲーム別に整理します。各モジュールごとに個別の権限ノードがあります。

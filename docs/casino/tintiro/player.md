@@ -78,7 +78,7 @@
 | 金額看板（例: `100E`） | ロビー全員のベット額をその金額に設定 |
 
 !!! warning "/tintiro コマンドは原則 OP 専用"
-    `/tintiro join` `/tintiro leave` `/tintiro bet` `/tintiro start` `/tintiro stop` `/tintiro open` などのコマンドは、すべて OP（または `tintiro.admin` 権限）でないと「OP専用です」と拒否されます。プレイヤーは上の看板から操作してください。
+    `/tintiro bet` `/tintiro start` `/tintiro stop` `/tintiro open` などのコマンドは、OP でないと「OP専用です」と拒否されます。プレイヤーは上の看板から操作してください。なお `/tintiro join` ・ `/tintiro leave` は **自分自身の参加・離脱に限り一般プレイヤーでも実行できます**（他プレイヤーを指定して参加/離脱させる場合のみ OP が必要）。
 
 ## よくある質問
 

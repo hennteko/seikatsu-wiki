@@ -46,8 +46,7 @@ modules:
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `settings.maxRaiseAmount` | `1000` | 1ハンドあたりの合計ベット額の上限（レイズ上限）。`/poker raisemoney` でも変更でき、変更内容はこのキーに保存される |
-
-| `bet_options` | （任意）SB掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1〜1,000,000）を使用 |
+| `bet_options` | （未設定） | （任意・トップレベルキー）SB掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000）を使用。コマンドからは書き込まれないため、変更する場合のみ手動で追記する |
 
 ### signs（公開札看板の位置）
 
@@ -55,12 +54,13 @@ modules:
 
 ### locations（誘導用の座標）
 
-`locations.lobby` / `locations.spawn` と、ゲームエリアの対角2点 `locations.field1` / `locations.field2` に、プレイヤー誘導用の座標が保存されます。`/poker setlobby` / `setstartspawn` / `setfield <1|2>` コマンドで設定され、各エントリは `world` / `x` / `y` / `z` / `yaw` / `pitch` を持ちます。
+`locations.lobby` / `locations.spawn` と、ゲームエリアの対角2点 `locations.field1` / `locations.field2` に、プレイヤー誘導用の座標が保存されます。`/poker setlobby` / `setstartspawn` / `setfield <1|2>` コマンドで設定され、各エントリは `world` / `x` / `y` / `z` / `yaw` / `pitch` を持ちます。なお `locations.gamearea` のみ専用のセットアップコマンドが無く、手動記入が必要です（下表参照）。
 
 | 座標 | 役割 |
 |---|---|
 | `locations.lobby` | 参加看板クリック時とゲーム終了時に転送されるロビー |
-| `locations.field1` / `field2` | ゲームエリア（対戦卓）の範囲を表す対角2点 |
+| `locations.gamearea` | ゲーム開始時に全員が転送される着席地点。専用コマンドは無く、poker.yml に手動記入する |
+| `locations.field1` / `field2` | ゲームエリア（対戦卓）の範囲を記録する対角2点（開始時の転送先ではない） |
 | `locations.spawn` | 離脱時に転送されるスポーン地点 |
 
 !!! note "座標・看板は手動編集しない"
@@ -219,7 +219,7 @@ modules:
     `/poker setsign <種別>` は、看板ブロックを見ながら（6ブロック以内）実行する必要があります。看板を設置してから、その看板に視点を合わせてコマンドを実行してください。
 
 ??? failure "ゲーム開始時にプレイヤーが転送されない"
-    ゲームエリア（`locations.field1` / `field2`）が未設定の可能性があります。`/poker setfield 1` と `/poker setfield 2` で設定してください。ゲーム終了時の転送先はロビー（`/poker setlobby`）です。
+    ゲーム開始時の転送先は `locations.gamearea`（着席地点）です。この座標が未設定だと転送がスキップされます（看板やプレイは続行できます）。`locations.gamearea` を設定するセットアップコマンドは無く、poker.yml に `world` / `x` / `y` / `z` / `yaw` / `pitch` の形式で手動記入する必要があります。なお `/poker setfield 1` / `2`（`locations.field1` / `field2`）はゲームエリアの範囲を記録する対角2点で、開始時の転送先ではありません。ゲーム終了時の転送先はロビー（`/poker setlobby`）です。
 
 ??? failure "公開カードが看板に表示されない"
     `card1`〜`card5` に登録した座標に **看板ブロックが実在する** か確認してください。看板が破壊・移動されていると表示が更新されません。再設置後、`/poker setsign card1`〜`card5` で登録し直してください。

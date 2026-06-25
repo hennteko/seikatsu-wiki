@@ -10,7 +10,7 @@
 |---|---|
 | 所属プラグイン | CasinoPlugin（統合プラグイン） |
 | モジュール ID | `slot` |
-| メインコマンド | `/slot [remote]` |
+| メインコマンド | `/slot [join\|remote\|setsign]` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/slot.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.slot.enabled` |
 | 通貨 | エメラルド（bank モジュールの口座残高。EmeraldAPI 経由） |
@@ -87,25 +87,35 @@
 
 ## 管理コマンド
 
-`/slot` コマンドは **OP専用**（`slot.admin` 権限）です。一般プレイヤーは `[Slot]` 看板または起動ロッドからGUIを開きます。
+`/slot` および `/slot join` は **全プレイヤーが使用可能** で、賭け金選択GUIを開きます（`[Slot]` 看板の右クリックと同等）。OP専用なのは `/slot setsign`（看板設置）のみで、`/slot remote` は `slot.remote` 権限を要求します。
 
-```text title="賭け金選択GUIを開く（OP専用）"
+```text title="賭け金選択GUIを開く（全員可）"
 /slot
 ```
 
-```text title="スロット起動ロッド（ブレイズロッド）を入手"
+```text title="賭け金選択GUIを開く（全員可・join 明示）"
+/slot join
+```
+
+```text title="スロット起動ロッド（ブレイズロッド）を入手（slot.remote 権限）"
 /slot remote
 ```
 
-```text title="視線先の看板を [Slot] 起動看板として登録"
+```text title="視線先の看板を [Slot] 起動看板として登録（OP専用）"
 /slot setsign
 ```
 
-| コマンド | 説明 |
-|---|---|
-| `/slot` | 賭け金選択GUIを開く（OP専用） |
-| `/slot remote` | スロット起動ロッド（ブレイズロッド）を入手する。右クリックでGUIを開けるアイテム |
-| `/slot setsign` | 視線先の看板を `[Slot]` 起動看板として登録する |
+```text title="視線先の [Slot] 看板設定を解除（OP専用）"
+/slot setsign remove
+```
+
+| コマンド | 権限 | 説明 |
+|---|---|---|
+| `/slot` | 全員 | 賭け金選択GUIを開く |
+| `/slot join` | 全員 | 賭け金選択GUIを開く（`/slot` と同じ） |
+| `/slot remote` | `slot.remote`（OP） | スロット起動ロッド（ブレイズロッド）を入手する。右クリックでGUIを開けるアイテム |
+| `/slot setsign` | OP / `slot.admin` | 視線先の看板を `[Slot]` 起動看板として登録する |
+| `/slot setsign remove` | OP / `slot.admin` | 視線先の看板の `[Slot]` 設定を解除する |
 
 !!! note "設定変更の反映"
     `slot.yml` を変更したあとは **サーバーの再起動** で反映してください。slot モジュール単体のリロードコマンドはありません。
@@ -114,8 +124,11 @@
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `slot.admin` | OP | `/slot` コマンドの実行・`[Slot]` 看板の設置 |
+| `slot.admin` | OP | `/slot setsign`（看板の設置・解除）・`[Slot]` 看板の手書き設置 |
 | `slot.remote` | OP | `/slot remote` でスロット起動ロッド（ブレイズロッド）を入手できる |
+
+!!! note "GUIを開く操作に権限は不要"
+    賭け金選択GUIを開く操作（`/slot`・`/slot join`・`[Slot]` 看板の右クリック・起動ロッドの右クリック）は **全プレイヤーが利用可能** で、専用の権限ノードはありません。OP権限が要るのは `setsign`（看板設置）のみです。なお旧 `slot.use` 権限は廃止されており、現行コードには存在しません。
 
 !!! note "remote 権限の互換"
     `/slot remote` は内部で `slot.remote` または旧 `slot2.remote` のどちらか一方を持っていれば許可される実装です。plugin.yml に宣言されているのは `slot.remote`（`default: op`）のみで、旧プラグイン由来の `slot2.remote` は宣言されていません。一般プレイヤーに起動ロッドを配りたい場合は、権限プラグイン（LuckPerms 等）で `slot.remote` を明示的に付与してください。
@@ -129,7 +142,7 @@
     slot モジュールは起動時に EmeraldAPI（bank モジュール）が利用可能かを確認し、未準備なら `EmeraldAPI not bound; bank module required before slot` という例外で停止します。`modules.bank.enabled` が `true` になっているか確認してください。
 
 ??? failure "プレイヤーがスロットを利用できない"
-    `/slot` コマンドはOP専用です。一般プレイヤーには `[Slot]` 看板または起動ロッドを用意してください。また、口座残高がマイナス（借金）のプレイヤーはスロットを利用できない仕様です。
+    GUIを開く操作（`/slot`・`/slot join`・`[Slot]` 看板・起動ロッド）は全プレイヤーが利用できます。利用できない場合は、slot モジュールが無効化されていないか、口座残高がマイナス（借金）になっていないかを確認してください。借金状態のプレイヤーはスロットを利用できない仕様です。
 
 ??? failure "`/slot remote` が「権限がありません」になる"
     `/slot remote` は `slot.remote`（または旧 `slot2.remote`）を要求します。`slot.remote` は plugin.yml 上 `default: op` のため、一般プレイヤーに使わせる場合は権限プラグインで `slot.remote` を付与してください。

@@ -128,17 +128,25 @@ prizes:
 /kuzi ore 5
 ```
 
+```text title="購入GUIを開く（全プレイヤー可）"
+/kuzi join
+```
+
 | コマンド | 説明 |
 |---|---|
 | `/kuzi reload` | `lottery.yml` の景品テーブルを再読み込みする |
 | `/kuzi setsign` | 視線先の看板を `[宝くじ]` 購入看板（購入GUIを開く）として登録する |
 | `/kuzi gui` | 購入GUIを開く（OP専用） |
 | `/kuzi <種類> <枚数>` | 抽選券を直接購入する（OP専用） |
+| `/kuzi join` | 購入GUIを開く（**全プレイヤー実行可**。看板の代わりに使える） |
+
+!!! note "/kuzi join は全プレイヤーが使える"
+    `/kuzi join` は OP 判定の前に処理されるため、**権限を問わず全プレイヤー** が実行でき、`[宝くじ]` 看板と同じ購入GUIを開きます。`/kuzi gui` は OP 専用ですが、`/kuzi join` は一般プレイヤーにも開放されている点が異なります。
 
 `/kuzi reload` はコンソール、OP、または `kuzi.reload` 権限を持つプレイヤーが実行できます。`lottery.yml` を編集したらこのコマンドで反映してください（サーバー再起動でも反映されます）。
 
 !!! tip "TAB 補完"
-    OP または `kuzi.reload` 権限保持者が `/kuzi` の第1引数で TAB を押すと、補完候補に `reload` が表示されます。`kuzi.admin` 保持者には `setsign` と `gui` も表示されます。
+    `/kuzi` の第1引数で TAB を押すと、**全プレイヤー** に `join`（と読み込み済みの各くじ種類）が表示されます。OP または `kuzi.reload` 権限保持者にはさらに `reload`、`kuzi.admin` 保持者には `setsign` と `gui` も表示されます。
 
 ## 権限ノード
 

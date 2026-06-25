@@ -158,14 +158,14 @@
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/blackjack start` | OP または `blackjack.start` | 待機中のゲームを開始する。ロビーに1人以上必要 |
-| `/blackjack stop` | OP または `blackjack.stop` | 進行中のゲームを強制終了する |
-| `/blackjack setstartspawn` | OP または `blackjack.setup` | 現在地を spawn 地点に設定する |
-| `/blackjack setlobby` | OP または `blackjack.setup` | 現在地を lobby 地点に設定する |
-| `/blackjack setfield <1\|2>` | OP または `blackjack.setup` | ゲームエリアの角1/角2を現在地に設定する |
-| `/blackjack join [プレイヤー名]` | OP（`blackjack.start`/`stop`/`setup` のいずれか） | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
-| `/blackjack leave [プレイヤー名]` | OP（同上） | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
-| `/blackjack bet <金額>` | OP（同上） | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
+| `/blackjack start` | OP | 待機中のゲームを開始する。ロビーに1人以上必要 |
+| `/blackjack stop` | OP | 進行中のゲームを強制終了する |
+| `/blackjack setstartspawn` | OP | 現在地を spawn 地点に設定する |
+| `/blackjack setlobby` | OP | 現在地を lobby 地点に設定する |
+| `/blackjack setfield <1\|2>` | OP | ゲームエリアの角1/角2を現在地に設定する |
+| `/blackjack join [プレイヤー名]` | 自分対象は誰でも可／他人指定は OP | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
+| `/blackjack leave [プレイヤー名]` | 自分対象は誰でも可／他人指定は OP | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
+| `/blackjack bet <金額>` | OP | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
 | `/blackjack setsign <join\|leave\|bet\|start\|remove>` | OP | 視線先の看板を指定種別の看板として登録/解除する（`bet` は掛け金変更GUI看板、金額引数なし） |
 
 !!! note "ゲーム開始時の挙動"
@@ -181,8 +181,8 @@
 | `blackjack.stop` | op | ブラックジャックを強制終了する |
 | `blackjack.setup` | op | ブラックジャックの地点設定・看板作成を行う |
 
-!!! note "/blackjack は原則 OP 専用"
-    `/blackjack` 系のサブコマンド（`join` / `leave` / `bet` / `start` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `setsign`）は、すべて `blackjack.start` / `blackjack.stop` / `blackjack.setup` のいずれか、もしくは OP 権限を持っていないと実行できません。プレイヤーは `[BlackJack]` 看板（`join` / `leave` / `bet`）を経由して参加・退出・ベットを行います。
+!!! note "/blackjack は原則 OP 専用（判定は OP かどうか）"
+    `/blackjack` 系のサブコマンド（`bet` / `start` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `setsign`）は **OP（またはコマンドブロック）でないと実行できません**。コマンド本体の可否は実際には「OP かどうか」で判定されるため、`blackjack.start` / `blackjack.stop` / `blackjack.setup` を非 OP プレイヤーに付与してもこれらのコマンドは実行できません（これらの権限ノードは看板作成の許可などに用いられます）。例外として `/blackjack join` ・ `/blackjack leave` は **自分自身を対象にする場合のみ一般プレイヤーでも実行可能** で、他プレイヤー名を指定する場合のみ OP が必要です。プレイヤーは `[BlackJack]` 看板（`join` / `leave` / `bet`）を経由して参加・退出・ベットを行います。
 
 ## トラブルシューティング
 

@@ -38,10 +38,11 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 ## 管理コマンド
 
-すべて `/emhorse <sub>`（OP または `emhorse.admin`）です。
+`join` のみ全プレイヤーが使用でき、それ以外は `/emhorse <sub>`（OP または `emhorse.admin`）です。
 
 | コマンド | 説明 |
 |---|---|
+| `/emhorse join` | **全員可**。`[厩舎]` 看板と同等に厩舎を開く（2頭以上なら所有馬一覧、1頭なら厩舎GUI、未所有ならメッセージ） |
 | `/emhorse setsign <shop\|stable\|entry\|remove>` | 視線先の看板を各種看板に設定/解除する |
 | `/emhorse givefoal <player> [bronze\|silver\|gold] [個数]` | 子馬券を付与（既定 bronze・1個） |
 | `/emhorse givewhistle <player>` | 呼び笛を付与 |
@@ -60,15 +61,18 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `emhorse.admin` | OP | `/emhorse` 全コマンド・看板設置 |
+| `emhorse.admin` | OP | `/emhorse` 各サブコマンド（`join` を除く）・看板設置 |
 
-プレイヤー向けの専用権限はありません（看板・アイテム操作で遊びます）。
+プレイヤー向けの専用権限はありません（看板・アイテム操作で遊びます）。`/emhorse join` のみ権限を問わず全プレイヤーが使用できます。
 
 ## modules/emhorse.yml 主要項目
 
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `max_horses` | 5 | 1人が所有できる馬の最大数（子馬券の引き換え上限） |
+| `naming.max_length` | 16 | 馬名の最大文字数（厩舎GUIの命名/改名で適用） |
+| `naming.rename_cost` | 1000 | 改名費用。初回命名は無料、2回目以降にこの額をエメラルドバンクから消費 |
+| `naming.ng_words` | `[運営, admin, 管理者]` | 命名に使えないNGワード（部分一致・大文字小文字無視。運用しながら追記可） |
 | `train.levels_per_grade` | 5 | グレード1段あたりの育成レベル上限（S＝rank8なら×5でLv40） |
 | `train.base_exp` | 100 | レベルアップ必要経験値の基準（Lv N→N+1 は `base_exp×(N+1)`） |
 | `mount.base_speed` / `speed_per_level` / `speed_cap` | 0.20 / 0.0015 / 0.32 | 騎乗速度（速度Lvで上昇・上限あり） |

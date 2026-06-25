@@ -48,6 +48,10 @@
 | `locations.spawn` | （未設定） | スポーン地点（離脱時の転送先）。`/tintiro setstartspawn` で書き込まれる |
 | `locations.lobby` | （未設定） | ロビー地点（参加時・ゲーム終了時の転送先）。`/tintiro setlobby` で書き込まれる |
 | `locations.field1` / `field2` | （未設定） | ゲームエリアの対角2点。`/tintiro setfield <1\|2>` で書き込まれる |
+| `bet_options` | （未設定） | （任意）`bet` 看板クリックで開く掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1〜1,000,000）を使用する |
+
+!!! tip "掛け金GUIの金額を変えるには bet_options"
+    `bet` 看板をクリックすると共通の **掛け金変更GUI** が開きます。並べる金額を変えたい場合は `tintiro.yml` に `bet_options`（数値リスト）を追加してください。未設定なら既定の18段階（1 / 5 / 10 / 25 / 50 / 100 / 250 / 500 / 1000 / 2500 / 5000 / 10000 / 25000 / 50000 / 100000 / 250000 / 500000 / 1000000）が使われます。この項目は自動生成されず、初期の `tintiro.yml` には含まれないため、必要な場合のみ手動で追記してください。
 
 !!! note "座標は手動編集より設定コマンドを推奨"
     `locations.spawn` / `locations.lobby` / `locations.field1` / `locations.field2` は `world` / `x` / `y` / `z` / `yaw` / `pitch` を持つ座標ブロックです。ゲーム内で `/tintiro setstartspawn` ・ `/tintiro setlobby` ・ `/tintiro setfield <1|2>` を実行すると、実行時の立ち位置が自動で書き込まれます。手動で編集する場合は tintiro.yml 内のコメントに記載された形式に従ってください。
@@ -181,8 +185,8 @@
 |---|---|---|
 | `tintiro.admin` | OP | plugin.yml に定義される管理権限ノード |
 
-!!! info "/tintiro コマンドは OP 専用（判定は OP かどうか）"
-    `/tintiro` 系のコマンド（`join` / `leave` / `bet` / `start` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `status` / `setsign`）は **OP（またはコマンドブロック）のみ** 実行できます。判定は実際には「OP かどうか」で行われるため、`tintiro.admin` 権限を非 OP プレイヤーに付与してもコマンドは実行できません。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
+!!! info "/tintiro コマンドは原則 OP 専用（判定は OP かどうか）"
+    `/tintiro` 系のコマンド（`bet` / `start` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `status` / `setsign`）は **OP（またはコマンドブロック）のみ** 実行できます。判定は実際には「OP かどうか」で行われるため、`tintiro.admin` 権限を非 OP プレイヤーに付与してもコマンドは実行できません。例外として `/tintiro join` ・ `/tintiro leave` は **自分自身を対象にする場合のみ一般プレイヤーでも実行可能** で、他プレイヤー名を指定して参加/離脱させる場合のみ OP 権限が必要です。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
 
 ## トラブルシューティング
 

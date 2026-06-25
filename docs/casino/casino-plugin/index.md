@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎰 カジノ・ギャンブル</span></div>
   <div class="quick-card"><span class="label">構成</span><span class="value">銀行＋8ゲーム（9モジュール）</span></div>
   <div class="quick-card"><span class="label">共通通貨</span><span class="value">エメラルド</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 26.1.2</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! info "CasinoPlugin の位置づけ"

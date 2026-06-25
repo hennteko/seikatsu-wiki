@@ -138,9 +138,19 @@
 /quiz ranking tower
 ```
 
+```text title="クイズタワーのロビーへ移動"
+/quiz join
+```
+
+```text title="クイズタワーから退出（退出地点へ移動）"
+/quiz leave
+```
+
 | コマンド | エイリアス | 説明 |
 |---|---|---|
 | `/quiz` | `/q` | クイズのヘルプを表示 |
+| `/quiz join` | ― | クイズタワーのロビーへ移動 |
+| `/quiz leave` | ― | クイズタワーから退出（退出地点へ移動） |
 | `/quiz daily` / `/qd` | ― | デイリークイズに挑戦 |
 | `/quiz tower` / `/qt` | ― | クイズタワーに挑戦 |
 | `/quiz ranking <answers\|correct\|tower>` | ― | ランキングを表示 |
