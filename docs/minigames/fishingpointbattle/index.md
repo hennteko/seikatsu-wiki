@@ -4,7 +4,7 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">2人以上（最小2人）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">1人以上（既定 min-players 1）</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">既定5分（1〜60分で指定可）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>

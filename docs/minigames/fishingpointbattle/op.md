@@ -54,21 +54,33 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 /fpb setsign leave
 ```
 
-!!! note "開始看板（start）はコマンドで登録できません"
-    現バージョンの `setsign` は **join / leave の2種類のみ** で、開始看板を登録するコマンド（`setstart` 等）はありません。ゲーム開始は `/fpb start [分]`（全員可・人数充足で開始）で行ってください。
+```text title="視線先の看板を開始看板として登録"
+/fpb setsign start
+```
+
+```text title="視線先の看板の登録を解除（看板を見ながら実行）"
+/fpb setsign delete
+```
+
+!!! note "開始看板（start）も登録できます"
+    現バージョンの `setsign` は **join / leave / start の3種類** に対応します。`/fpb setsign start` で開始看板を登録すると、その看板を右クリックするだけでゲームを開始できます。登録を解除したいときは、対象の看板を見ながら `/fpb setsign delete` を実行してください（join / leave / start いずれの登録も解除できます）。
+
+!!! warning "開始看板のクリックは OP（`fpb.admin`）のみ"
+    `/fpb setsign start` で登録した **開始看板を右クリックして開始できるのは `fpb.admin` 権限を持つプレイヤーだけ** です。一方、コマンドの `/fpb start [分]` は権限不要（全員可）です。一般プレイヤーにも開始させたい場合はコマンド導線を案内してください。
 
 !!! note "必須の座標と任意の座標"
     初期リスポーン（`setstartspawn`）・ロビー（`setlobby`）・ゲームエリアの角1/2（`setfield 1`・`setfield 2`）の4点はゲーム開始に **必須** です。すべて設定されていないと `/fpb start` を実行できません。`fishspot`（高ポイントゾーン）は **任意** で、未設定でもゲームは開始できます。設定した座標は config.yml の `locations` セクションに自動保存されます。
 
 !!! tip "看板での参加導線を設置"
-    プレイヤーの参加・退出は看板で行います。看板を設置し、**看板を見ながら（5ブロック以内）** `/fpb setsign join`（参加看板）または `/fpb setsign leave`（退出看板）を実行して登録してください。
+    プレイヤーの参加・退出・開始は看板で行えます。看板を設置し、**看板を見ながら（5ブロック以内）** `/fpb setsign join`（参加看板）・`/fpb setsign leave`（退出看板）・`/fpb setsign start`（開始看板）を実行して登録してください。
 
-    - 看板テキストはプラグインが自動で書き込みます（1行目 `[釣り大会]`、2行目 `▶クリックで参加`／`▶クリックで退出`）。
-    - 位置は config.yml の `signs.join` / `signs.leave` に保存され、再起動後も有効です。
+    - 看板テキストはプラグインが自動で書き込みます（1行目 `[釣り大会]`、2行目 `▶クリックで参加`／`▶クリックで退出`／`▶クリックで開始`）。
+    - 位置は config.yml の `signs.join` / `signs.leave` / `signs.start` に保存され、再起動後も有効です。
     - クリック判定は **登録された位置との一致** で行われるため、手書きで同じ文字を書いた看板は機能しません（手書き登録は廃止）。
-    - 登録状況は `/fpb status` の「参加看板／退出看板」欄で確認できます。
+    - 登録を解除するには、対象の看板を見ながら `/fpb setsign delete` を実行します。
+    - 登録状況は `/fpb status` の「参加看板／退出看板／開始看板」欄で確認できます。
 
-    参加看板を使うには `fpb.play` 権限（既定で全員に付与）が必要です。
+    参加看板を使うには `fpb.play` 権限（既定で全員に付与）が必要です。開始看板のクリックには `fpb.admin` 権限が必要です。
 
 ## config.yml 設定項目
 
@@ -77,7 +89,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `default-duration` | 5 | デフォルト制限時間（分） |
-| `min-players` | 2 | 開始に必要な最小参加人数 |
+| `min-players` | 1 | 開始に必要な最小参加人数（既定 `1` で一人開催が可能） |
 | `countdown-seconds` | 5 | 開始前カウントダウン（秒） |
 
 ### コンボ設定（`combo`）
@@ -173,7 +185,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `beacon-radius` | 3.0 | 魚寄せビーコンの効果半径（ブロック）。小数指定可 |
 
 !!! note "魚寄せビーコンのアイテム説明文"
-    `beacon-radius` を変更しても、配布される「魚寄せビーコン」アイテムの説明文（lore）に表示される「半径3ブロック」という記述は `SpecialItemManager` 側でハードコードされているため変わりません。実効範囲は config の値が優先されますが、アイテム説明と食い違う場合は周知してください。
+    配布される「魚寄せビーコン」アイテムの説明文（lore）に表示される効果半径・ボーナス倍率・設置時間は、`item-effects` の `beacon-radius` / `beacon-bonus` / `beacon-duration` の値から動的に生成されます（半径は整数に丸めて表示）。config を変更すれば説明文にも反映されます。
 
 ### 報酬設定（`rewards`）
 
@@ -220,7 +232,8 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `/fpb setlobby` | 待機ロビー地点を設定 |
 | `/fpb setfield <1\|2>` | ゲームエリアの角を設定 |
 | `/fpb setfishspot` | 高ポイントゾーンを設定（任意） |
-| `/fpb setsign <join\|leave>` | 視線先の看板を参加／退出看板として登録（テキストは自動書き込み） |
+| `/fpb setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録（テキストは自動書き込み） |
+| `/fpb setsign delete` | 視線先の看板の登録を解除 |
 | `/fpb stop` | ゲームを強制終了 |
 | `/fpb reload` | config.yml を再読み込み |
 
@@ -228,15 +241,15 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用 |
-| `fpb.play` | 全員 | ゲームに参加できる（看板・`/fpb join`） |
+| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用、**開始看板のクリック** |
+| `fpb.play` | 全員 | ゲームに参加できる（参加看板・`/fpb join`） |
 
 !!! note "コマンド権限の設計"
     `/fpb` コマンド自体に権限制限はなく、サブコマンドごとに権限チェックします。**`join`・`leave`・`start`・`help`・`status` は権限不要（全員可）** で、参加・退出・開始は看板でもコマンドでも行えます。会場設定・`stop`・`reload` のみ `fpb.admin` が必要です。`start` には管理者権限は不要な点に注意してください。
 
 ## ゲームの運営
 
-1. プレイヤーがロビー看板から参加し、`min-players`（既定2人）以上集まるのを待つ。
+1. プレイヤーがロビー看板から参加し、`min-players`（既定1人）以上集まるのを待つ。
 2. `/fpb status` で参加人数と座標設定を確認する。
 3. `/fpb start` または `/fpb start <分>` でゲームを開始する。
 4. 異常時は `/fpb stop` で強制終了する。
