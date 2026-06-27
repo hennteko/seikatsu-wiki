@@ -65,8 +65,8 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 !!! note "開始看板（start）も登録できます"
     現バージョンの `setsign` は **join / leave / start の3種類** に対応します。`/fpb setsign start` で開始看板を登録すると、その看板を右クリックするだけでゲームを開始できます。登録を解除したいときは、対象の看板を見ながら `/fpb setsign delete` を実行してください（join / leave / start いずれの登録も解除できます）。
 
-!!! warning "開始看板のクリックは OP（`fpb.admin`）のみ"
-    `/fpb setsign start` で登録した **開始看板を右クリックして開始できるのは `fpb.admin` 権限を持つプレイヤーだけ** です。一方、コマンドの `/fpb start [分]` は権限不要（全員可）です。一般プレイヤーにも開始させたい場合はコマンド導線を案内してください。
+!!! note "開始看板のクリックは全員可"
+    `/fpb setsign start` で登録した **開始看板は、誰がクリックしても（権限不要で）ゲームを開始できます**。コマンドの `/fpb start [分]` も同様に権限不要（全員可）です。最小参加人数（`min-players`）を満たしていれば、一般プレイヤーも看板・コマンドのどちらからでも開始できます。
 
 !!! note "必須の座標と任意の座標"
     初期リスポーン（`setstartspawn`）・ロビー（`setlobby`）・ゲームエリアの角1/2（`setfield 1`・`setfield 2`）の4点はゲーム開始に **必須** です。すべて設定されていないと `/fpb start` を実行できません。`fishspot`（高ポイントゾーン）は **任意** で、未設定でもゲームは開始できます。設定した座標は config.yml の `locations` セクションに自動保存されます。
@@ -80,7 +80,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
     - 登録を解除するには、対象の看板を見ながら `/fpb setsign delete` を実行します。
     - 登録状況は `/fpb status` の「参加看板／退出看板／開始看板」欄で確認できます。
 
-    参加看板を使うには `fpb.play` 権限（既定で全員に付与）が必要です。開始看板のクリックには `fpb.admin` 権限が必要です。
+    参加看板を使うには `fpb.play` 権限（既定で全員に付与）が必要です。開始看板のクリックは権限不要で、誰でも開始できます。
 
 ## config.yml 設定項目
 
@@ -241,8 +241,11 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用、**開始看板のクリック** |
+| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用 |
 | `fpb.play` | 全員 | ゲームに参加できる（参加看板・`/fpb join`） |
+
+!!! note "開始看板・`/fpb start` は権限不要"
+    `start` 系の操作（開始看板のクリック・`/fpb start`）には `fpb.admin` も `fpb.play` も不要で、**誰でも**最小参加人数を満たせばゲームを開始できます。
 
 !!! note "コマンド権限の設計"
     `/fpb` コマンド自体に権限制限はなく、サブコマンドごとに権限チェックします。**`join`・`leave`・`start`・`help`・`status` は権限不要（全員可）** で、参加・退出・開始は看板でもコマンドでも行えます。会場設定・`stop`・`reload` のみ `fpb.admin` が必要です。`start` には管理者権限は不要な点に注意してください。

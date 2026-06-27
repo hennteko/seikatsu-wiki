@@ -53,8 +53,8 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 ```text title="開始看板を設定（モード別。クリックでそのモードの試合開始）"
 /splatoon setsign start <turf|area|hoko|tower>
 ```
-```text title="看板の登録を解除（視線先の参加/離脱/ブキ/開始看板）"
-/splatoon removesign
+```text title="看板の登録を解除（視線先の参加/離脱/ブキ/開始看板を自動判別）"
+/splatoon setsign delete
 ```
 ```text title="ロビーのスポーン地点（任意・試合終了後の戻り先）"
 /splatoon setlobby
@@ -150,12 +150,13 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `/splatoon setlobby` / `setstartspawn` | ロビー / ゲーム外スポーンを現在地に設定 |
 | `/splatoon setsign <join\|leave\|weapon>` | 視線先の看板を参加 / 離脱 / ブキ選択看板に設定 |
 | `/splatoon setsign start <turf\|area\|hoko\|tower>` | 視線先の看板を **モード別の開始看板** に設定 |
+| `/splatoon setsign delete` | 視線先の看板の登録を解除（参加 / 離脱 / ブキ / 開始を自動判別） |
 | `/splatoon setmode <turf\|area\|hoko\|tower>` | 既定の対戦モードを設定 |
 | `/splatoon setzone <1\|2> <1\|2>` | ガチエリアのゾーンを設定 |
 | `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定（ゴール台はホコ専用） |
 | `/splatoon settower checkpoint <orange\|blue> <番号>` | ガチヤグラの番号付きCPを設定（最大番号がゴール） |
 | `/splatoon settower clear` | ガチヤグラの経路・関門を全消去 |
-| `/splatoon removesign` | 視線先の看板（参加 / 離脱 / ブキ / 開始）の登録を解除 |
+| `/splatoon setsign delete` | 視線先の看板（参加 / 離脱 / ブキ / 開始）の登録を解除（自動判別） |
 
 ## 権限ノード
 

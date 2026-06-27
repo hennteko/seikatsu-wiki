@@ -34,9 +34,10 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `default-course` | `"1000m"` | コースIDを省略したとき（看板・コマンド）に使われる既定コース |
+| `game.result-seconds` | 10 | クリア後、結果発表（ランキング表示）を見せてからロビーへ戻すまでの秒数。0で即時 |
 | `actionbar-interval` | 5 | 計測中アクションバーの更新間隔（tick／20=1秒） |
 | `sign-update-interval` | 30 | ランキング看板の自動更新間隔（秒） |
-| `ranking-display-count` | 10 | ランキング表示件数の設定値（※現状コードでは未使用。表示は常に10件固定） |
+| `ranking-display-count` | 10 | チャット表示時のランキング件数（`/asure ranking`・クリア／ギブアップ後の表示に使用。コンソール実行時のみ10件固定） |
 
 ### コース設定（`courses`）
 
@@ -68,7 +69,7 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 
 ### 戻るアイテム設定（`return-item`）
 
-アスレ計測中に配られる、通過済みチェックポイントへワープできるアイテムの設定です（**ドロッパーでは配られません**）。右クリックで通過済みCDの選択GUIが開き、選んだCPへワープします（消費されず、タイム・距離記録も減りません）。判定はギブアップ同様にPDCタグで行うため、同素材の通常アイテムには反応しません。
+アスレ計測中に配られる、通過済みチェックポイントへワープできるアイテムの設定です（**ドロッパーでは配られません**）。右クリックで通過済みCPの選択GUIが開き、選んだCPへワープします（消費されず、タイム・距離記録も減りません）。判定はギブアップ同様にPDCタグで行うため、同素材の通常アイテムには反応しません。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
@@ -94,37 +95,54 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
 ### 2. スポーン地点・スタート地点を設定する
 
-設定したい位置に立って実行します。
+設定したい位置に立って実行します。地点は3種類あります。
+
+```text title="初期スポーン（途中抜け・切断時の戻り先）を現在地に設定"
+/asure setstartspawn
+```
 
 ```text title="ロビー（クリア・ギブアップ後の戻り先）を現在地に設定"
-/asure setup spawn [コースID]
+/asure setlobby [コースID]
 ```
 
-```text title="スタート地点を現在地に設定（距離計測の基準にもなる）"
-/asure setup start [コースID]
+```text title="スタート地点（開始時のTP先・距離計測の基準）を現在地に設定"
+/asure setspawn [コースID]
 ```
 
-コースIDを省略すると `default-course` が対象になります。
+コースIDを省略すると `default-course` が対象になります（`setstartspawn` はコース非依存の全体設定です）。
+
+!!! note "地点の役割の違い"
+    - **初期スポーン**（`setstartspawn`）… `/asure leave` や切断時の戻り先。全コース共通の1か所。config の `default-spawn` に保存されます。未設定の場合は最初のコースのロビー、それも無ければワールドスポーンへフォールバックします。
+    - **ロビー**（`setlobby`）… クリア・ギブアップ後の戻り先。config の `courses.<ID>.spawn` に保存されます。
+    - **スタート地点**（`setspawn`）… 開始時のテレポート先で、アスレの距離計測の基準（Z座標）にもなります。config の `courses.<ID>.start` に保存されます。
 
 ### 3. 看板を設置する
 
-看板の **1行目** に種別、**2行目** に役割、**3行目** にコースID を書いて設置すると、AsureTimer の機能看板に変換されます。
+看板は **コマンドで登録** します。設置したい看板に視線を向けた状態（5ブロック以内）で、対応する `setsign` コマンドを実行すると、その看板が機能看板として登録され文面が自動整形されます。**看板に手書きしても登録されません**（旧仕様の手書き登録は廃止されました）。
 
-| 1行目 | 2行目 | 3行目 | 4行目 | 役割 |
-|---|---|---|---|---|
-| `[asure]` | `start` | コースID | - | アスレのスタート看板 |
-| `[asure]` | `goal` | コースID | - | アスレのゴール看板 |
-| `[asure]` | `ranking` | コースID | `time` または `distance` | アスレのランキング看板 |
-| `[dropper]` | `start` | コースID | - | ドロッパーのスタート看板 |
-| `[dropper]` | `goal` | コースID | - | ドロッパーのゴール看板 |
-| `[dropper]` | `ranking` | コースID | `time` | ドロッパーのランキング看板 |
+```text title="開始看板を視線先の看板に登録（コースID省略時は default-course）"
+/asure setsign start [コースID]
+```
+
+```text title="ゴール看板を視線先の看板に登録（コースID省略時は default-course）"
+/asure setsign goal [コースID]
+```
+
+```text title="ランキング看板を視線先の看板に登録（種別は time または distance、両方とも必須）"
+/asure setsign ranking <コースID> <time|distance>
+```
+
+```text title="視線先の登録看板を解除する"
+/asure setsign delete
+```
 
 !!! note "看板の仕様"
-    - 3行目（コースID）を空欄にすると `default-course` が使われます。
-    - ランキング看板の4行目は `time`（クリアタイム）か `distance`（到達距離）で、省略時は `time` です。
-    - 看板の作成には `asuretimer.admin` 権限が必要です。
-    - 設置に成功するとプラグインが看板の文面（`[AsureTimer]` `▶ START ▶` など）を自動整形します。
-    - ランキング看板は `sign-update-interval`（既定30秒）ごとに自動更新され、裏面にベスト記録が表示されます。
+    - 看板の種別（アスレ／ドロッパー）は **コースの種別** で自動判定されます。看板側で `[asure]`/`[dropper]` を書き分ける必要はありません。
+    - `start` / `goal` はコースIDを省略すると `default-course` が対象になります。`ranking` はコースIDと種別（`time`/`distance`）の両方が必須です。
+    - 看板の登録・解除には `asuretimer.admin` 権限が必要です。
+    - 登録に成功するとプラグインが看板の文面を自動描画します（アスレは `[AsureTimer]` `>> START >>` `* GOAL *`、ドロッパーは `[Dropper]` `v START v` `* CLEAR *`、ランキングは `[Ranking]`）。
+    - 登録看板を **破壊すると登録も自動解除** されます。
+    - ランキング看板は `sign-update-interval`（既定30秒）ごとに自動更新され、表面に1位プレイヤー名、裏面にベスト記録が表示されます。
 
 ## 管理コマンド
 
@@ -132,14 +150,19 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 
 | コマンド | 説明 |
 |---|---|
-| `/asure join [コースID]` | スタート看板クリックと同じ処理でコースに参加・計測開始（`asuretimer.play` 必要） |
-| `/asure setup <spawn\|start> [コースID]` | 現在地をスポーン／スタート地点に設定 |
+| `/asure start [コースID] [プレイヤー]` | スタート看板クリックと同じ処理でコースに参加・計測開始。自分の開始は `asuretimer.play`、他プレイヤー指定は `asuretimer.admin` が必要（`/asure join` も同じ） |
+| `/asure leave [プレイヤー]` | 計測を中止して離脱（記録なし・初期スポーンへ）。他プレイヤー指定は `asuretimer.admin` 必要 |
+| `/asure status [コースID]` | 地点設定・看板登録数・現在のプレイ人数など設定状況を表示（誰でも実行可） |
+| `/asure setstartspawn` | 現在地を初期スポーン（離脱・切断時の戻り先）に設定 |
+| `/asure setlobby [コースID]` | 現在地をロビー（クリア・ギブアップ後の戻り先）に設定 |
+| `/asure setspawn [コースID]` | 現在地をスタート地点（開始時のTP先・距離計測基準）に設定 |
+| `/asure setsign <start\|goal\|ranking\|delete> ...` | 視線先の看板を機能看板として登録／解除 |
 | `/asure course list` | 登録済みコースの一覧（種別・距離・設定状況）を表示 |
 | `/asure course create <ID> <asure\|dropper> [距離]` | コースを新規作成 |
 | `/asure course settype <ID> <asure\|dropper>` | コースの種別を変更 |
 | `/asure course delete <ID>` | コースを削除 |
 | `/asure ranking [コースID] [time\|distance]` | ランキングを表示 |
-| `/asure reload` | config.yml・コース定義・ギブアップ／戻るアイテム素材を再読み込み |
+| `/asure reload` | config.yml・コース定義・看板・ギブアップ／戻るアイテム素材を再読み込み |
 | `/asure stats` | 自分の全コース統計を表示 |
 | `/asure stats <プレイヤー>` | 指定プレイヤーの全コース統計を表示（他人指定は `asuretimer.admin` 必要） |
 | `/asure stats <プレイヤー> <コースID>` | 指定プレイヤー・コースの統計を表示 |
@@ -165,27 +188,28 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 !!! note "サブコマンドごとの権限ガード"
     `/asure` コマンド自体には plugin.yml で `permission` が指定されていないため、コマンド自体は誰でも叩けます。サブコマンドごとに以下のチェックが入ります。
 
-    - `setup` / `reload` / `course` … `asuretimer.admin` を実装側でチェック
+    - `setstartspawn` / `setlobby` / `setspawn` / `setsign` / `reload` / `course` … `asuretimer.admin` を実装側でチェック
+    - `start`／`leave` で **他プレイヤーを指定** した場合 … `asuretimer.admin` を実装側でチェック
     - `stats <他プレイヤー>` … `asuretimer.admin` を実装側でチェック
-    - `join` … `asuretimer.play` を実装側でチェック（既定全員可）
-    - `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
+    - `start`（自分） … `asuretimer.play` を実装側でチェック（既定全員可。`join` も同じ）
+    - `leave`（自分） / `status` / `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
     - `ranking` … 権限チェックなし（誰でも実行可）
 
-    そのため一般プレイヤーは `/asure ranking` や `/asure stats` を実行できます。アクションバー / 看板 / GUI と併用する運用で問題ありません。
+    そのため一般プレイヤーは `/asure ranking` や `/asure stats`、`/asure status` を実行できます。アクションバー / 看板 / GUI と併用する運用で問題ありません。
 
 ## トラブルシューティング
 
 ??? failure "看板をクリックしても計測が始まらない"
-    看板が AsureTimer の看板として認識されているか確認してください（設置時に `[AsureTimer]` 等へ自動整形されます）。また、看板3行目のコースIDが `courses` に登録され、`start` 地点が設定済みである必要があります。`/asure course list` で `[設定済]` になっているか確認してください。
+    看板が AsureTimer の看板として登録されているか確認してください（`/asure setsign start` 等で登録すると文面が自動整形されます。手書きでは登録されません）。また、看板に紐づくコースIDが `courses` に登録され、`start` 地点が設定済みである必要があります。`/asure course list` で `[設定済]`、`/asure status` で看板登録数を確認してください。
 
-??? failure "「コースが設定されていません」と表示される"
-    対象コースの **スタート地点が未設定** です。スタート地点に立って `/asure setup start <コースID>` を実行してください。スポーン地点も `/asure setup spawn <コースID>` で設定しておくと、クリア・ギブアップ後に正しくロビーへ戻れます。
+??? failure "「コースのスタート地点が未設定です」と表示される"
+    対象コースの **スタート地点が未設定** です。スタート地点に立って `/asure setspawn <コースID>` を実行してください。ロビー地点も `/asure setlobby <コースID>` で設定しておくと、クリア・ギブアップ後に正しくロビーへ戻れます。
 
 ??? failure "コースが作成・登録できない"
     `/asure course create <ID> <asure|dropper> [距離]` の形式を確認してください。種別は `asure` か `dropper` のみ、距離は数値で指定します。実行には `asuretimer.admin` 権限が必要です。
 
 ??? failure "ランキング看板が更新されない / 1位が表示されない"
-    ランキング看板はチャンクが読み込まれている範囲のみ `sign-update-interval`（既定30秒）ごとに更新されます。記録が1件も無いコースでは `---` が表示されます。看板1行目が `[Ranking]` / `[DropperRank]` に整形されているか確認してください。
+    ランキング看板はチャンクが読み込まれている範囲のみ `sign-update-interval`（既定30秒）ごとに更新されます。記録が1件も無いコースでは `---` が表示されます。看板1行目が `[Ranking]` に整形されているか確認してください。なおドロッパーコースのランキングは距離概念が無いため常にタイム表示になります。
 
 ??? failure "ギブアップアイテムが効かない"
     ギブアップ判定はアイテムの PersistentDataContainer タグで行われます。プラグインが配布したアイテムのみ反応するため、自分でクリエイティブ等で出した同名アイテムは機能しません。スタート看板から再度コースを開始すれば、新しい正規のギブアップアイテムが配布されます。`giveup-item.material` を変更した直後は `/asure reload` を実行し、その後コースを再スタートしてください。
@@ -194,7 +218,7 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
     チェックポイントは **金の感圧板（軽量用感圧板 / LIGHT_WEIGHTED_PRESSURE_PLATE）** を踏むことで記録されます。コース上に金の感圧板を設置してください。なお距離は `start` 地点からの **Z方向の進行** で計算されるため、コースはZ方向に伸びるよう設計すると距離表示が正しく機能します。
 
 ??? failure "設定変更が反映されない"
-    `config.yml` を編集したら `/asure reload` を実行してください。コース定義・座標・メッセージが再読み込みされます。看板自体の文面は再設置するまで変わりません。
+    `config.yml` を編集したら `/asure reload` を実行してください。コース定義・座標・看板登録・ギブアップ／戻るアイテム素材が再読み込みされ、登録済み看板の文面も再描画されます。なお `messages`（チャット文面）は実行時に都度参照されるため即時反映されます。
 
 ---
 

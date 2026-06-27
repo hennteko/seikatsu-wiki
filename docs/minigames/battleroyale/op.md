@@ -36,6 +36,7 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `maxPlayers` | 16 | ロビーの最大参加人数 |
+| `game.result-seconds` | 10 | 勝敗確定後、結果発表を表示してからロビーへ戻すまでの秒数 |
 | `shrinkTime` | 60 | ワールドボーダーが縮小する **間隔**（秒） |
 | `shrinkAmount` | 50 | 1回の縮小で縮むブロック数 |
 | `shrinkSpeed` | 5 | 1回の縮小にかける秒数（ボスバー演出） |
@@ -65,7 +66,7 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 | キー | 形式 | 説明 |
 |---|---|---|
 | `chestLocations` | 座標のリスト | アイテムが補充されるチェストの座標一覧 |
-| `itemPool` | 重み付きエントリのリスト | チェストにランダムで入るアイテム。各要素は `material` / `weight`（出現重み）/ `min-amount` / `max-amount`。既定で6種が初期投入される（旧形式のアイテムID文字列リストも後方互換で読み込み可） |
+| `itemPool` | 重み付きエントリのリスト | チェストにランダムで入るアイテム。既定で6種が初期投入される。3形式に対応：①`material` 形式（`material` / `weight` / `min-amount` / `max-amount`）、②`item` 形式（ポーション効果・チップ矢・エンチャント等のメタ情報を含む `ItemStack`。`/btr setitem` で自動的にこの形式で保存）、③旧形式（アイテムID文字列のみ・重み1/個数1扱い）も後方互換で読み込み可 |
 
 ### 状態管理項目（自動管理）
 
@@ -114,6 +115,10 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 /btr setsign start
 ```
 
+```text title="視線先の看板の登録を解除（看板を見ながら実行・表示もクリア）"
+/btr setsign delete
+```
+
 ```text title="チェストを登録（チェストを見ながら実行・複数登録可）"
 /btr setchest
 ```
@@ -146,7 +151,7 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
     初期サイズはフィールド範囲（`setfield 1`/`2`）から自動算出されます。範囲を直接指定するコマンド（旧 `setarea`）はありません。縮小量・停止サイズ・縮小演出秒は `config.yml` の `shrinkAmount` / `minBorderSize` / `shrinkSpeed` で調整します。
 
 !!! tip "看板について"
-    `/btr setsign <join|leave|start>` で登録した看板は、プラグインが自動的に装飾します（`[BattleRoyale]` の見出しや参加人数表示など）。参加看板はクリックでロビー参加、退出看板はクリックで離脱、開始看板はクリックでゲーム開始（開始はOP権限が必要）です。なお `/btr join`・`/btr leave` コマンド（全員可）でも参加・退出できます。
+    `/btr setsign <join|leave|start>` で登録した看板は、プラグインが自動的に装飾します（`[BattleRoyale]` の見出しや参加人数表示など）。参加看板はクリックでロビー参加、退出看板はクリックで離脱、開始看板はクリックでゲーム開始（**開始は全員可**）です。なお `/btr join`・`/btr leave`・`/btr start` コマンド（いずれも全員可）でも操作できます。登録した看板を解除したいときは、その看板を見ながら `/btr setsign delete` を実行すると config から削除され、看板の表示もクリアされます。
 
 !!! note "設定の確認"
     `/btr status` で、地点・看板・ゲーム設定・チェスト数・アイテムプール数・現在のロビー状況をまとめて確認できます。ゲーム開始前に未設定項目がないか確認してください。
@@ -159,6 +164,7 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 | `/btr setlobby` | 受付ロビー地点を設定 |
 | `/btr setfield <1\|2>` | ゲームエリアの角1または2を設定 |
 | `/btr setsign <join\|leave\|start>` | 参加／退出／開始看板を設定 |
+| `/btr setsign delete` | 視線先の看板の登録を解除（表示もクリア） |
 | `/btr setchest` | 見ているチェストを登録 |
 | `/btr setitem [重み] [最小] [最大]` | 手持ちアイテムをアイテムプールに追加 |
 | `/btr itemlist` | アイテムプールの一覧と出現割合を表示 |
@@ -184,8 +190,11 @@ plugin.yml には次の2つの権限が定義されています。コード上�
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `battleroyale.admin` | OP | 管理系（setstartspawn / setlobby / setfield / setsign / setchest / setitem / itemlist / setweight / removeitem / settime / setmax / setteam / start / stop / reset / status） |
+| `battleroyale.admin` | OP | 管理系（setstartspawn / setlobby / setfield / setsign / setchest / setitem / itemlist / setweight / removeitem / settime / setmax / setteam / stop / reset。`/btr join <名前>`・`/btr leave <名前>` の他プレイヤー指定も含む） |
 | `battleroyale.play` | OP | `/btr team`（チーム参加）の使用権限 |
+
+!!! info "権限不要で全員が使えるコマンド"
+    `/btr join`・`/btr leave`（自分のみ）・`/btr start`・`/btr status` は権限チェックがなく、全プレイヤー（コマンドブロック／コンソール含む）が実行できます。`/btr start` は看板クリックと同じく誰でもゲームを開始できる点に注意してください。
 
 !!! note "join / leave は権限不要・team はOP権限"
     `/btr join`・`/btr leave` は **権限チェックがなく全プレイヤーが使えます**（看板の右クリックと同じ動作）。一方 `/btr team <チーム名>` は `battleroyale.play`（既定OP）が必要なため、一般プレイヤーにチーム分けを使わせたい場合は権限プラグインで `battleroyale.play` を付与してください。

@@ -10,7 +10,7 @@
 |---|---|
 | モジュール ID | `blackjack` |
 | 親プラグイン | CasinoPlugin（`jp.casinoplugin.CasinoPlugin`） |
-| メインコマンド | `/blackjack <join\|leave\|bet\|start\|stop\|setstartspawn\|setlobby\|setfield\|setsign>` |
+| メインコマンド | `/blackjack <join\|leave\|status\|bet\|start\|stop\|setstartspawn\|setlobby\|setfield\|setsign>` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/blackjack.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.blackjack.enabled` |
 | 依存モジュール | `bank`（エメラルド口座・共通通貨。必須） |
@@ -166,7 +166,7 @@
 | `/blackjack join [プレイヤー名]` | 自分対象は誰でも可／他人指定は OP | ロビーに参加（プレイヤーは `[BlackJack]` 看板から参加） |
 | `/blackjack leave [プレイヤー名]` | 自分対象は誰でも可／他人指定は OP | ロビーから退出（プレイヤーは `[BlackJack] leave` 看板から退出） |
 | `/blackjack bet <金額>` | OP | ロビー参加者全員のベット額を設定する（プレイヤーは `[BlackJack] bet` 看板から設定） |
-| `/blackjack setsign <join\|leave\|bet\|start\|remove>` | OP | 視線先の看板を指定種別の看板として登録/解除する（`bet` は掛け金変更GUI看板、金額引数なし） |
+| `/blackjack setsign <join\|leave\|bet\|start\|delete\|remove>` | OP | 視線先の看板を指定種別の看板として登録/解除する（`bet` は掛け金変更GUI看板、金額引数なし。`delete` / `remove` は設定解除） |
 
 !!! note "ゲーム開始時の挙動"
     `/blackjack start` を実行すると、ロビー参加者ごとに「ベット額が設定されているか」「口座残高が足りているか」を確認します。未設定・残高不足のプレイヤーは自動的にロビーから外され、有効な参加者の賭け金がポット（サーバー口座）へ集められてゲームが始まります。有効な参加者が0人の場合はゲームが中止されます。

@@ -23,7 +23,7 @@ Zinro（Minecraft人狼プラグイン）の導入・初期設定・config・権
 1. ビルドした `Zinro` のJARファイルをサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動すると `plugins/Zinro/config.yml` が自動生成される。
 3. 後述の初期設定（位置設定・占い看板・ゲート看板）を行う。
-4. 設定を変更したら `/zinro save` で保存し、`/zinro reload` で再読み込みする。
+4. 各設定コマンドは実行時に自動保存されます。`config.yml` を直接編集した場合は `/zinro reload` で再読み込みします。
 
 ## 初期設定
 
@@ -94,17 +94,20 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 /zinro setsign shop
 ```
 
-```text title="開始看板として登録（クリックでゲーム開始。/zinro setstart でも可）"
+```text title="開始看板として登録（クリックでゲーム開始）"
 /zinro setsign start
 ```
 
-登録するとプラグインが `[人狼]` / `▶クリックで参加`（参加看板）や `[人狼]` / `▶クリックで退出`（退出看板）などのテキストを自動で書き込みます。手書きによる自動登録は廃止されています。開始看板は `/zinro setstart` でも登録できます。
+登録するとプラグインが `[人狼]` / `▶クリックで参加`（参加看板）や `[人狼]` / `▶クリックで退出`（退出看板）などのテキストを自動で書き込みます。手書きによる自動登録は廃止されています。
 
-### 5. 設定の保存
-
-```text title="設定を保存する"
-/zinro save
+```text title="看板の登録を解除（視線先の看板を自動判別）"
+/zinro setsign delete
 ```
+
+`setsign delete` は、視線先（5ブロック以内）の看板がゲート看板（参加／退出／ショップ／開始）か占い看板かを自動判別して登録を解除し、看板のテキストも消去します。
+
+!!! tip "設定は自動保存されます"
+    `setsign`・`setboard`・`setstartspawn`・`setlobby`・`setspawn`・`setfield` などの設定コマンドは実行時に自動保存されます。`/zinro save` コマンドはありません。`config.yml` を直接編集した場合のみ `/zinro reload` を実行してください。
 
 ## config.yml 主要項目
 
@@ -169,15 +172,15 @@ role_distribution:
 | `zinro.admin` | OP | 管理・セットアップコマンドすべて |
 
 !!! note "プレイヤー向けの権限"
-    `/zinro join`・`/zinro leave`・`/zinro start` は **権限不要で全プレイヤーが使えます**（ゲート看板と同等）。ショップを開くコマンドはなく、ショップは看板またはショップの杖から開きます。それ以外の設定・管理コマンドは `zinro.admin`（OP）が必要です。
+    `/zinro join`・`/zinro leave`・`/zinro start`・`/zinro status` は **権限不要で全プレイヤーが使えます**（`join`・`leave`・`start` はゲート看板と同等）。ショップを開くコマンドはなく、ショップは看板またはショップの杖から開きます。それ以外の設定・管理コマンドは `zinro.admin`（OP）が必要です。
 
 ## 管理コマンド
 
-設定・管理コマンドは `zinro.admin` 権限が必要です（`join` / `leave`（自己離脱）/ `start` は全員可）。
+設定・管理コマンドは `zinro.admin` 権限が必要です（`join` / `leave`（自己離脱）/ `start` / `status` は全員可）。
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/zinro join` / `leave` / `start` | 全員 | 参加 / 退出 / 開始（ゲート看板と同等） |
+| `/zinro join` / `leave` / `start` / `status` | 全員 | 参加 / 退出 / 開始（ゲート看板と同等）/ 設定状況の確認 |
 | `/zinro stop` | admin | ゲームを強制終了する |
 | `/zinro setstartspawn` | admin | 初期スポーン地点を現在地に設定 |
 | `/zinro setlobby` | admin | ロビー地点を現在地に設定 |
@@ -185,11 +188,12 @@ role_distribution:
 | `/zinro setfield <1\|2>` | admin | フィールド範囲を現在地に設定 |
 | `/zinro setboard <1-20>` | admin | 見ている看板を占い看板として登録 |
 | `/zinro setsign <join\|leave\|shop\|start>` | admin | 視線先の看板をゲート／開始看板として登録 |
-| `/zinro setstart` | admin | 視線先の看板を開始看板として登録（`setsign start` と同等） |
+| `/zinro setsign delete` | admin | 視線先の看板（ゲート看板・占い看板）の登録を解除 |
 | `/zinro leave <player>` | admin | 指定プレイヤーをロビーから強制離脱させる |
-| `/zinro status` | admin | 設定状況を確認する |
-| `/zinro save` | admin | 設定を保存する |
 | `/zinro reload` | admin | 設定を再読み込みする |
+
+!!! note "設定の保存・`/zinro setstart` について"
+    各設定コマンドは実行時に自動保存されるため、`/zinro save` コマンドは存在しません。また旧 `/zinro setstart` は廃止され、開始看板の登録は `/zinro setsign start` に統一されています。
 
 ## 運営の流れ
 
@@ -213,14 +217,14 @@ role_distribution:
     サーバーのJavaバージョンが古い可能性があります。Zinroが要求するバージョンに合わせてJavaを更新してください。
 
 ??? failure "設定変更が反映されない"
-    `config.yml` を直接編集した場合は `/zinro reload` を実行してください。コマンドで設定を変更した場合は `/zinro save` で保存してからリロードします。
+    `config.yml` を直接編集した場合は `/zinro reload` を実行してください。`setsign`・`setboard`・各位置設定などのコマンドで変更した場合は実行時に自動保存されるため、保存操作は不要です。
 
 ## 実装・ドキュメントに関する注意
 
 !!! warning "同梱ドキュメントとコマンド体系の差異"
     Zinroには複数の同梱ドキュメント（README.md・SETUP_GUIDE.md・QUICKSTART.md・各種PHASEレポートなど）が含まれていますが、内容が古く現行バージョンと食い違う箇所があります。**このWIKIは現行コード（v1.4.0）の実装を正としています。** 特に次の点に注意してください。
 
-    - `/zinro vote`・`/zinro config`・`/zinro setup ...` といったコマンドは、現行コードには **存在しません**。投票は投票用紙GUIで行います。参加・退出・開始は `/zinro join`・`/zinro leave`・`/zinro start`（全員可）またはゲート看板で行えます。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。
+    - `/zinro vote`・`/zinro config`・`/zinro setup ...`・`/zinro save`・`/zinro setstart` といったコマンドは、現行コードには **存在しません**。投票は投票用紙GUIで行います。参加・退出・開始は `/zinro join`・`/zinro leave`・`/zinro start`（全員可）またはゲート看板で行えます。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。開始看板の登録は `/zinro setsign start`、看板の登録解除は `/zinro setsign delete` です。設定は実行時に自動保存されます。
     - 一部ドキュメントに「死神（REAPER）削除済み」とありますが、現行の役職定義には未使用の死神が残っています。実際の配役には登場しないため通常プレイへの影響はありません。
     - 価格変更コマンドや `shop_prices` 設定は現行の同梱 `config.yml` には含まれません。ショップ価格は固定です。
 

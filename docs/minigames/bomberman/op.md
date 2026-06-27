@@ -66,11 +66,20 @@ OP権限（`bomberman.admin`）で、設定したい場所に **立って／対�
 ```text title="開始看板を登録"
 /bomberman setsign start
 ```
+```text title="開始看板を登録（任意：2行目に表示する識別子ラベルを付与）"
+/bomberman setsign start <識別子>
+```
 ```text title="視線先の看板の登録を解除"
+/bomberman setsign delete
+```
+```text title="視線先の看板の登録を解除（互換エイリアス）"
 /bomberman removesign
 ```
 
 テキストはプラグインが自動で書き込みます（1行目 `[ボンバーマン]`）。位置は config の `signs` に保存され、再起動後も有効です。看板の破壊は `bomberman.admin` のみ可能で、破壊すると登録も解除されます。
+
+!!! note "看板の登録解除"
+    解除は **視線先（6ブロック以内）の看板を自動判別** して行います。`/bomberman setsign delete` が標準で、`/bomberman removesign` は同じ動作の互換エイリアスです。開始看板に付けた識別子ラベルは単一ステージのため **表示用**（看板2行目に表示）で、ステージ切替などには影響しません。
 
 ## ゲーム設定コマンド（`bomberman.admin`）
 

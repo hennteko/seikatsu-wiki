@@ -10,7 +10,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 |---|---|
 | プラグイン名 | Yukicraft |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukicraft <join\|leave\|start\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setstart\|setsign\|reload>` |
+| メインコマンド | `/yukicraft <join\|leave\|start\|status\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setsign\|reload>` |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Yukicraft/config.yml` |
 
@@ -52,7 +52,10 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `game.max-players` | 16 | 最大参加人数 |
-| `game.end-delay` | 10 | ゲーム終了後、ロビーへ戻るまでの秒数 |
+| `game.result-seconds` | 10 | ゲーム終了後、結果発表してからロビーへ戻るまでの秒数 |
+
+!!! note "旧キー `game.end-delay` からの自動移行"
+    旧バージョンの `game.end-delay` は、プラグイン起動時に自動で `game.result-seconds` へ移行され、旧キーは削除されます。手動での書き換えは不要です。
 
 ### クリーパー設定（`creeper`）
 
@@ -99,15 +102,14 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/yukicraft join` / `leave` / `start` | 全員 | 参加 / 退出 / 開始（看板と同等。引数省略で自分） |
+| `/yukicraft status` | 全員 | 設定状況・ゲーム状態を確認する |
 | `/yukicraft join <対象>` / `leave <対象>` | `yukicraft.admin` | 対象を指定して参加／離脱させる |
 | `/yukicraft stop` | `yukicraft.admin` | ゲームを強制終了する |
 | `/yukicraft setstartspawn` | `yukicraft.admin` | 初期リスポーン地点を設定する |
 | `/yukicraft setlobby` | `yukicraft.admin` | ロビー地点を設定する |
 | `/yukicraft setspawn` | `yukicraft.admin` | ゲーム開始スポーン地点を設定する |
 | `/yukicraft setfield <1\|2>` | `yukicraft.admin` | ゲームエリアの角を設定する |
-| `/yukicraft setsign <join\|leave>` | `yukicraft.admin` | 視線先の看板を参加／離脱看板として登録する |
-| `/yukicraft setstart` | `yukicraft.admin` | 視線先の看板をゲーム開始看板として登録する |
-| `/yukicraft status` | `yukicraft.admin` | 設定状況・ゲーム状態を確認する |
+| `/yukicraft setsign <join\|leave\|start\|delete>` | `yukicraft.admin` | 視線先の看板を参加／離脱／開始看板として登録、または登録解除する |
 | `/yukicraft reload` | `yukicraft.admin` | config.yml を再読み込みする |
 
 !!! note "看板による参加導線"
@@ -122,22 +124,26 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
     ```
 
     ```text title="開始看板として登録（クリックでゲーム開始）"
-    /yukicraft setstart
+    /yukicraft setsign start
     ```
 
-    コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config（`signs.join` / `signs.leave` / `signs.start`）に保存します。手書きでのテキスト入力は不要です。開始看板のみ `setstart`、参加・離脱は `setsign` で登録します。
+    ```text title="看板の登録を解除（種別を自動判別・テキストもクリア）"
+    /yukicraft setsign delete
+    ```
+
+    コマンドを実行すると、プラグインがテキストを自動書き込みし、位置を config（`signs.join` / `signs.leave` / `signs.start`）に保存します。手書きでのテキスト入力は不要です。参加・離脱・開始はすべて `setsign <join\|leave\|start>` で登録し、`setsign delete` で登録解除できます。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `yukicraft.admin` | OP | start / stop / setstartspawn / setlobby / setspawn / setfield / setstart / setsign / reload / join / leave（管理者コマンドすべて） |
+| `yukicraft.admin` | OP | stop / setstartspawn / setlobby / setspawn / setfield / setsign / reload / join &lt;対象&gt; / leave &lt;対象&gt;（管理者コマンドすべて） |
 
 ## ゲームの運営
 
 1. プレイヤーが参加看板のクリックまたは管理者による `/yukicraft join` でロビーに集まる。
 2. 人数がそろったら `/yukicraft start` で開始する。
-3. 異常時は `/yukicraft stop` で強制終了する（`end-delay` 秒後に全員ロビーへ戻る）。
+3. 異常時は `/yukicraft stop` で強制終了する（`result-seconds` 秒後に全員ロビーへ戻る）。
 
 ## トラブルシューティング
 

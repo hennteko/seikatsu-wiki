@@ -98,10 +98,14 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 ```
 
 ```text title="開始看板として登録（任意・右クリックでゲーム開始）"
-/2dtreasure setstart
+/2dtreasure setsign start
 ```
 
-登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` / `signs.start` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。
+```text title="視線先の看板の登録を解除する"
+/2dtreasure setsign delete
+```
+
+登録するとプラグインが看板テキストを自動で書き込み、位置が config.yml の `signs.join` / `signs.leave` / `signs.start` に保存されます（再起動後も有効）。手書きテキスト（`[2DT]`）による登録は廃止されています。`setsign delete` は視線先の看板の種別を自動判別して登録を解除し、テキストをクリアします。
 
 | 種別 | 表示（自動書き込み） | 用途 |
 |---|---|---|
@@ -121,8 +125,8 @@ TwoDTreasure の導入・地点設定・config・看板・権限・管理コマ�
 | `/2dtreasure setstartspawn` | 初期リスポーン地点を設定する |
 | `/2dtreasure setlobby` | ロビー地点を設定する |
 | `/2dtreasure setfield <1\|2>` | ゲームエリアの角1／角2を設定する |
-| `/2dtreasure setsign <join\|leave>` | 視線先の看板を参加／退出看板として登録する |
-| `/2dtreasure setstart` | 視線先の看板をゲーム開始看板として登録する（右クリックで試合開始） |
+| `/2dtreasure setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録する（開始看板は右クリックで試合開始） |
+| `/2dtreasure setsign delete` | 視線先の看板の登録を解除する（種別は自動判別） |
 | `/2dtreasure join` | ロビーに参加する（参加看板クリックと同じ。`twodtreasure.play` 権限で全員可） |
 | `/2dtreasure leave` | ロビー／ゲームから離脱する（退出看板クリックと同じ。全員可） |
 | `/2dtreasure start` | ゲームを開始する（コマンドブロック対応） |

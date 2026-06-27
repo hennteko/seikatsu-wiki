@@ -11,7 +11,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | プラグイン名 | BoatGP |
 | バージョン | 1.0.0 |
 | api-version | 26.1.2 |
-| メインコマンド | `/race`（エイリアス `/boatgp`）/ **`boatgp.admin` 権限が必要（OP専用）** |
+| メインコマンド | `/race`（エイリアス `/boatgp`）/ join・leave・start・status・list は全員可、設定系は `boatgp.admin` |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/BoatGP/config.yml`、`items.yml`、`messages.yml`、`surfaces.yml`、`circuits/<名前>.yml` |
 
@@ -27,7 +27,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 5. 設定を変更したら `/race reload` で再読み込みする。
 
 !!! warning "既存サーバーを更新する場合の注意（messages.yml）"
-    `messages.yml` は **既存ファイルがあると新しいメッセージキーが自動追記されません**。アップデートで `sign:`（看板。`join-created` / `leave-created` / `start-created` / `info-created` / `look-at-sign` / `no-circuit` / `invalid-type`）・`admin.startspawn-set` / `finish-a-set` / `checkpoint-a-set`・`lobby.rejoin` / `lobby.waiting-next`（連続プレイ）・`show:`（チェックポイント表示）・`admin.checkpoint-deleted` / `finish-deleted` / `checkpoints-cleared` / `spawn-deleted` / `spawn-cleared`（削除系）が追加されています。特に **情報看板を使う場合は `sign.info-created` / `sign.invalid-type` が必須** です。これらが空欄表示になる場合は、既存の `messages.yml` を一度退避してサーバー再起動で再生成するか、不足キーを追記してください。`items.yml`・`surfaces.yml` の項目は今回変更ありません。
+    `messages.yml` は **既存ファイルがあると新しいメッセージキーが自動追記されません**。アップデートで `sign:`（看板。`join-created` / `leave-created` / `start-created` / `look-at-sign` / `deleted` / `not-registered`）・`admin.startspawn-set` / `finish-a-set` / `checkpoint-a-set`・`lobby.rejoin` / `lobby.waiting-next`（連続プレイ）・`show:`（チェックポイント表示）・`admin.checkpoint-deleted` / `finish-deleted` / `checkpoints-cleared` / `spawn-deleted` / `spawn-cleared`（削除系）が追加されています。これらが空欄表示になる場合は、既存の `messages.yml` を一度退避してサーバー再起動で再生成するか、不足キーを追記してください。`items.yml`・`surfaces.yml` の項目は今回変更ありません。
 
 !!! info "config.yml に新キーが追加されました（入力ベース操舵）"
     今回 `config.yml` の `kart` セクションに **`input-steering`（既定 `true`）** と **`turn-rate`（既定 `4.5`）** が追加されました。`config.yml` は **既存ファイルがあると新キーが自動追記されません**。ただしプラグイン内部の既定値も `input-steering=true` / `turn-rate=4.5` のため、**キーが無くても入力ベース操舵で動作します**。挙動を調整したい場合や従来のネイティブ操舵に戻したい場合は、既存の `config.yml` に手動で追記してください（記述例は下記）。
@@ -245,13 +245,11 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 /race clearspawn
 ```
 
-## 看板の設置（参加・離脱・開始・情報）
+## 看板の設置（参加・離脱・開始）
 
-`/race` コマンドはOP専用のため、**プレイヤーの参加・離脱は看板で行います**（参加看板・離脱看板の設置は実質必須）。看板の作成には **2通りの方法** があります。どちらも `boatgp.admin` 権限が必要です。
+看板は **プレイヤーがコマンドを覚えずに参加・離脱・開始できる補助手段** です（`/race join` / `leave` / `start` は全員が実行できますが、ロビーに看板を置いておくと便利です）。看板の設置・解除は **`/race setsign` コマンド専用** です（看板への直接書き込みによる登録は廃止されました）。いずれも `boatgp.admin` 権限が必要です。
 
-### 方法A：コマンドで設定（参加・離脱・開始）
-
-看板を設置し、看板を見ながら（6ブロック以内）以下を実行すると、プラグインが自動でテキストを書き込みます。
+設置した看板を見ながら（6ブロック以内）以下を実行すると、プラグインが登録し、整形済みテキストを書き込みます。
 
 ```text title="参加看板を設定（クリックで参加。コース名が書き込まれる）"
 /race setsign join
@@ -261,7 +259,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 /race setsign leave
 ```
 
-```text title="開始看板を設定（クリックでレース強制開始・編集中のサーキット対象）"
+```text title="開始看板を設定（クリックでレース開始・編集中のサーキット対象）"
 /race setstart
 ```
 
@@ -269,9 +267,13 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 /race setsign start <サーキット名>
 ```
 
+```text title="見ている看板の登録を解除（テキストも消去）"
+/race setsign delete
+```
+
 開始看板は `/race setstart` と `/race setsign start` のどちらでも作成できます。`setstart` は引数を省略すると編集中のサーキットが対象になり、サーキット名で明示も可能です（`/race setstart <サーキット名>`）。**`setsign start` はサーキット名の指定が必須** です。
 
-`setsign` / `setstart` は引数でサーキットを明示することもできます（`setsign join` は省略時に編集中のサーキット、`setsign leave` はサーキット指定不要）。
+`setsign join` / `setstart` は引数でサーキットを明示することもできます（省略時は編集中のサーキット、`setsign leave` はサーキット指定不要）。
 
 ```text title="サーキットを指定して参加看板を設定"
 /race setsign join <サーキット名>
@@ -281,42 +283,27 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 /race setstart <サーキット名>
 ```
 
-### 方法B：看板に直接書き込んで作成（参加・離脱・情報）
-
-新規に設置する看板へ、行を手入力しても作成できます。1行目に `[boatgp]`（大文字小文字不問）、2行目に種別、3行目にサーキット名を入れて確定すると、プラグインが整形済みテキストへ自動的に書き換えます。
-
-- `[boatgp]` / `join` / `<サーキット名>` … 参加看板（コース名は登録済みである必要があります）
-- `[boatgp]` / `leave` … 離脱看板（3行目は不要）
-- `[boatgp]` / `info` / `<サーキット名>` … **情報看板**（後述）
-
-!!! note "方法Bでは開始看板（START）は作れません"
-    看板への直接書き込みで作れるのは **join / leave / info** の3種です。**開始看板（START）はコマンド `/race setstart` または `/race setsign start <名前>` でのみ作成** できます。2行目に上記以外を入れるとエラーになります（メッセージは「2行目は join / leave / info のいずれか」）。
-
-### 情報看板（[BoatGP-Info]）
-
-方法Bの `info` で作成する **情報看板** は、指定サーキットの **募集状況と参加人数を約5秒ごとに自動更新** して表示します（クリック動作はありません）。
-
-- 表示内容：状態（募集中／開始間近／進行中／終了）と「現在人数 / グリッド数」。
-- 設置後すぐに1度更新され、以降は5秒間隔で最新化されます。
-
-!!! note "看板の仕組み"
-    クリック動作のある看板は1行目に `[BoatGP]` タグ、2行目に種別（JOIN / LEAVE / START）、3行目にコース名が入ります。情報看板は1行目が `[BoatGP-Info]` になります。クリック判定は **看板のテキスト** で行うため、設置位置は自由です。`setsign` 実行時に編集中のサーキット（または引数で指定したサーキット）名が書き込まれます。開始看板は誰でもクリックできますが、強制開始は内部で `boatgp.admin` を確認します（参加者がいないと開始されません）。クリック看板には連打防止のため1秒のクールダウンがあります。
+!!! note "看板の仕組み（座標で判定・テキストは表示専用）"
+    登録した看板は **座標** を `plugins/BoatGP/signs.yml` に保存し、クリック判定は **保存した座標との一致** で行います（看板のテキストには依存しません）。看板には1行目に `[BoatGP]` タグ、2行目に種別（JOIN / LEAVE / START）、3行目にコース名、4行目に **状態＋参加人数**（約5秒ごとに自動更新）が表示されます。看板を壊すと登録は自動解除されます。`setsign delete` は見ている看板の登録を解除し、テキストも消去します。開始看板（START）クリックは `/race start` 相当で、参加者がいれば誰でも開始できます。クリック看板には連打防止のため1秒のクールダウンがあります。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `boatgp.play` | 全員 | **参加看板（JOIN）クリック** でレースに参加できる |
-| `boatgp.admin` | OP | **`/race` コマンド全体**（join/leave/list を含む）の実行、サーキットの作成・管理、レース強制操作（start/stop/reload） |
+| `boatgp.admin` | OP | サーキットの作成・管理（create/setlobby/setsign 等）、`/race stop` / `reload`、看板設置・削除。設定系コマンドのみコード側でこの権限を確認する |
 
-!!! warning "`/race` コマンドは OP 専用です"
-    `plugin.yml` で `race` コマンドに `permission: boatgp.admin` が設定されているため、**一般プレイヤーは `/race` 系コマンドを一切実行できません**（`/race join` / `/race leave` / `/race list` を含む）。プレイヤーの参加・離脱は **看板クリック** で行います（参加・離脱看板の設置は必須）。参加看板クリック時のみ `boatgp.play` 権限が確認されます。
+!!! warning "`/race` のコマンドレベル権限は無し（設定系のみ admin）"
+    `plugin.yml` の `race` コマンドには **コマンドレベルの `permission` が設定されていません**。そのため **`/race join` / `leave` / `start` / `status` / `list` は全員が実行できます**。サーキット設定（create / setlobby / setspawn / setfinish / addcheckpoint / setsign / setstart / show / laps 等）と `/race reload` は **コード内で `boatgp.admin` を確認** し、`/race stop` は **OP または `boatgp.admin`** で実行できます。プレイヤーは看板クリック・コマンドのどちらでも参加・離脱・開始できます。`boatgp.play` 権限は廃止されました。
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/race start` | `boatgp.admin` | 自分が参加中のレースを強制開始する |
+| `/race join [サーキット名]` | 全員 | レースに参加してロビーへ（看板クリックと同等） |
+| `/race leave` | 全員 | レースから離脱する（看板クリックと同等） |
+| `/race start [サーキット名]` | 全員 | レースを開始する（参加者がいれば誰でも可。コンソール/コマブロはサーキット名必須） |
+| `/race status [サーキット名]` | 全員 | サーキットの設定状況を確認する（`info` も可） |
+| `/race list` | 全員 | サーキット一覧を表示する |
 | `/race stop` | `boatgp.admin` または OP | 自分が参加中のレースを強制中止する（OP は権限ノードなしでも実行可） |
 | `/race reload` | `boatgp.admin` | config.yml・items.yml・surfaces.yml・サーキットを再読み込み |
 | `/race create <名前>` | `boatgp.admin` | 新規サーキットを作成して選択する |
@@ -326,13 +313,9 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `/race delcheckpoint <番号>` / `delfinish` / `clearcheckpoints` | `boatgp.admin` | チェックポイント／ゴールの削除・全消去 |
 | `/race delspawn <番号>` / `clearspawn` | `boatgp.admin` | スタートグリッドの削除・全消去 |
 | `/race additembox [半径]` / `laps <数>` / `world [名前]` | `boatgp.admin` | アイテムボックス追加・周回数・対象ワールド |
-| `/race setsign <join\|leave\|start>` / `setstart` | `boatgp.admin` | 看板を参加／離脱／開始看板に設定（`setsign start <名前>` は開始看板、`setstart` も開始看板） |
+| `/race setsign <join\|leave\|start\|delete>` / `setstart` | `boatgp.admin` | 看板を参加／離脱／開始看板に設定、`delete` で登録解除（`setsign start <名前>` は開始看板、`setstart` も開始看板） |
 | `/race show` | `boatgp.admin` | チェックポイント表示プレビューのON/OFF（自分のみ） |
-| `/race status` | `boatgp.admin` | 設定状況を確認する（`info` も可） |
 | `/race admin <サブ> ...` | `boatgp.admin` | 上記設定コマンドの旧形式（互換のため引き続き使用可） |
-| `/race join [サーキット名]` | `boatgp.admin` | レースに参加する（プレイヤーは参加看板クリックで参加） |
-| `/race leave` | `boatgp.admin` | レースから離脱する（プレイヤーは離脱看板クリックで離脱） |
-| `/race list` | `boatgp.admin` | サーキット一覧を表示する |
 
 !!! note "自動保存・強制開始・強制中止について"
     設定系コマンドは **実行のたびに自動保存** されるため `save` は不要です（`/race cancel` で編集破棄）。`/race start` と `/race stop` は **コマンド実行者が参加中のレース** に作用します。設定（config・items.yml・路面・サーキット）を変更したら `/race reload` で反映できます。
@@ -363,7 +346,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
     ゴールライン・チェックポイントは **a→b の2点で引いたライン** をコースを横切る形で通過する必要があります。ラインがコース幅をまたいでいない、または高さ（Y許容）が足りないと通過になりません。`/race setfinish a`→反対側で `setfinish b`、`addcheckpoint a`→`b` の順で、コース幅いっぱいに引いてください。高さは `... b [高さ]` で調整できます（既定±4.0）。
 
 ??? failure "看板をクリックしても参加・開始できない"
-    `/race setsign join`（または `setstart`）で看板を設定済みか確認してください。看板の1行目が `[BoatGP]` タグになっている必要があります（情報看板の `[BoatGP-Info]` はクリック動作がありません）。看板を直接書き込んで作る場合は1行目 `[boatgp]`・2行目 `join`/`leave`/`info` で確定します（**START は `/race setstart` または `/race setsign start <名前>` でのみ作成**）。開始看板は内部で `boatgp.admin` 権限を確認するため、一般プレイヤーがクリックしても開始できません。クリック直後は1秒のクールダウンがあります。
+    看板は **`/race setsign`（または `setstart`）で登録済み** か確認してください（看板への直接書き込みによる登録は廃止されました）。クリック判定は **保存した座標との一致** で行うため、看板を一度壊して置き直した場合は再登録が必要です（壊すと自動解除されます）。開始看板はそのコースに参加者がいないと開始されません。クリック直後は1秒のクールダウンがあります。なお `/race join` / `leave` / `start` は全員がコマンドでも実行できます。
 
 ??? failure "アイテムボックスを通ってもアイテムが出ない"
     そのサーキットに `additembox` でアイテムボックスが追加されているか `/race status` で確認してください。また、プレイヤーが **すでにアイテムを所持している** とアイテムボックスは反応しません。取得直後のボックスは `items.yml` の `item-box.cooldown-ticks`（既定80tick）の間は再出現しません。
