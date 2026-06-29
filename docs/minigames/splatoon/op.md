@@ -11,12 +11,12 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | プラグイン名 | SplatoonPlugin |
 | バージョン | 2.0.0 |
 | api-version | 26.1.2 |
-| メインコマンド | `/splatoon` |
+| メインコマンド | `/splatoon`（対戦）・`/salmon`（サーモンラン） |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/SplatoonPlugin/config.yml` |
 
-!!! success "v2.0.0 の主な追加（ブキ刷新＆ガチマッチ）"
-    メインブキ9種・サブ6種・スペシャル5種に拡張され、**ブキ選択GUI**（ブキ看板）で自由編成できるようになりました。さらに対戦モードが **ナワバリ／ガチエリア／ガチホコ／ガチヤグラ** の4種に増えています。会場・看板・モードはすべてコマンドで設定し、`config.yml` に自動保存されます。
+!!! success "v2.0.0 の主な追加（ブキ刷新＆ガチマッチ＆サーモンラン）"
+    メインブキ9種・サブ6種・スペシャル5種に拡張され、**ブキ選択GUI**（ブキ看板）で自由編成できるようになりました。さらに対戦モードが **ナワバリ／ガチエリア／ガチホコ／ガチヤグラ** の4種に増えています。会場・看板・モードはすべてコマンドで設定し、`config.yml` に自動保存されます。加えて **サーモンラン（PvE協力モード）** を新搭載し、`/salmon` コマンドと独立した看板・config（`salmon.*`）で運用します（複数ステージ＝アリーナを同時稼働可能）。
 
 ## 導入手順
 
@@ -165,7 +165,117 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `splatoon.admin` | OP | 会場設定・看板設置・モード設定・stop などの管理コマンド |
 
 !!! note "参加系コマンドは全員が使えます"
-    `join`・`leave`・`status`・`start <モード>` は **権限不要で全プレイヤーが実行可能** です（看板と同等）。`splatoon.admin` が必要なのは会場設定・看板設置・モード設定・`stop` などの管理コマンドだけです。
+    `join`・`leave`・`status`・`start <モード>` は **権限不要で全プレイヤーが実行可能** です（看板と同等）。`splatoon.admin` が必要なのは会場設定・看板設置・モード設定・`stop` などの管理コマンドだけです。なお `/salmon` 系も同じ `splatoon.admin` 権限を共用します。
+
+## サーモンラン（PvE協力モード）
+
+`/salmon` コマンドで運用する **協力PvEモード** です。対戦（`/splatoon`）とは独立しており、**ステージ識別子ごとに1つのアリーナ** を定義して **複数ステージを同時稼働** できます。座標・看板・WAVE設定はすべて `/salmon` の各 set コマンドで `config.yml` の `salmon.*` 配下へ **即自動保存** されます。
+
+!!! warning "対戦（PvP）と同時には動きません"
+    サーモンランと通常対戦は戦闘登録（プレイヤー状態）を共有するため、**PvP対戦が `WAITING` 以外（進行中）のときはサーモンランを開始できません**。逆にサーモンラン稼働中のPvP開始も抑止されます。
+
+### セットアップ手順（サーモンラン）
+
+OP権限（`splatoon.admin`）で **その場に立って／対象を見て** 実行します。`<ステージ>` は任意の識別子（例: `stage1`）で、初回の set 実行時に自動作成されます。
+
+```text title="ロビースポーン（参加時のTP先・共通）"
+/salmon setlobby
+```
+```text title="初期スポーン（離脱・終了後の戻り先・共通）"
+/salmon setstartspawn
+```
+```text title="基地スポーン（参加者の開始地点・ステージ別）"
+/salmon setspawn <ステージ>
+```
+```text title="金イクラコンテナ（納品地点・ステージ別）"
+/salmon setbasket <ステージ>
+```
+```text title="シャケ湧き地点を追加（複数登録可・ステージ別）"
+/salmon setspawner <ステージ>
+```
+```text title="満潮フィールドの角1 / 角2（必須・ステージ別）"
+/salmon setfield <ステージ> <1|2>
+```
+```text title="干潮フィールドの角1 / 角2（任意・未設定時は満潮を流用）"
+/salmon settide <ステージ> <1|2>
+```
+```text title="WAVE数を設定（既定3）"
+/salmon setwaves <ステージ> <数>
+```
+```text title="各WAVEのノルマを設定（既定 7/12/18）"
+/salmon setquota <ステージ> <WAVE> <数>
+```
+```text title="WAVE制限時間を設定（秒・既定100）"
+/salmon settime <ステージ> <秒>
+```
+```text title="参加看板を設定（共通・複数登録可）"
+/salmon setsign join
+```
+```text title="離脱看板を設定（共通・複数登録可）"
+/salmon setsign leave
+```
+```text title="開始看板を設定（ステージ別）"
+/salmon setsign start <ステージ>
+```
+```text title="看板の登録を解除（視線先の参加/離脱/開始看板を自動判別）"
+/salmon setsign delete
+```
+```text title="設定・進行状況を確認（ステージ名は任意）"
+/salmon status [ステージ]
+```
+
+!!! tip "ステージ開始に必要な最小設定"
+    あるステージで `/salmon start` できるのは **基地スポーン・金イクラコンテナ・湧き地点1つ以上・満潮フィールド** がすべて揃ったときです。干潮フィールドは任意（未設定なら満潮範囲を流用）。不足があると開始時に `/salmon status <ステージ>` で確認するよう案内されます。最低人数は1人（ロビーが0人だと開始できません）。
+
+### サーモンランのコマンド
+
+| コマンド | 権限 | 説明 |
+|---|---|---|
+| `/salmon join` / `leave` | 全員 | ロビーへ参加 / 退出 |
+| `/salmon start <ステージ>` | 全員 | ステージを開始（コマンドブロック / コンソール可） |
+| `/salmon status [ステージ]` | 全員 | 設定・進行状況を確認 |
+| `/salmon stop <ステージ>` | `splatoon.admin` | ステージを強制終了して `IDLE` に戻す |
+| `/salmon setlobby` / `setstartspawn` | `splatoon.admin` | 共通スポーンを設定 |
+| `/salmon setspawn <ステージ>` | `splatoon.admin` | 基地スポーンを設定 |
+| `/salmon setbasket <ステージ>` | `splatoon.admin` | 金イクラコンテナを設定 |
+| `/salmon setspawner <ステージ>` | `splatoon.admin` | シャケ湧き地点を追加 |
+| `/salmon setfield <ステージ> <1\|2>` | `splatoon.admin` | 満潮フィールドの角を設定 |
+| `/salmon settide <ステージ> <1\|2>` | `splatoon.admin` | 干潮フィールドの角を設定（任意） |
+| `/salmon setwaves <ステージ> <数>` | `splatoon.admin` | WAVE数を設定 |
+| `/salmon setquota <ステージ> <WAVE> <数>` | `splatoon.admin` | WAVEごとのノルマを設定 |
+| `/salmon settime <ステージ> <秒>` | `splatoon.admin` | WAVE制限時間を設定 |
+| `/salmon setsign <join\|leave\|start <ステージ>\|delete>` | `splatoon.admin` | 看板を設定 / 解除 |
+
+!!! note "デバッグ用コマンド"
+    `/salmon addegg <ステージ> [個数]`（納品カウントを直接加算）と `/salmon spawnegg <ステージ>`（足元に金イクラ実体を生成）は **動作検証用のデバッグコマンド** です。いずれも進行中ステージでのみ機能し、通常運用では使いません。
+
+### config.yml（`salmon.*` 主要項目）
+
+座標・看板・各ステージ設定（`salmon.lobby-spawn` / `salmon.default-spawn` / `salmon.join-signs` / `salmon.leave-signs` / `salmon.stages.<識別子>.*`）はコマンド実行時に自動保存されます。以下は **全ステージ共通の調整パラメータ**（コードに既定値あり・未記載でも動作）です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `salmon.ink-damage` | 4.0 | インク弾1ヒットがシャケに与えるダメージ |
+| `salmon.zako.live-cap` | 12 | 雑魚シャケの同時存在上限 |
+| `salmon.zako.per-second` | 2 | 1秒あたりの雑魚湧き数 |
+| `salmon.zako.per-wave-base` | 12 | WAVE1の総湧き数の基準 |
+| `salmon.zako.per-wave-step` | 6 | WAVEが進むごとの総湧き増加量 |
+| `salmon.zako.golden-egg-chance` | 0.0 | 雑魚撃破時の金イクラ落下確率（本来の供給源はオオモノ） |
+| `salmon.downed-seconds` | 12 | ダウンから戦線離脱までの猶予（秒） |
+| `salmon.revive-radius` | 2.0 | 味方が近づくと救助できる半径 |
+| `salmon.golden-egg.carry-slowness` | 1 | 金イクラ運搬中の鈍足レベル |
+| `salmon.golden-egg.basket-radius` | 3.0 | コンテナ納品判定の半径 |
+| `salmon.boss.per-wave` | 2 | WAVEごとのオオモノ出現数 |
+| `salmon.boss.spawn-interval` | 8 | オオモノの出現間隔（秒） |
+| `salmon.boss.reward-eggs` | 3 | オオモノ撃破時に出現する金イクラ数 |
+| `salmon.boss.steelhead.hp` / `bomb-interval` / `bomb-radius` / `bomb-damage` | 60 / 5 / 3.0 / 4.0 | バクダン：弱点HP・爆撃間隔・範囲・ダメージ |
+| `salmon.boss.scrapper.hp` | 50 | テッパン：背面弱点HP |
+| `salmon.boss.stinger.segments` / `segment-hp` / `shot-interval` / `shot-damage` | 4 / 10 / 4 / 3.0 | タワー：段数・段HP・狙撃間隔・ダメージ |
+
+各ステージ定義は `salmon.stages.<識別子>` 配下に `base-spawn` / `basket` / `enemy-spawners` / `field.high.min|max` / `field.low.min|max` / `waves` / `quota` / `time` / `start-sign` として保存されます（既定: WAVE数3・ノルマ`[7,12,18]`・時間100秒）。
+
+!!! warning "既存サーバーを更新する場合（config自動マージなし）"
+    対戦側と同様、本プラグインは `saveDefaultConfig()` のみのため、**既存の `config.yml` に `salmon.*` の新しい調整キーを自動追記しません**。コード側に既定値があるため未記載でも既定値で動作します。雑魚湧きやオオモノを調整したい場合は配布 `config.yml` を参照して手動追記してください。座標・看板・ステージ設定はコマンドで都度保存されるため問題ありません。
 
 ## トラブルシューティング
 
@@ -186,6 +296,9 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 
 ??? failure "試合終了後にフィールドが元に戻らない"
     フィールドは試合開始時のスナップショットから自動復元されます。サーバー停止などで中断された場合は復元されないことがあります。`/splatoon stop` で強制終了すると復元が実行されます。
+
+??? failure "サーモンランが開始できない / シャケが湧かない"
+    `/salmon status <ステージ>` で **基地スポーン・金イクラコンテナ・湧き地点（1つ以上）・満潮フィールド** が「設定済み」か確認してください。いずれかが未設定だと開始できません。また **PvP対戦が進行中（`WAITING` 以外）だとサーモンランは開始できません**。ロビーに最低1人いる必要もあります。湧き地点は `/salmon setspawner <ステージ>` で複数登録できます。
 
 ---
 

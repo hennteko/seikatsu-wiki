@@ -41,10 +41,13 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 ```text title="④ 隠れ側スポーンを現在地に設定（任意）"
 /kakurenbo setspawn
 ```
-```text title="⑤ フィールド範囲の頂点1 / 頂点2を現在地に設定（任意）"
+```text title="⑤ 鬼の待機ステージを現在地に設定（任意・隠れ時間中の隔離地点）"
+/kakurenbo setstage
+```
+```text title="⑥ フィールド範囲の頂点1を現在地に設定（任意）"
 /kakurenbo setfield 1
 ```
-```text title="⑤ フィールド範囲の頂点2"
+```text title="⑥ フィールド範囲の頂点2を現在地に設定（任意）"
 /kakurenbo setfield 2
 ```
 ```text title="設定状況を確認"
@@ -53,6 +56,26 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 !!! tip "ロビー・スポーンの配置に注意"
     隠れ側スポーン（`setspawn`）が未設定の場合、隠れ側は **ロビー位置からそのまま擬態を開始** します。ロビーがフィールドから離れていると擬態がフィールド外で始まってしまうため、**ロビーをフィールド内に置く**か、`setspawn`（隠れ側スポーン）を設定してください。フィールド範囲（`setfield 1`/`2`）を設定すると、その範囲外へは移動できなくなります（未設定なら制限なし）。
+
+!!! note "鬼の待機ステージ（setstage）"
+    隠れ時間中、鬼は **待機ステージ** に隔離され足止めされます。`setstage` が未設定の場合は鬼スポーン（`setspawn seeker`）の位置で待機し、探索フェーズ開始時に鬼スポーンへ解き放たれます。隠れ側に化け場所を覗かれたくない場合は、フィールドから離れた地点を `setstage` に設定してください。
+
+### 数値設定（コマンドで即保存）
+
+人数や各タイマーは config を直接編集しなくてもコマンドで変更でき、即 `config.yml` に保存されます。
+
+```text title="最大参加人数を設定"
+/kakurenbo setmax <人数>
+```
+```text title="開始に必要な最小人数を設定"
+/kakurenbo setmin <人数>
+```
+```text title="制限時間（秒）を設定"
+/kakurenbo settime <秒>
+```
+```text title="隠れ時間（秒）を設定"
+/kakurenbo setdelay <秒>
+```
 
 ### 擬態ブロックパレットの登録
 
@@ -69,7 +92,7 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 ### 看板の設置
 
-参加・離脱・開始・ブロック選択の **4種** の看板を登録できます。看板を見ながら（5ブロック以内）以下を実行します。
+参加・離脱・開始・ブロック選択・鬼立候補の **5種** の看板を登録できます。看板を見ながら（5ブロック以内）以下を実行します。
 
 ```text title="参加看板を登録"
 /kakurenbo setsign join
@@ -83,8 +106,17 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 ```text title="擬態ブロック選択看板を登録（隠れ側が右クリックでGUIを開く）"
 /kakurenbo setsign block
 ```
+```text title="鬼立候補看板を登録（クリックで鬼に立候補・任意）"
+/kakurenbo setsign oni
+```
+```text title="登録済み看板の登録を解除（視線先の看板を自動判別）"
+/kakurenbo setsign delete
+```
 
 テキストはプラグインが自動で書き込み（config の `sign.*` から描画）、位置は `locations.yml` に保存されます。クリック判定は保存位置との一致で行います。
+
+!!! tip "鬼立候補看板（setsign oni）"
+    ロビー参加者がクリックすると **鬼に立候補**（もう一度クリックで取り消し）。看板の4行目に現在の立候補人数（`%count%`）が表示されます。開始時は立候補者から優先的に鬼を抽選し、不足分はランダム指名で補います。未設置でも従来どおり全員ランダムで鬼が決まります。
 
 ## config.yml 主要項目
 
@@ -101,12 +133,31 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `game.seeker-ratio` | 8 | 何人につき鬼1人か（切り上げ・最低1人・最大 n-1） |
 | `game.snap-interval-ticks` | 2 | スナップ判定の間隔（tick） |
 | `game.snap-idle-ms` | 300 | 静止とみなす猶予（ミリ秒） |
+| `game.result-seconds` | 10 | 結果発表を表示してからロビーへ戻すまでの秒数 |
+
+!!! tip "数値はコマンドでも変更できます"
+    `min-players` / `max-players` / `match-duration` / `hiding-time` は、それぞれ `/kakurenbo setmin` / `setmax` / `settime` / `setdelay` でゲーム内から変更でき、即 `config.yml` に保存されます。
+
+### disguise セクション（隠れ側の擬態アイテム）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `disguise.item-material` | `STICK` | 擬態ステッキのアイテム種別 |
+| `disguise.item-name` | `&b擬態ステッキ …` | 擬態ステッキの表示名 |
+| `disguise.release-hold-ticks` | 20 | スニーク長押しで擬態解除に必要な tick（20=約1秒） |
+
+### seeker セクション（鬼の捕獲アイテム）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `seeker.snowball-amount` | 16 | 鬼に配る雪玉の数（投擲後に自動補充） |
+| `seeker.snowball-name` | `&f雪玉 …` | 雪玉の表示名 |
 
 ### blocks / messages / sign / gui
 
 - `blocks` … 擬態パレット（`addblock` / `removeblock` で編集・自動保存）。
-- `messages` … 各種通知文（`&` カラーコード対応）。`prefix` ほか役割通知・捕獲・残り時間など。
-- `sign.{lobby,leave,start,block}` … 各看板の表示文。参加看板の4行目は `%current%/%max%` で人数表示。
+- `messages` … 各種通知文（`&` カラーコード対応）。`prefix` ほか役割通知・捕獲・残り時間・鬼立候補・ロビー参加/退出ブロードキャストなど。
+- `sign.{lobby,leave,start,block,oni}` … 各看板の表示文。参加看板の4行目は `%current%/%max%` で人数、鬼立候補看板の4行目は `%count%` で立候補人数を表示。
 - `gui.block-select-title` … ブロック選択GUIのタイトル。
 
 !!! warning "既存サーバーは config が自動追記されません"
@@ -116,24 +167,27 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setfield・addblock・removeblock・stop・status・reload |
+| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・join/leave の他プレイヤー指定 |
 | `kakurenbo.play` | 全員 | ゲームへの参加（`join`） |
 
-!!! note "join / leave / start は権限不要で全員可"
-    `/kakurenbo join`・`leave`・`start` は権限チェックがなく全プレイヤーが使えます（看板と同等）。設定・管理コマンドのみ `kakurenbo.admin` が必要です。
+!!! note "join / leave / start / status は権限不要で全員可"
+    `/kakurenbo join`・`leave`・`start`・`status` は権限チェックがなく全プレイヤーが使えます（看板と同等）。ただし `join <名前>` / `leave <名前>` のように **他プレイヤーを指定** する場合のみ `kakurenbo.admin` が必要です。設定・管理コマンドも `kakurenbo.admin` が必要です。
 
 ## 管理コマンド
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/kakurenbo join` / `leave` / `start` | 全員 | 参加 / 退出 / 開始（看板と同等） |
+| `/kakurenbo join [名前]` / `leave [名前]` / `start` | 全員（名前指定は admin） | 参加 / 退出 / 開始（看板と同等。名前指定で他プレイヤーを操作） |
+| `/kakurenbo status` | 全員 | 設定状況・進行状態を表示（読み取り専用） |
 | `/kakurenbo setlobby` / `setstartspawn` | `kakurenbo.admin` | ロビー / 初期スポーンを設定 |
 | `/kakurenbo setspawn [seeker]` | `kakurenbo.admin` | 隠れ側スポーン（引数なし）／鬼スポーン（`seeker`）を設定 |
+| `/kakurenbo setstage` | `kakurenbo.admin` | 鬼の待機ステージ（隠れ時間中の隔離地点）を設定 |
 | `/kakurenbo setfield <1\|2>` | `kakurenbo.admin` | フィールド範囲の頂点を設定 |
-| `/kakurenbo setsign <join\|leave\|start\|block>` | `kakurenbo.admin` | 視線先の看板を各用途で登録 |
+| `/kakurenbo setsign <join\|leave\|start\|block\|oni\|delete>` | `kakurenbo.admin` | 視線先の看板を各用途で登録 / 解除 |
+| `/kakurenbo setmax` / `setmin <人数>` | `kakurenbo.admin` | 最大 / 最小人数を設定 |
+| `/kakurenbo settime <秒>` / `setdelay <秒>` | `kakurenbo.admin` | 制限時間 / 隠れ時間を設定 |
 | `/kakurenbo addblock` / `removeblock` | `kakurenbo.admin` | 手持ちブロックを擬態パレットに追加 / 削除 |
 | `/kakurenbo stop` | `kakurenbo.admin` | ゲームを強制終了 |
-| `/kakurenbo status` | `kakurenbo.admin` | 設定状況・進行状態を表示 |
 | `/kakurenbo reload` | `kakurenbo.admin` | config を再読み込み |
 
 ## トラブルシューティング

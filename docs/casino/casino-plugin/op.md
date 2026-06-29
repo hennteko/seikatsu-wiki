@@ -43,8 +43,8 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `emhorse` | 育成馬（EmeraldHorse・馬を育てて競馬に出走） | `emhorse_data.yml` / `modules/emhorse.yml` |
 | `quiz` | クイズ（デイリー＋タワー） | `quiz/` 配下 |
 
-!!! note "config.yml の modules に emhorse が無い場合"
-    同梱の `config.yml` の `modules:` には `emhorse` の項目が無いことがありますが、未記載のモジュールは **既定で有効（true）** として起動します。無効化したい場合のみ `modules.emhorse.enabled: false` を手動で追記してください。
+!!! note "未記載モジュールは既定で有効"
+    `config.yml` の `modules:` ブロックには全9モジュール（`bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse`）が記載されています。仮に何らかのモジュールの項目が未記載でも、未記載のモジュールは **既定で有効（true）** として起動します。無効化したい場合のみ `modules.<id>.enabled: false` を手動で追記してください。
 
 !!! note "各ゲームの詳細は個別ページへ"
     上記モジュールの個別設定（座標設定・配当率・確率調整など）は、このページでは深掘りしません。各ゲームの個別ページにまとめられています。
@@ -61,10 +61,10 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `debug.verbose` | `false` | true で各モジュールの詳細ログを出力（本番では false 推奨） |
 
 !!! tip "モジュールの ON / OFF"
-    `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` の8項目があります（`emhorse` は未記載ですが既定 true で起動します）。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
+    `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse` の9項目があります。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
 
 !!! warning "config.yml の新キーは自動追記されません"
-    本体は起動時に `saveDefaultConfig()` を呼びますが、これは `config.yml` が **存在しない場合のみ** 同梱版を書き出す動作です（`copyDefaults` は使っていません）。そのため、プラグイン更新で新しい設定キーが増えても、既存サーバーの `config.yml` には自動で追記されません。新キー（例: `modules.emhorse.enabled`）を使いたい場合は手動で追記するか、一度 `config.yml` を退避してから再生成してください。
+    本体は起動時に `saveDefaultConfig()` を呼びますが、これは `config.yml` が **存在しない場合のみ** 同梱版を書き出す動作です（`copyDefaults` は使っていません）。そのため、プラグイン更新で新しい設定キーが増えても、既存サーバーの `config.yml` には自動で追記されません。新しく追加された設定キーを使いたい場合は手動で追記するか、一度 `config.yml` を退避してから再生成してください。
 
 ## 権限ノード
 
