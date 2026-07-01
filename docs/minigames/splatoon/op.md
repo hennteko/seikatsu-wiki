@@ -156,7 +156,9 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `/splatoon sethoko` / `setgoal <orange\|blue>` | ガチホコ中央 / ゴール台を設定（ゴール台はホコ専用） |
 | `/splatoon settower checkpoint <orange\|blue> <番号>` | ガチヤグラの番号付きCPを設定（最大番号がゴール） |
 | `/splatoon settower clear` | ガチヤグラの経路・関門を全消去 |
-| `/splatoon setsign delete` | 視線先の看板（参加 / 離脱 / ブキ / 開始）の登録を解除（自動判別） |
+| `/splatoon setmin <人数>` | 最小参加人数（カウントダウン開始に必要な人数）を設定し `config.yml` に保存 |
+| `/splatoon setmax <人数>` | 最大参加人数を設定し `config.yml` に保存 |
+| `/splatoon settime <秒>` | 試合の制限時間（秒）を設定し `config.yml` に保存（次の試合から反映） |
 
 ## 権限ノード
 
@@ -199,6 +201,12 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 ```text title="干潮フィールドの角1 / 角2（任意・未設定時は満潮を流用）"
 /salmon settide <ステージ> <1|2>
 ```
+```text title="潮汐で水位が変化する『水盤』領域の角1 / 角2（任意）"
+/salmon settidearea <ステージ> <1|2>
+```
+```text title="満潮／干潮の水面Y（立ち位置のYを使用・任意）"
+/salmon settidelevel <ステージ> <high|low>
+```
 ```text title="WAVE数を設定（既定3）"
 /salmon setwaves <ステージ> <数>
 ```
@@ -227,6 +235,14 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 !!! tip "ステージ開始に必要な最小設定"
     あるステージで `/salmon start` できるのは **基地スポーン・金イクラコンテナ・湧き地点1つ以上・満潮フィールド** がすべて揃ったときです。干潮フィールドは任意（未設定なら満潮範囲を流用）。不足があると開始時に `/salmon status <ステージ>` で確認するよう案内されます。最低人数は1人（ロビーが0人だと開始できません）。
 
+!!! note "潮汐（水位変化）は任意機能 ― `settide` と `settidearea`/`settidelevel` は別物"
+    サーモンランでは各WAVE開始時に **満潮／干潮がランダムに切り替わり** ます。これに関する設定は2系統あり、目的が異なります。
+
+    - **`settide`（干潮フィールド）** … 干潮WAVEで使う **プレイ範囲（湧き・塗り判定の直方体）** を満潮とは別に設定します。未設定なら満潮範囲を流用します。
+    - **`settidearea` ＋ `settidelevel`（水位変化）** … 実際に **水が満ち引きする演出** を行う機能です。`settidearea 1/2` で **水盤（水位が上下する立方体）** を指定し、`settidelevel high`／`low` で **満潮／干潮それぞれの水面Y**（実行時の立ち位置のY）を登録します。**水盤領域の角2点と満潮Y・干潮Yの4つがすべて揃うと有効** になり、満潮WAVEでは水盤内の空気↔水を満潮Yまで満たし、干潮WAVEでは干潮Yまで水を引かせます（固形ブロックは変更しません）。水没した低い足場は危険地帯となり、**水面下では水死判定でダウン** することがあります。
+
+    `settide` と `settidearea`/`settidelevel` は独立しており、片方だけ／両方の設定が可能です。いずれも任意で、未設定でもステージは動作します。
+
 ### サーモンランのコマンド
 
 | コマンド | 権限 | 説明 |
@@ -241,6 +257,8 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 | `/salmon setspawner <ステージ>` | `splatoon.admin` | シャケ湧き地点を追加 |
 | `/salmon setfield <ステージ> <1\|2>` | `splatoon.admin` | 満潮フィールドの角を設定 |
 | `/salmon settide <ステージ> <1\|2>` | `splatoon.admin` | 干潮フィールドの角を設定（任意） |
+| `/salmon settidearea <ステージ> <1\|2>` | `splatoon.admin` | 潮汐で水位が変化する水盤領域の角を設定（任意） |
+| `/salmon settidelevel <ステージ> <high\|low>` | `splatoon.admin` | 満潮／干潮の水面Y（立ち位置のY）を設定（任意） |
 | `/salmon setwaves <ステージ> <数>` | `splatoon.admin` | WAVE数を設定 |
 | `/salmon setquota <ステージ> <WAVE> <数>` | `splatoon.admin` | WAVEごとのノルマを設定 |
 | `/salmon settime <ステージ> <秒>` | `splatoon.admin` | WAVE制限時間を設定 |
@@ -272,7 +290,7 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 | `salmon.boss.scrapper.hp` | 50 | テッパン：背面弱点HP |
 | `salmon.boss.stinger.segments` / `segment-hp` / `shot-interval` / `shot-damage` | 4 / 10 / 4 / 3.0 | タワー：段数・段HP・狙撃間隔・ダメージ |
 
-各ステージ定義は `salmon.stages.<識別子>` 配下に `base-spawn` / `basket` / `enemy-spawners` / `field.high.min|max` / `field.low.min|max` / `waves` / `quota` / `time` / `start-sign` として保存されます（既定: WAVE数3・ノルマ`[7,12,18]`・時間100秒）。
+各ステージ定義は `salmon.stages.<識別子>` 配下に `base-spawn` / `basket` / `enemy-spawners` / `field.high.min|max` / `field.low.min|max` / `waves` / `quota` / `time` / `start-sign` / `tide.area.min|max` / `tide.high-y` / `tide.low-y` として保存されます（既定: WAVE数3・ノルマ`[7,12,18]`・時間100秒）。`tide.*`（水位変化）は水盤2点と満潮Y・干潮Yの4つが揃ったときのみ有効になる任意設定です。
 
 !!! warning "既存サーバーを更新する場合（config自動マージなし）"
     対戦側と同様、本プラグインは `saveDefaultConfig()` のみのため、**既存の `config.yml` に `salmon.*` の新しい調整キーを自動追記しません**。コード側に既定値があるため未記載でも既定値で動作します。雑魚湧きやオオモノを調整したい場合は配布 `config.yml` を参照して手動追記してください。座標・看板・ステージ設定はコマンドで都度保存されるため問題ありません。
