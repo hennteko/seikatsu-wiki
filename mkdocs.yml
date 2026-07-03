@@ -94,6 +94,10 @@ nav:
           - minigames/irooni/index.md
           - 👤 プレイヤー向け: minigames/irooni/player.md
           - 🛠️ OP・運営向け: minigames/irooni/op.md
+      - DBD（デッドバイデイライト）:
+          - minigames/dbd/index.md
+          - 👤 プレイヤー向け: minigames/dbd/player.md
+          - 🛠️ OP・運営向け: minigames/dbd/op.md
       - Zankipvp（残機制PvP）:
           - minigames/zankipvp/index.md
           - 👤 プレイヤー向け: minigames/zankipvp/player.md
