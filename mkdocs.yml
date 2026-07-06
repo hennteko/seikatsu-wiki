@@ -98,6 +98,10 @@ nav:
           - minigames/dbd/index.md
           - 👤 プレイヤー向け: minigames/dbd/player.md
           - 🛠️ OP・運営向け: minigames/dbd/op.md
+      - BedWars（ベッドウォーズ）:
+          - minigames/bedwars/index.md
+          - 👤 プレイヤー向け: minigames/bedwars/player.md
+          - 🛠️ OP・運営向け: minigames/bedwars/op.md
       - Zankipvp（残機制PvP）:
           - minigames/zankipvp/index.md
           - 👤 プレイヤー向け: minigames/zankipvp/player.md
@@ -151,6 +155,10 @@ nav:
           - race/asuretimer/index.md
           - 👤 プレイヤー向け: race/asuretimer/player.md
           - 🛠️ OP・運営向け: race/asuretimer/op.md
+      - ElytraRace（エリトラレース）:
+          - minigames/elytrarace/index.md
+          - 👤 プレイヤー向け: minigames/elytrarace/player.md
+          - 🛠️ OP・運営向け: minigames/elytrarace/op.md
   - 03 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
