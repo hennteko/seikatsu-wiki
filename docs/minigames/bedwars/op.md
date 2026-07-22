@@ -141,6 +141,7 @@ BedWarsPlugin の導入・チーム/ジェネレーター/ショップ/看板の
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `settings.min-players` | 2 | 開始に必要な最低人数（`setmin` でも変更可） |
+| `settings.team-size` | 2 | 1チームの目標人数（チーム数＝参加人数÷この値の切り上げ・最大は有効チーム数。例: 2なら6人→3チーム 2vs2vs2） |
 | `settings.game-time` | 2400 | 試合の制限時間（秒＝40分・`settime` でも変更可） |
 | `settings.respawn-delay` | 5 | リスポーン待機（秒） |
 | `settings.build-max-y` | 0 | 建築高度上限（0＝無制限） |

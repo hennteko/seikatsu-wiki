@@ -10,7 +10,7 @@ MiniGameMenu の導入・`/mgmenu` コマンド・config（メニューアイテ
 |---|---|
 | プラグイン名 | MiniGameMenu |
 | メインコマンド | `/mgmenu`（エイリアス `/menu`・`/mgm`・`/ミニゲーム`） |
-| プレイヤー操作 | 「生活鯖メニュー」の本を右クリック（`mgmenu.use`、既定全員） |
+| プレイヤー操作 | 「生活鯖メニュー」の紙を右クリック（`mgmenu.use`、既定全員） |
 | 依存プラグイン | なし（連携先の各ミニゲーム／カジノ等が別途必要） |
 | 設定ファイル | `plugins/MiniGameMenu/config.yml` |
 | api-version | 26.1.2（plugin.yml 表記は `1.21`） |
@@ -73,7 +73,7 @@ settings:
 
 ```text title="設定例（menu-item セクション）"
 menu-item:
-  material: WRITTEN_BOOK
+  material: PAPER
   name: "&6&l生活鯖メニュー &7(右クリック)"
   lore:
     - "&7右クリックでミニゲーム一覧を開く"
@@ -83,7 +83,7 @@ menu-item:
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `menu-item.material` | `WRITTEN_BOOK` | アイテムの種類 |
+| `menu-item.material` | `PAPER` | アイテムの種類（読み込み側の内部既定は `WRITTEN_BOOK` だが、標準 config.yml は `PAPER`） |
 | `menu-item.name` | 「生活鯖メニュー (右クリック)」 | 表示名（`&` カラーコード対応） |
 | `menu-item.lore` | （上記） | 説明文 |
 | `menu-item.custom-model-data` | `0` | カスタムモデルデータ |
@@ -140,9 +140,9 @@ buttons:
 
 ```text title="ゲーム定義の構造"
 categories:
-  team:                       # カテゴリID
-    name: "&bチーム戦"
-    icon: DIAMOND_SWORD
+  minigame:                   # カテゴリID
+    name: "&bミニゲーム"
+    icon: NETHER_STAR
     games:
       kakurenbo:              # ゲームID
         name: "&aかくれんぼ"
@@ -165,7 +165,7 @@ categories:
 | `…actions.{join,leave,start}.command` | 実行するコマンド。文字列1つ、または複数行リスト可。`%player%` 置換対応 |
 
 !!! tip "標準で収録されるゲーム"
-    既定 config には **チーム戦9種**（LOL/かくれんぼ/スプラ/ドロケイ/残機制PVP/雪合戦/雪鬼/青鬼/色鬼）、**個人戦10種**（PVP/TNTラン/アスレタイマー/バトルロイヤル/ボンバーマン/マリカー/人狼/釣りイベント/雪クラフト/2D宝探し）、**カジノ8種**（ブラックジャック/ポーカー/スロット/宝くじ/チンチロ/クイズ/競馬/育成競馬）が定義されています。連携コマンドは各ゲーム側の `join`/`leave`/`start` を呼び出します。
+    既定 config は **`minigame`・`casino` の2カテゴリ** 構成です。**ミニゲーム20種**（LOL/かくれんぼ/スプラ/ドロケイ/残機制PVP/雪合戦/雪鬼/青鬼/色鬼/ベッドウォーズ/PVP/TNTラン/アスレタイマー/バトルロイヤル/ボンバーマン/マリカー/人狼/釣りイベント/雪クラフト/2D宝探し）、**カジノ8種**（ブラックジャック/ポーカー/スロット/宝くじ/チンチロ/クイズ/競馬/育成競馬）が定義されています。連携コマンドは各ゲーム側の `join`/`leave`/`start` を呼び出します。
 
 !!! warning "command が無いアクションはスキップ"
     `actions` 下に `command` が無いアクションは警告ログを出してスキップされます（ボタンも表示されません）。連携先のコマンド名が変わった場合は、ここを実環境に合わせて修正してください。
