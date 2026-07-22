@@ -9,7 +9,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | DBD |
-| バージョン | 1.2.0 |
+| バージョン | 1.4.0 |
 | api-version | 26.1.2（プラグイン内部の宣言は 1.21 系互換） |
 | メインコマンド | `/dbd`（エイリアスなし） |
 | 依存プラグイン | なし |
@@ -21,7 +21,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 
 ## 導入手順
 
-1. ビルドした `DBD`（`dbd-1.2.0.jar`）をサーバーの `plugins/` フォルダに配置する。
+1. ビルドした `DBD`（`dbd-1.4.0.jar`）をサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動・再起動すると `plugins/DBD/config.yml` が自動生成される（初回のみ）。
 3. 後述の手順で会場（スポーン・発電機・フック・板・窓・ゲート・ハッチ・看板）を設定する。
 4. 数値を変えたい場合は `config.yml` の `settings` を編集して **サーバー再起動**（またはプラグインリロード）で反映する。
@@ -133,6 +133,10 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 /dbd setsign start <識別子>
 ```
 
+```text title="パーク看板を登録（クリックでパーク選択GUIを開く）"
+/dbd setsign perk
+```
+
 看板の解除は、解除したい看板を見ながら（6ブロック以内）次のコマンドを実行します。
 
 ```text title="視線先の看板の登録を解除"
@@ -165,7 +169,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 | `settings.skillcheck-chance` | 0.10 | 修理中1秒ごとのスキルチェック発生率 |
 | `settings.wiggle-count` | 24 | 担がれた時のもがき脱出に必要なスニーク回数 |
 | `settings.pallet-break-seconds` | 2.5 | 鬼の板破壊時間（秒。パーク「野蛮な力」で短縮） |
-| `settings.vault-survivor-ticks` | 12 | 逃げの窓乗り越え時間（tick。12tick＝約0.6秒） |
+| `settings.vault-survivor-ticks` | 6 | 逃げの窓乗り越え時間（tick。6tick＝約0.3秒） |
 | `settings.vault-killer-ticks` | 34 | 鬼の窓乗り越え時間（tick） |
 | `settings.endurance-seconds` | 10 | フック救助後の「攻撃を1回防ぐ」無敵（我慢／ボロタイ）秒数 |
 | `settings.stun-seconds` | 2 | 板スタンの秒数 |
@@ -243,11 +247,11 @@ killer-allocation:
 | `/dbd setwindow` | dbd.admin | 視線先のブロックを窓枠に登録／解除する |
 | `/dbd setpallet` | dbd.admin | 視線先のブロック＋自分の向きで板を登録／解除する |
 | `/dbd setgate <1\|2>` | dbd.admin | 視線先のブロックを脱出ゲートに設定する |
-| `/dbd setsign <join\|leave\|start [識別子]\|delete>` | dbd.admin | 視線先の看板を各種看板に登録／解除する |
+| `/dbd setsign <join\|leave\|start [識別子]\|perk\|delete>` | dbd.admin | 視線先の看板を各種看板（参加／離脱／開始／パーク）に登録／解除する |
 | `/dbd stop` | dbd.admin | 試合を強制終了する（コンソール可） |
 
 !!! tip "タブ補完に対応しています"
-    `/dbd` の第1引数（サブコマンド）、`setspawn`（`killer` / `survivor`）、`setfield` / `setgate`（`1` / `2`）、`setsign`（`join` / `leave` / `start` / `delete`）、`setspawn survivor`（`clear`）はタブ補完に対応しています。管理者用のサブコマンドは `dbd.admin` を持つ場合のみ補完候補に表示されます。
+    `/dbd` の第1引数（サブコマンド）、`setspawn`（`killer` / `survivor`）、`setfield` / `setgate`（`1` / `2`）、`setsign`（`join` / `leave` / `start` / `perk` / `delete`）、`setspawn survivor`（`clear`）はタブ補完に対応しています。管理者用のサブコマンドは `dbd.admin` を持つ場合のみ補完候補に表示されます。
 
 ## 権限ノード
 
