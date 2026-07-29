@@ -66,8 +66,16 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 /wajinro setshop delete
 ```
 
-!!! tip "フィールド範囲とスケルトン"
-    スケルトン（エメラルドの番人）は `setfield` で設定した角1・角2の範囲内にランダム出現します。フィールド範囲が未設定だとスケルトンが湧かず、エメラルドを稼げません。必ず2点とも設定してください。
+```text title="スケルトン湧き地点を現在地に追加（任意・複数設置可）"
+/wajinro setskelspawn village1
+```
+
+```text title="最寄り（5ブロック以内）のスケルトン湧き地点を解除"
+/wajinro setskelspawn delete
+```
+
+!!! tip "スケルトン（エメラルドの番人）の湧き方"
+    スケルトンは既定で `setfield` の角1・角2の範囲内の **地表** にランダム出現します（フィールド範囲が未設定だと湧かず、エメラルドを稼げないため必ず2点とも設定してください）。洞窟・屋内など地表に湧かせたくないステージでは、`setskelspawn <ステージ>` で **湧き地点を手動登録** できます。**登録地点が1つでもあるステージでは、地表への自動湧きは行われず、登録地点（空きブロック）からのみランダムに湧きます**。登録状況は `/wajinro status` に「スケルトン湧き地点 登録数」として表示されます。
 
 ### 3. 看板の設置
 
@@ -354,6 +362,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | `/wajinro setspawn <ステージ>` | admin | ゲームスポーンを設定（ステージ作成を兼ねる） |
 | `/wajinro setfield <ステージ> <1\|2>` | admin | フィールド範囲の角を設定 |
 | `/wajinro setshop <ステージ\|delete>` | admin | ショップ地点を追加 / 最寄りを解除 |
+| `/wajinro setskelspawn <ステージ\|delete>` | admin | スケルトン湧き地点を追加 / 最寄りを解除（登録時は地表自動湧きより優先） |
 | `/wajinro setsign <join\|leave\|start <ス>\|name <ス>\|delete>` | admin | 視線先の看板を各用途で登録 / 解除 |
 | `/wajinro setrole <auto\|wolf\|accomplice\|vampire\|possessed> [値]` | admin | 配役を設定（auto以外は手動モードに） |
 | `/wajinro settime <day\|night\|firstday> <秒>` | admin | 各フェーズの時間を設定 |
@@ -362,7 +371,8 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | `/wajinro stop` | admin | ゲームを強制終了する |
 | `/wajinro setvc <add\|remove\|list> [ID]` | admin | ミュート対象VCの追加 / 削除 / 一覧 |
 | `/wajinro setlinkchannel <ID>` | admin | リンク用メッセージの投稿先チャンネルを設定 |
-| `/wajinro linkpost` | admin | リンク用のボタン付きメッセージを投稿する |
+| `/wajinro linkpost [code]` | admin | 連携メッセージを投稿（無印＝ロビー参加者の名前ボタン一覧 / `code`＝旧方式のコード入力ボタン） |
+| `/wajinro unlink <プレイヤー名>` | admin | 指定プレイヤーのDiscord連携を解除（引数なしの `unlink` は本人用・全員可） |
 | `/wajinro unmuteall` | admin | 登録VCの全員のミュートを解除（保険） |
 
 !!! note "reload / save コマンドはありません"
@@ -375,9 +385,15 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 1. Discord Developer Portal で BOT を作成し、トークンを取得する。
 2. BOT に「メンバーをミュート」「チャンネルを見る」「メッセージを送信」権限を付与し、サーバーへ招待する（Privileged Intent は不要）。
 3. `config.yml` の `discord.enabled: true`／`bot-token`／`guild-id` を設定してサーバーを再起動する。
-4. `/wajinro setlinkchannel <チャンネルID>` で投稿先を設定し、`/wajinro linkpost` でボタン付きメッセージを投稿する（1回でOK）。
+4. `/wajinro setlinkchannel <チャンネルID>` で連携メッセージの投稿先チャンネルを設定する。
 5. `/wajinro setvc add <VCチャンネルID>` でミュート対象のVCを登録する（複数可）。
-6. プレイヤーは `/wajinro link` で表示される6桁コードを、Discordのリンクメッセージのボタンから5分以内に入力して連携する。
+6. プレイヤーをロビーに集めてから `/wajinro linkpost` を実行すると、**ロビー参加者の一覧が名前ボタン付き** でDiscordに投稿されます。各プレイヤーは **自分のMinecraft名のボタン** を押すだけで、押したDiscordアカウントと紐付きます（コード入力は不要）。既に連携済みのメンバーは本文に一覧表示され、ボタンは出ません。
+
+!!! tip "コード入力方式（旧方式）を使いたい場合"
+    `/wajinro linkpost code` を実行すると、常設の「リンク」ボタン付きメッセージを投稿します。プレイヤーは `/wajinro link` で6桁コードを発行し、ボタンからモーダルを開いて5分以内に入力して連携します。ロビーに人が集まる前に設置しておきたい場合に向いています。どちらの方式で連携しても効果は同じです。
+
+!!! warning "誤った連携（なりすまし）の解除"
+    名前ボタン方式では、他人が先に自分以外の名前ボタンを押すと別のDiscordアカウントに紐付いてしまう可能性があります。その場合は本人が `/wajinro unlink` で解除するか、管理者が `/wajinro unlink <プレイヤー名>` で解除してから、正しい本人がもう一度ボタンを押してください。連携が成立するとゲーム内の本人へ通知が届くため、心当たりのない連携に気づけます。
 
 !!! tip "ミュートが残ってしまったとき"
     何らかの理由でミュートが解除されない場合は `/wajinro unmuteall` で登録VCの全員のミュートを一括解除できます。
