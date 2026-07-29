@@ -167,6 +167,7 @@ Minecraft上で人狼を遊ぶミニゲームに、RPGのアクション要素�
 | `/wajinro start [ステージ]` | ゲームを開始する（開始看板と同等・全員可。ステージが1つなら省略可） |
 | `/wajinro status` | 設定状況・進行状況を確認する（全員可） |
 | `/wajinro link` / `unlink` | Discordアカウントと連携／解除する（連携が有効な場合のみ） |
+| `/wajinro linkcheck` | ロビー参加者のDiscord連携状況（連携済み／未連携）を確認する（全員可） |
 
 エイリアスとして `/wj` も使えます。
 

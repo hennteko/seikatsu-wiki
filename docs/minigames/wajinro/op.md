@@ -191,8 +191,11 @@ roles:
 | `settings.first-day-seconds` | 30 | 初日の昼の長さ（秒／最小5） |
 | `settings.day-seconds` | 120 | 昼の長さ（秒／最小10） |
 | `settings.night-seconds` | 120 | 夜の長さ（秒／最小10） |
-| `settings.skeleton.max-alive` | 10 | スケルトン同時出現の上限（1〜50） |
-| `settings.skeleton.spawn-interval` | 8 | スケルトンの出現間隔（秒／最小1） |
+| `settings.skeleton.max-alive` | 10 | スケルトン同時出現の上限（固定モード時。1〜50） |
+| `settings.skeleton.per-player-mode` | `false` | `true`＝同時湧き上限を「生存者数×`per-player`（切り上げ・最大50）」で人数に比例させる／`false`＝固定値 `max-alive` を使用 |
+| `settings.skeleton.per-player` | 1.0 | 人数比例モード時の、生存者1人あたりの湧き数（0.5〜5.0） |
+| `settings.skeleton.spawn-interval` | 8 | スケルトンの出現間隔（秒／1〜60） |
+| `settings.skeleton.per-night-limit` | 0 | 1夜あたりの合計出現数の上限（0＝無制限。夜が来るたびにカウントはリセット） |
 | `settings.skeleton.emerald-chance` | 0.5 | スケルトン撃破時のエメラルド獲得確率（0.0〜1.0） |
 | `settings.spectator-mode` | `spectator` | 死亡者の観戦方式。`spectator` / `adventure`（統合版で観戦が不安定な場合） |
 | `settings.werewolf-axe-mode` | `ver2` | 人狼の斧。`ver1`＝昼の回数制限なし / `ver2`＝1回の昼に1本 |
@@ -249,7 +252,7 @@ discord:
 
 ## ゲーム管理本（設定メニューGUI）
 
-config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI** で価格・配役・バリエーション・タイマーをまとめて変更できる管理者向けアイテムです。**設定はクリックした瞬間に `config.yml` へ保存**され、reload は不要です（`config.yml` を手書きで編集した場合のみサーバー再起動が必要）。
+config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI** で価格・配役・バリエーション・タイマー・スケルトンをまとめて変更できる管理者向けアイテムです。**設定はクリックした瞬間に `config.yml` へ保存**され、reload は不要です（`config.yml` を手書きで編集した場合のみサーバー再起動が必要）。
 
 ### 入手と使い方
 
@@ -267,7 +270,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 
 ### メニュー構成
 
-右クリックで最初に開く画面（タイトル「ゲーム管理本」）から、4種類の設定画面へ分岐します。各設定画面の右下スロットの **「戻る」** でメイン画面へ、メイン画面の **「閉じる」** でGUIを閉じます。ページ送りではなく、メイン → 各設定画面の2階層構成です。
+右クリックで最初に開く画面（タイトル「ゲーム管理本」）から、5種類の設定画面へ分岐します。各設定画面の右下スロットの **「戻る」** でメイン画面へ、メイン画面の **「閉じる」** でGUIを閉じます。ページ送りではなく、メイン → 各設定画面の2階層構成です。
 
 | メイン画面のボタン | 開く設定画面 | 変更対象のconfigキー |
 |---|---|---|
@@ -275,6 +278,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | 配役設定 | 人狼・共犯者・吸血鬼・狼憑き | `roles.*` |
 | バリエーション設定 | 斧 / 占い / 騎士の祈り / 槍 / 俊敏 / 観戦方式 | `settings.*` |
 | タイマー設定 | 初日昼・昼・夜の秒数・最低人数 | `settings.*` |
+| スケルトン設定 | 湧き数モード / 上限 / 1人あたり湧き数 / 湧き間隔 / 1夜あたり上限 | `settings.skeleton.*` |
 
 ### ① 価格設定（`prices.*`）
 
@@ -342,6 +346,21 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 !!! info "秒数の下限について"
     書き込み時の下限は3項目とも5秒ですが、`day-seconds`・`night-seconds` は読み出し時に最低10秒として扱われるため、GUI上は10秒を下回って表示されません（`first-day-seconds` は5秒まで下げられます）。テストプレイでは最低人数を1に下げると1人でも開始できます。
 
+### ⑤ スケルトン設定（`settings.skeleton.*`）
+
+夜に出現する「エメラルドの番人」（スケルトン）の湧き方を調整します。**湧き数モード** で「固定」と「人数比例」を切り替えられます。
+
+| 項目 | 操作 | configキー | 既定値 | 補足 |
+|---|---|---|---|---|
+| 湧き数モード | クリックで切替 | `settings.skeleton.per-player-mode` | `false`（固定） | 固定＝下の「同時湧き上限」を使用／人数比例＝生存者数 × 1人あたり湧き数（切り上げ・最大50） |
+| 同時湧き上限（固定） | 左 +1 / 右 −1 | `settings.skeleton.max-alive` | 10体 | 固定モード時に使用（1〜50） |
+| 1人あたり湧き数 | 左 +0.5 / 右 −0.5 | `settings.skeleton.per-player` | 1.0 | 人数比例モード時に使用（0.5〜5.0）。例: 1.5 × 生存8人 = 上限12体 |
+| 湧き間隔 | 左 +1秒 / 右 −1秒 | `settings.skeleton.spawn-interval` | 8秒 | 1〜60秒 |
+| 1夜あたりの出現数 | 左 +1 / 右 −1（Shift+クリックで ±10） | `settings.skeleton.per-night-limit` | 無制限（0） | 夜の間に出現する合計数の上限（0＝無制限）。夜が来るたびにカウントはリセット |
+
+!!! tip "固定モードと人数比例モード"
+    既定は「固定」で、`max-alive`（既定10体）を同時湧きの上限にします。「人数比例」に切り替えると、生存者が多いほど番人が増えます（生存者数 × `per-player` を切り上げ、最大50体）。少人数でも多人数でも稼ぎのバランスを取りたい場合に便利です。`per-night-limit` を設定すると、1夜あたりの合計出現数に上限をかけられます（過剰なエメラルド稼ぎの抑制用）。エメラルド獲得確率（`emerald-chance`）はGUIにはなく、`config.yml` で調整します。
+
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
@@ -349,7 +368,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | `wajinro.admin` | OP | セットアップ・管理コマンドすべて／管理本の使用 |
 
 !!! note "プレイヤー向けコマンドは権限不要"
-    `/wajinro join`・`leave`・`start`・`status`・`link`・`unlink` は **権限不要で全プレイヤーが使えます**（`join`・`leave`・`start` は看板と同等）。それ以外の設定・管理コマンドは `wajinro.admin`（OP）が必要です。
+    `/wajinro join`・`leave`・`start`・`status`・`link`・`unlink`・`linkcheck` は **権限不要で全プレイヤーが使えます**（`join`・`leave`・`start` は看板と同等）。それ以外の設定・管理コマンドは `wajinro.admin`（OP）が必要です。
 
 ## 管理コマンド一覧
 
@@ -357,6 +376,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 |---|---|---|
 | `/wajinro join` / `leave` / `start [ステージ]` / `status` | 全員 | 参加 / 離脱 / 開始 / 設定状況の確認 |
 | `/wajinro link` / `unlink` | 全員 | Discord連携 / 解除（連携有効時のみ） |
+| `/wajinro linkcheck` | 全員 | ロビー参加者のDiscord連携状況（連携済み／未連携）を一覧表示 |
 | `/wajinro setstartspawn` | admin | 初期スポーン（戻り先）を現在地に設定 |
 | `/wajinro setlobby` | admin | ロビー地点を現在地に設定 |
 | `/wajinro setspawn <ステージ>` | admin | ゲームスポーンを設定（ステージ作成を兼ねる） |
