@@ -135,6 +135,10 @@ nav:
           - minigames/zinro/index.md
           - 👤 プレイヤー向け: minigames/zinro/player.md
           - 🛠️ OP・運営向け: minigames/zinro/op.md
+      - WaJinro（人狼RPG）:
+          - minigames/wajinro/index.md
+          - 👤 プレイヤー向け: minigames/wajinro/player.md
+          - 🛠️ OP・運営向け: minigames/wajinro/op.md
       - TwoDTreasure（2D宝探し）:
           - minigames/twodtreasure/index.md
           - 👤 プレイヤー向け: minigames/twodtreasure/player.md
