@@ -79,7 +79,7 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 
 ### 3. 看板の設置
 
-参加・離脱・開始・名前登録の看板を登録できます。看板を **見ながら（6ブロック以内）** 以下を実行します。テキストはプラグインが自動で書き込みます。
+参加・離脱・Discord連携・開始・名前登録の看板を登録できます。看板を **見ながら（6ブロック以内）** 以下を実行します。テキストはプラグインが自動で書き込みます。
 
 ```text title="参加看板を登録（クリックで参加）"
 /wajinro setsign join
@@ -87,6 +87,10 @@ OP権限で、設定したい場所に **立った状態** で以下を実行し
 
 ```text title="離脱看板を登録（クリックで離脱）"
 /wajinro setsign leave
+```
+
+```text title="Discord連携看板を登録（クリックで連携コードを発行＝ /wajinro link と同等）"
+/wajinro setsign link
 ```
 
 ```text title="開始看板を登録（クリックでそのステージを開始）"
@@ -191,11 +195,12 @@ roles:
 | `settings.first-day-seconds` | 30 | 初日の昼の長さ（秒／最小5） |
 | `settings.day-seconds` | 120 | 昼の長さ（秒／最小10） |
 | `settings.night-seconds` | 120 | 夜の長さ（秒／最小10） |
-| `settings.skeleton.max-alive` | 10 | スケルトン同時出現の上限（固定モード時。1〜50） |
-| `settings.skeleton.per-player-mode` | `false` | `true`＝同時湧き上限を「生存者数×`per-player`（切り上げ・最大50）」で人数に比例させる／`false`＝固定値 `max-alive` を使用 |
-| `settings.skeleton.per-player` | 1.0 | 人数比例モード時の、生存者1人あたりの湧き数（0.5〜5.0） |
-| `settings.skeleton.spawn-interval` | 8 | スケルトンの出現間隔（秒／1〜60） |
-| `settings.skeleton.per-night-limit` | 0 | 1夜あたりの合計出現数の上限（0＝無制限。夜が来るたびにカウントはリセット） |
+| `settings.skeleton.max-alive` | 10 | 1夜の出現数（固定モード時）。夜開始に半分・第2波の時刻に残り半分が出現（1〜200） |
+| `settings.skeleton.per-player-mode` | `false` | `true`＝1夜の出現数を「生存者数×`per-player`（切り上げ・最大200）」で人数に比例させる／`false`＝固定値 `max-alive` を使用 |
+| `settings.skeleton.per-player` | 1.0 | 人数比例モード時の、生存者1人あたりの出現数（0.5〜20.0） |
+| `settings.skeleton.wave2-seconds` | 60 | 第2波の出現時刻（夜開始からの秒数／10〜600）。夜の長さより長いと第2波は出現しない |
+| `settings.skeleton.health` | 20 | スケルトンのHP（1〜100。20＝バニラ＝ハート10個） |
+| `settings.skeleton.aggressive` | `false` | `true`＝弓を持ちプレイヤーを攻撃する／`false`＝弓なし・無害（エメラルド集め専用） |
 | `settings.skeleton.emerald-chance` | 0.5 | スケルトン撃破時のエメラルド獲得確率（0.0〜1.0） |
 | `settings.spectator-mode` | `spectator` | 死亡者の観戦方式。`spectator` / `adventure`（統合版で観戦が不安定な場合） |
 | `settings.werewolf-axe-mode` | `ver2` | 人狼の斧。`ver1`＝昼の回数制限なし / `ver2`＝1回の昼に1本 |
@@ -278,7 +283,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | 配役設定 | 人狼・共犯者・吸血鬼・狼憑き | `roles.*` |
 | バリエーション設定 | 斧 / 占い / 騎士の祈り / 槍 / 俊敏 / 観戦方式 | `settings.*` |
 | タイマー設定 | 初日昼・昼・夜の秒数・最低人数 | `settings.*` |
-| スケルトン設定 | 湧き数モード / 上限 / 1人あたり湧き数 / 湧き間隔 / 1夜あたり上限 | `settings.skeleton.*` |
+| スケルトン設定 | 出現数モード / 1夜の出現数 / 1人あたり出現数 / 第2波の時刻 / HP / 攻撃モード | `settings.skeleton.*` |
 
 ### ① 価格設定（`prices.*`）
 
@@ -348,18 +353,19 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 
 ### ⑤ スケルトン設定（`settings.skeleton.*`）
 
-夜に出現する「エメラルドの番人」（スケルトン）の湧き方を調整します。**湧き数モード** で「固定」と「人数比例」を切り替えられます。
+夜に出現する「エメラルドの番人」（スケルトン）の湧き方を調整します。出現は **2ウェーブ方式** で、1夜の出現数の半分が夜開始（0秒）に、残り半分が第2波の時刻に湧きます。**出現数モード** で「固定」と「人数比例」を切り替えられます。
 
 | 項目 | 操作 | configキー | 既定値 | 補足 |
 |---|---|---|---|---|
-| 湧き数モード | クリックで切替 | `settings.skeleton.per-player-mode` | `false`（固定） | 固定＝下の「同時湧き上限」を使用／人数比例＝生存者数 × 1人あたり湧き数（切り上げ・最大50） |
-| 同時湧き上限（固定） | 左 +1 / 右 −1 | `settings.skeleton.max-alive` | 10体 | 固定モード時に使用（1〜50） |
-| 1人あたり湧き数 | 左 +0.5 / 右 −0.5 | `settings.skeleton.per-player` | 1.0 | 人数比例モード時に使用（0.5〜5.0）。例: 1.5 × 生存8人 = 上限12体 |
-| 湧き間隔 | 左 +1秒 / 右 −1秒 | `settings.skeleton.spawn-interval` | 8秒 | 1〜60秒 |
-| 1夜あたりの出現数 | 左 +1 / 右 −1（Shift+クリックで ±10） | `settings.skeleton.per-night-limit` | 無制限（0） | 夜の間に出現する合計数の上限（0＝無制限）。夜が来るたびにカウントはリセット |
+| 出現数モード | クリックで切替 | `settings.skeleton.per-player-mode` | `false`（固定） | 固定＝下の「1夜の出現数」を使用／人数比例＝生存者数 × 1人あたり出現数（切り上げ・最大200） |
+| 1夜の出現数（固定） | 左 +1 / 右 −1（Shift+クリックで ±10） | `settings.skeleton.max-alive` | 10体 | 固定モード時に使用（1〜200）。夜開始に半分、第2波の時刻に残り半分が出現 |
+| 1人あたり出現数 | 左 +0.5 / 右 −0.5 | `settings.skeleton.per-player` | 1.0 | 人数比例モード時に使用（0.5〜20.0）。例: 1.5 × 生存8人 = 1夜12体 |
+| 第2波の時刻 | 左 +10秒 / 右 −10秒 | `settings.skeleton.wave2-seconds` | 60秒 | 夜開始からの秒数（10〜600）。夜の長さより長いと第2波は出現しない |
+| スケルトンのHP | 左 +1 / 右 −1（Shift+クリックで ±10） | `settings.skeleton.health` | 20 | ハート10個＝バニラ（1〜100） |
+| 攻撃モード | クリックで切替 | `settings.skeleton.aggressive` | `false`（攻撃しない） | 攻撃する＝弓を持ちプレイヤーを狙う（バニラ挙動）／攻撃しない＝弓なし・無害。装備は次の夜のスポーン分から反映 |
 
-!!! tip "固定モードと人数比例モード"
-    既定は「固定」で、`max-alive`（既定10体）を同時湧きの上限にします。「人数比例」に切り替えると、生存者が多いほど番人が増えます（生存者数 × `per-player` を切り上げ、最大50体）。少人数でも多人数でも稼ぎのバランスを取りたい場合に便利です。`per-night-limit` を設定すると、1夜あたりの合計出現数に上限をかけられます（過剰なエメラルド稼ぎの抑制用）。エメラルド獲得確率（`emerald-chance`）はGUIにはなく、`config.yml` で調整します。
+!!! tip "固定モードと人数比例モード・2ウェーブ出現"
+    既定は「固定」で、`max-alive`（既定10体）が1夜の出現数です。「人数比例」に切り替えると、生存者が多いほど番人が増えます（生存者数 × `per-player` を切り上げ、最大200体）。いずれのモードでも、1夜の出現数の半分が夜開始に、残り半分が `wave2-seconds`（既定60秒）に出現します。第2波の時刻が夜の長さを超えると第2波は出ません。エメラルド獲得確率（`emerald-chance`）はGUIにはなく、`config.yml` で調整します。
 
 ## 権限ノード
 
@@ -383,7 +389,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | `/wajinro setfield <ステージ> <1\|2>` | admin | フィールド範囲の角を設定 |
 | `/wajinro setshop <ステージ\|delete>` | admin | ショップ地点を追加 / 最寄りを解除 |
 | `/wajinro setskelspawn <ステージ\|delete>` | admin | スケルトン湧き地点を追加 / 最寄りを解除（登録時は地表自動湧きより優先） |
-| `/wajinro setsign <join\|leave\|start <ス>\|name <ス>\|delete>` | admin | 視線先の看板を各用途で登録 / 解除 |
+| `/wajinro setsign <join\|leave\|link\|start <ス>\|name <ス>\|delete>` | admin | 視線先の看板を各用途で登録 / 解除（`link`＝Discord連携コード発行看板） |
 | `/wajinro setrole <auto\|wolf\|accomplice\|vampire\|possessed> [値]` | admin | 配役を設定（auto以外は手動モードに） |
 | `/wajinro settime <day\|night\|firstday> <秒>` | admin | 各フェーズの時間を設定 |
 | `/wajinro setmin <人数>` | admin | 開始最低人数を設定（1〜15） |
@@ -417,6 +423,9 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 
 !!! tip "ミュートが残ってしまったとき"
     何らかの理由でミュートが解除されない場合は `/wajinro unmuteall` で登録VCの全員のミュートを一括解除できます。
+
+!!! tip "Discord連携看板を設置しておくと便利"
+    `/wajinro setsign link` で **Discord連携看板** を設置できます。プレイヤーがこの看板を右クリックすると `/wajinro link` と同様に連携コードが発行され、コード入力方式（`linkpost code`）と組み合わせてロビーで手軽に連携できます。連携が無効な場合や連携済みの場合は、その旨のメッセージが表示されます。
 
 ## 運営の流れ
 
