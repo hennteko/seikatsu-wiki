@@ -16,7 +16,7 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | 設定ファイル | `plugins/SplatoonPlugin/config.yml` |
 
 !!! success "v2.0.0 の主な追加（ブキ刷新＆ガチマッチ＆サーモンラン）"
-    メインブキ9種・サブ6種・スペシャル5種に拡張され、**ブキ選択GUI**（ブキ看板）で自由編成できるようになりました。さらに対戦モードが **ナワバリ／ガチエリア／ガチホコ／ガチヤグラ** の4種に増えています。会場・看板・モードはすべてコマンドで設定し、`config.yml` に自動保存されます。加えて **サーモンラン（PvE協力モード）** を新搭載し、`/salmon` コマンドと独立した看板・config（`salmon.*`）で運用します（複数ステージ＝アリーナを同時稼働可能）。
+    メインブキ9種・サブ6種・スペシャル5種に拡張され、**ブキ選択GUI**（ブキ看板）で自由編成できるようになりました。さらに対戦モードが **ナワバリ／ガチエリア／ガチホコ／ガチヤグラ** の4種に増えています。会場・看板・モードはすべてコマンドまたは **チェスト型の管理GUI（`/splatoon book`・`/salmon book`）** で設定し、`config.yml` に自動保存されます。**複数の対戦会場（アリーナ）を登録して切替運用** でき（`/splatoon setarena`）、加えて **サーモンラン（PvE協力モード）** を新搭載し、`/salmon` コマンドと独立した看板・config（`salmon.*`）で運用します（複数ステージ＝アリーナを同時稼働可能）。
 
 ## 導入手順
 
@@ -68,6 +68,34 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 
 !!! tip "フィールドと塗れる床"
     `setfield 1`/`2` の2点で囲んだ直方体が塗り判定の範囲です。**塗れる床は限定されています**（草・土・石・白/薄灰/灰コンクリート・白コンクリートパウダー・テラコッタ・白テラコッタ・砂・砂利・オーク/トウヒの板材・オレンジ/青コンクリート）。これ以外（純色の羊毛・ガラス・水など）や、真上が空気でないブロックは塗れません。塗ると床は一時的にチームカラーのコンクリートへ置換され、試合終了時に元の状態へ復元されます。
+
+## 複数会場（アリーナ）と管理GUI
+
+v2.0.0 から **複数の対戦会場（アリーナ）を登録し、切り替えて運用** できます。スポーン・フィールド・ゾーン・ホコ・ゴール・ヤグラCP といった地点設定は **会場ごと** に保存され、`setfield`／`setspawn`／`setzone`／`sethoko`／`setgoal`／`settower` などはすべて **「現在会場」** に対して作用します。初期の会場IDは `default` です。
+
+```text title="編集/対象の会場を切り替える（未登録なら新規作成）"
+/splatoon setarena <会場名>
+```
+```text title="会場を削除する"
+/splatoon delarena <会場名>
+```
+```text title="会場を指定して試合開始（会場を切り替えてから開始）"
+/splatoon start <会場名> <turf|area|hoko|tower>
+```
+
+!!! note "現在会場という考え方"
+    地点系コマンドは常に **現在会場** に保存されます。会場を増やすときは `setarena <会場名>` で切り替えてから各地点を設定してください。`/splatoon status` の先頭に **現在会場（編集/対象）** と **登録会場一覧** が表示されます。会場名を指定した `start <会場名> <モード>` は会場を切り替えてから、省略した `start <モード>` は現在会場で開始します。
+
+### 管理GUI（`/splatoon book`・`/salmon book`）
+
+コマンドを覚えなくても設定できるよう、**チェスト型の管理GUI** を用意しています。`/splatoon book` または `/salmon book` で共通メニューが開き、**PvP設定（会場一覧→会場編集）** と **サーモンラン設定（ステージ一覧→ステージ編集）** に分岐します。数値は左右クリックで増減（シフトで大きく）、地点は立ち位置で即セット、看板は視線先の看板に設定でき、変更は即 `config.yml` に保存されます。会場一覧では **シフト＋右クリックで会場を削除** できます。なお **新規会場／新規ステージはGUIからは作成できず**、初回だけコマンド（`/splatoon setarena <会場名>` ／ `/salmon setspawn <ステージ名>`）で作成すると一覧に現れます。
+
+```text title="管理GUIを開く（PvP＋サーモンラン共通）"
+/splatoon book
+```
+```text title="管理GUIを開く（/salmon からでも同じメニュー）"
+/salmon book
+```
 
 ## 対戦モードの設定
 
@@ -121,7 +149,7 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 | `game.hoko.count` / `goal-radius` 等 | 100 / 2.0 | ガチホコのカウント・ゴール半径ほか（`hold-seconds` はconfigに残るが**保持超過の自爆は現在無効**） |
 | `game.tower.count` / `occupy-radius` / `advance-seconds` 等 | 100 / 3.0 / 25 | ガチヤグラのカウント・占有半径・前進/後退秒ほか |
 
-座標系（`arena.spawn.*` / `arena.field.*` / `arena.zone1/2` / `arena.hoko` / `arena.goal.*` / `arena.tower.*` / 各 `*-sign` / `lobby-spawn` / `default-spawn`）はコマンド実行時に自動保存されます。
+座標系は **会場ごと** に `arenas.<会場ID>.*`（`spawn.*` / `field.*` / `zone1/2` / `hoko` / `goal.*` / `tower.checkpoints.*`）へ、現在会場IDは `arena-current` に、看板・ロビー等は各 `*-sign` / `lobby-spawn` / `default-spawn` へ、コマンド実行時に自動保存されます。旧バージョンの単一 `arena.*` 構造は起動時に自動で `arenas.default` へ移行されます（`config.yml` の手動編集は不要）。
 
 !!! warning "既存サーバーを更新する場合（config自動マージなし）"
     本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新しいキー（`game.area` / `game.hoko` / `game.tower` など）を自動追記しません**。コード側に既定値があるため未記載でも既定値で動作しますが、**各モードのカウントや時間を調整したい場合は配布 `config.yml` を参照して手動で追記**してください。座標・看板・モードはコマンドで都度保存されるため問題ありません。
@@ -144,8 +172,12 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 
 | コマンド | 説明 |
 |---|---|
+| `/splatoon book` | チェスト型の管理GUIを開く（PvP＋サーモンラン共通） |
+| `/splatoon setarena <会場名>` | 編集/対象の会場を切替（未登録なら新規作成） |
+| `/splatoon delarena <会場名>` | 登録済みの会場を削除 |
+| `/splatoon start <会場名> <turf\|area\|hoko\|tower>` | 会場を切り替えてから指定モードで試合開始 |
 | `/splatoon stop` | 進行中の試合を強制終了 |
-| `/splatoon setfield <1\|2>` | フィールド範囲の角を現在地に設定 |
+| `/splatoon setfield <1\|2>` | フィールド範囲の角を現在地に設定（現在会場） |
 | `/splatoon setspawn <orange\|blue>` | チームの試合内スポーンを現在地に設定 |
 | `/splatoon setlobby` / `setstartspawn` | ロビー / ゲーム外スポーンを現在地に設定 |
 | `/splatoon setsign <join\|leave\|weapon>` | 視線先の看板を参加 / 離脱 / ブキ選択看板に設定 |
@@ -250,6 +282,7 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 | `/salmon join` / `leave` | 全員 | ロビーへ参加 / 退出 |
 | `/salmon start <ステージ>` | 全員 | ステージを開始（コマンドブロック / コンソール可） |
 | `/salmon status [ステージ]` | 全員 | 設定・進行状況を確認 |
+| `/salmon book` | `splatoon.admin` | チェスト型の管理GUIを開く（PvP＋サーモンラン共通） |
 | `/salmon stop <ステージ>` | `splatoon.admin` | ステージを強制終了して `IDLE` に戻す |
 | `/salmon setlobby` / `setstartspawn` | `splatoon.admin` | 共通スポーンを設定 |
 | `/salmon setspawn <ステージ>` | `splatoon.admin` | 基地スポーンを設定 |

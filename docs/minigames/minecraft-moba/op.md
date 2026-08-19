@@ -29,6 +29,9 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
 
+!!! tip "コマンドの代わりにGUIでも設定できます"
+    以下のセットアップは、`/moba book` で開く **管理GUIメニュー** からクリック操作でも行えます（下記「管理GUIメニュー（`/moba book`）」参照）。コマンドとGUIは等価で、どちらで設定しても config に即保存されます。
+
 !!! info "セットアップコマンドはすべてフラット化されました"
     旧 `/moba setup <core\|tower\|minion\|creep>` のサブコマンド形式は廃止され、`setcore` / `setturret` / `setlane` / `setcamp` の独立コマンドに統合されました。コア・タワー・レーン・クリープ湧きなどの **ステージ固有のジオメトリ** は、`setstage` で選んだ編集ステージ（`STAGES.<識別子>.*`）配下に保存されます。
 
@@ -133,6 +136,29 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 !!! tip "看板の登録解除"
     登録を取り消すときは、対象の看板を見た状態で **`/moba setsign delete`** を実行します。種類（参加/退出/ショップ/チャンピオン/開始）は自動判別され、看板テキストもクリアされます。
 
+## 管理GUIメニュー（`/moba book`）
+
+コマンドを覚えなくても、**チェスト型のGUIメニュー** から地点設定・看板登録・ゲーム制御・数値設定をまとめて行えます。以降のセットアップコマンドと同じ操作を、その場のクリックで実行できます（`moba.admin` 権限が必要）。
+
+```text title="管理GUIメニューを開く（OP限定）"
+/moba book
+```
+
+メニューは以下の4ページで構成されます（トップメニューから各ページへ移動）。
+
+| ページ | 内容 |
+|---|---|
+| 設定状況 | 各地点・看板・ステージ・数値・ゲーム状態を一覧表示（`/moba status` と同等の読み取り） |
+| ゲーム制御 | 登録ステージごとの **開始** ボタン／**強制停止**／**リロード** |
+| 地点・看板設定 | **現在地** に各地点（初期スポーン・ロビー・フィールド・チームスポーン・コア・防衛塔・クリープ湧き）を設定。看板の設置／解除。編集ステージの切替 |
+| 数値設定 | 最大人数・最小人数（左クリック +1／右クリック −1、Shiftで ±10）、制限時間（±10、Shiftで ±60） |
+
+!!! tip "GUIからの看板登録は「ボタン→対象看板を右クリック」"
+    地点・看板設定ページで看板ボタン（参加／離脱／ショップ／チャンピオン／開始／登録解除）をクリックすると、メニューが閉じて **保留状態** になります。続けて対象の看板を **右クリック** すると登録（または解除）が確定します。開始看板は、その時点の **編集ステージ** に紐づけて登録されます。
+
+!!! note "GUIとコマンドは等価"
+    `/moba book` の各操作は、対応するコマンド（`setcore` / `setturret` / `setsign` / `setmax` など）と同じ処理を呼び出し、実行時に config へ即保存・自動リロードされます。どちらで設定しても結果は同じです。新しいステージ（マップ）の作成だけは、先に `/moba setstage <名前>` で識別子を用意してください。
+
 ## config.yml 主要項目
 
 ### ゲーム基本設定（`GAME_SETTINGS`）
@@ -193,7 +219,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `AFK` | `KICK_TIME`(300) / `CHECK_INTERVAL`(60) / `AUTO_KICK` | 一定時間無移動で自動離脱 |
 | `RECALL` | `CHANNEL_TIME`(8) / `COOLDOWN`(60) / `CANCEL_ON_DAMAGE` / `CANCEL_ON_MOVE` | 拠点帰還の詠唱・CD・中断条件 |
 | `VISION.WARD` | `DURATION`(180) / `VISION_RANGE`(20) / `MAX_WARDS_PER_PLAYER`(3) / `COST`(75) | ワードの持続・範囲・上限・価格 |
-| `RESPAWN` | `BASE_TIME`(5) / `TIME_PER_LEVEL`(0.5) / `KEEP_INVENTORY` | リスポーン時間と装備保持 |
+| `RESPAWN` | `BASE_TIME`(5) / `TIME_PER_LEVEL`(0.5) / `KEEP_INVENTORY` / `INVINCIBLE_SECONDS`(3) | リスポーン時間・装備保持・復活直後の無敵秒数（スポーンキル防止・0で無効） |
 | `KILLSTREAK` | `REQUIRED_KILLS`(3) / `BONUS_EMERALD`(2) | キルストリーク |
 | `SIGNS` | `JOIN` / `LEAVE` / `SHOP` / `CHAMPION` / `START.<識別子>` | 看板位置（コマンドで自動保存）。開始看板のみ `START` 配下に識別子ごとのキーで複数保存される |
 | `STAGES` | `<識別子>.TEAM_RED` / `TEAM_BLUE` / `AREA` / `MINION_WAYPOINTS` / `CREEP_SPAWNS` ほか | ステージ固有のジオメトリ（コア/防衛塔/スポーン/エリア/レーン/クリープ湧き）。`setstage` で選んだ編集ステージ配下に保存 |
@@ -211,7 +237,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `moba.admin` | OP | `stop` / `reload` / `setstage` / `setsign` / `setstartspawn` / `setlobby` / `setfield` / `setspawn` / `setcore` / `setturret` / `setlane` / `setcamp` / `setmax` / `setmin` / `settime` などの設定・管理コマンド、および `/shop` の実行に必要 |
+| `moba.admin` | OP | `book` / `stop` / `reload` / `setstage` / `setsign` / `setstartspawn` / `setlobby` / `setfield` / `setspawn` / `setcore` / `setturret` / `setlane` / `setcamp` / `setmax` / `setmin` / `settime` などの設定・管理コマンド、および `/shop` の実行に必要 |
 
 !!! note "プレイヤー向け権限について"
     `/moba join`・`leave`・`start`・`stats`・`status` は **権限不要で全員が使えます**（`status` は読み取り専用）。`join`・`leave`・`stats` でプレイヤー名を指定して他者を対象にする操作のみOP限定です。一方 **`/shop` は `plugin.yml` で `moba.admin` 限定** のため、一般プレイヤーは `/shop` コマンドを直接使えません（ショップ看板から開きます）。
@@ -231,6 +257,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 | コマンド | 説明 |
 |---|---|
+| `/moba book` | 管理GUIメニュー（管理メニュー）を開く。地点設定・看板登録・ゲーム制御・数値設定をGUIで行える |
 | `/moba stop` | ゲームを停止する |
 | `/moba reload` | config.yml を再読み込み（看板・構造物も再構築） |
 | `/moba setstage <識別子>` | 以降の地点設定の編集ステージを切り替える |
@@ -275,6 +302,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
     - ワード（敵の発光・上限3個）、リコール（拠点帰還）、AFK自動離脱
     - HUDサイドバー（KDA/CS/Lv/マナ/エメラルド/コアHP/チームキル）、ルーン（スタッツ装備）
     - 経済・経験値・ショップ、チーム管理・状態管理、看板（参加/退出/ショップ/チャンピオン/開始）
+    - 管理GUIメニュー（`/moba book`・設定状況/ゲーム制御/地点・看板設定/数値設定をクリック操作）
 
 !!! warning "既知の制約・注意点"
     - ミニオンの Pathfinding は簡易実装で、経路が正しくても期待通り動かない場合があります。
