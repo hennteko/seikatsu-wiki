@@ -131,6 +131,10 @@ nav:
           - minigames/battleroyale/index.md
           - 👤 プレイヤー向け: minigames/battleroyale/player.md
           - 🛠️ OP・運営向け: minigames/battleroyale/op.md
+      - Sniper（スナイパーバトロワ）:
+          - minigames/sniper/index.md
+          - 👤 プレイヤー向け: minigames/sniper/player.md
+          - 🛠️ OP・運営向け: minigames/sniper/op.md
       - Zinro（人狼）:
           - minigames/zinro/index.md
           - 👤 プレイヤー向け: minigames/zinro/player.md
