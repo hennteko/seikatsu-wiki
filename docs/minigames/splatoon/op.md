@@ -53,9 +53,12 @@ SplatoonPlugin の導入・フィールド設定・モード・config・権限�
 ```text title="開始看板を設定（モード別。クリックでそのモードの試合開始）"
 /splatoon setsign start <turf|area|hoko|tower>
 ```
-```text title="看板の登録を解除（視線先の参加/離脱/ブキ/開始看板を自動判別）"
+```text title="看板の登録を解除（視線先の参加/離脱/ブキ/開始看板を自動判別・1枚ずつ）"
 /splatoon setsign delete
 ```
+
+!!! success "看板は複数設置できます（v更新）"
+    参加・離脱・ブキ選択・開始の各看板を **複数拠点に設置** できるようになりました（会場ごとに保持）。`setsign` は上書きではなく **追記** され、`setsign delete` は視線先の1枚だけ解除します。人数・状態表示は全枚数が同時に更新されます。既存の看板データは自動で引き継がれるため、**設定のやり直しは不要**です。開始看板はモード別（`turf`/`area`/`hoko`/`tower`）で、それぞれ複数設置できます。
 ```text title="ロビーのスポーン地点（任意・試合終了後の戻り先）"
 /splatoon setlobby
 ```

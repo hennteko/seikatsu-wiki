@@ -57,9 +57,12 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 | `lobby` | `ワールド名,x,y,z,yaw,pitch` | 受付エリア（ロビー） |
 | `areaPos1` | `ワールド名,x,y,z` | ゲームエリアの角1 |
 | `areaPos2` | `ワールド名,x,y,z` | ゲームエリアの角2 |
-| `joinSign` | `ワールド名,x,y,z` | 参加看板の位置 |
-| `leaveSign` | `ワールド名,x,y,z` | 退出看板の位置 |
-| `startSign` | `ワールド名,x,y,z` | 開始看板の位置（`/btr setsign start` で登録） |
+| `signs.join` | `"ワールド名,x,y,z"` のリスト | 参加看板の位置（複数設置可） |
+| `signs.leave` | `"ワールド名,x,y,z"` のリスト | 退出看板の位置（複数設置可） |
+| `signs.start` | `"ワールド名,x,y,z"` のリスト | 開始看板の位置（複数設置可・`/btr setsign start` で追加） |
+
+!!! success "看板は複数設置できます（v更新）"
+    参加・退出・開始の各看板を **複数拠点に設置** できるようになりました。`/btr setsign <join|leave|start>` は上書きではなく **追記** され、`/btr setsign delete` は視線先の1枚だけ解除します。クリック判定・人数表示は全枚数を対象に更新されます。**旧形式の `joinSign` / `leaveSign` / `startSign`（単一文字列）は起動時に自動で `signs.join` / `signs.leave` / `signs.start`（リスト）へ移行され、旧キーは削除されます。設定のやり直しは不要**です。
 
 ### チェスト設定
 
