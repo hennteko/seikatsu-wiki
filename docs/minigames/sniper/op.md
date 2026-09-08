@@ -203,7 +203,9 @@
 | `health.natural-regen` | false | 自然回復（false推奨。回復ポーションは別途有効） |
 | `fall-damage` | true | 落下ダメージ |
 | `jump-potion-no-fall` | true | ジャンプポーション中は落下ダメージ無効 |
+| `jump-potion-fall-limit` | 0 | 落下ダメージを無効にする落下距離の上限（ブロック）。0=距離に関係なく無効。高所からの飛び降りだけ罰したい場合に使用（目安12前後。6以下はバニラ仕様で効果なし・起動時警告） |
 | `melee-damage` | false | 近接攻撃を許可（false＝純狙撃戦） |
+| `hide-nametags` | true | 試合中の参加者のネームタグ（頭上の名前）を消す。trueで壁越しに名前で位置がバレなくなる（ロビー・通常ワールドには影響なし） |
 | `keep-food` | true | 満腹度を減らさない |
 
 ### 安全地帯（ワールドボーダー）
@@ -234,8 +236,24 @@
 | `pending-expire-days` | 30 | 復元待ちデータ（players.yml）の保持日数 |
 | `messages.prefix` | `[スナイパー]` | メッセージの接頭辞 |
 
+### ロビー共通インベントリ（`lobby-inventory`）
+
+ロビー入場時に入る前の所持品を退避してインベントリを空にし、ロビー退室時に復元する共通システムです。退避データは `plugins/Sniper/lobby-inventory.yml` に自動保存され、サーバー再起動やクラッシュをまたいでも復元されます（試合の開始・終了では復元されず、ロビー在籍中はずっと空のまま）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `lobby-inventory.enabled` | true | falseでこの機能を丸ごと無効化（従来挙動に戻る） |
+| `lobby-inventory.gamemode` | ADVENTURE | ロビー滞在中のゲームモード（`ADVENTURE`/`SURVIVAL`/`CREATIVE`/`KEEP`） |
+| `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
+| `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し体力・満腹度を全回復 |
+| `lobby-inventory.reset-exp` | true | ロビー入場時に経験値とレベルを0にする |
+| `lobby-inventory.expire-days` | 30 | 復元されずに残った退避データの保持日数 |
+
+!!! success "看板は複数設置できます"
+    参加・離脱・開始の各看板を **複数拠点に設置** できます（`signs` は座標リスト形式）。`/sniper setsign <join|leave|start <ステージ>>` は上書きではなく **追記** され、`/sniper setsign delete` は視線先の1枚だけ解除します。
+
 !!! note "自動生成される領域（手動編集不要）"
-    `stages`（フィールド・スポーン・チェスト）、`signs`（看板）、`default-spawn` / `lobby-spawn` はコマンドまたは設定ツールで自動生成・自動保存されます。手動編集は不要です。
+    `stages`（フィールド・スポーン・チェスト）、`signs`（看板）、`default-spawn` / `lobby-spawn` はコマンドまたは設定ツールで自動生成・自動保存されます。手動編集は不要です。`config-version` はプラグインが管理するバージョン番号です。
 
 ## 管理コマンド
 
@@ -260,6 +278,7 @@
 | `/sniper removeitem <番号>` | 指定アイテムを削除 |
 | `/sniper stagelist` | ステージ一覧を表示 |
 | `/sniper delstage <ステージ>` | 指定ステージを削除 |
+| `/sniper lobbyfix <プレイヤー> [force]` | ロビーに入る前の持ち物が戻らないときの復旧。`force` で退避データを破棄してロックだけ解除 |
 | `/sniper stop` | ゲームを停止する |
 | `/sniper reset` | 在籍・試合データを全消去（緊急リセット） |
 | `/sniper reload` | config を再読み込み |
