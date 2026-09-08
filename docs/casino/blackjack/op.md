@@ -158,6 +158,7 @@
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
+| `/blackjack status` | 誰でも可（読み取り専用） | 地点設定（spawn / lobby / field）の有無と現在のロビー人数を表示する |
 | `/blackjack start` | OP | 待機中のゲームを開始する。ロビーに1人以上必要 |
 | `/blackjack stop` | OP | 進行中のゲームを強制終了する |
 | `/blackjack setstartspawn` | OP | 現在地を spawn 地点に設定する |

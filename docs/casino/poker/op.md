@@ -134,13 +134,14 @@ modules:
     `card1`〜`card5`（poker.yml では `signs.sign1`〜`sign5`）の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。
 
 !!! note "看板の種類とフォーマット"
-    看板は視線先（6ブロック以内）を見ながら `/poker setsign <join|leave|bet|start|card1〜5>` で登録します。種別ごとの動作は次のとおりです。
+    看板は視線先（6ブロック以内）を見ながら `/poker setsign <join|leave|bet|start|card1〜5|delete>` で登録します。種別ごとの動作は次のとおりです。
 
     - `join`（`lobby` でも可）: 参加看板。クリックで待機リストに追加＆ロビーへ転送。参加人数（最大6人）を自動表示
     - `leave`: 離脱看板。クリックで待機リスト／ゲームから離脱
     - `bet`: SB掛け金変更看板。クリックで **SB掛け金変更GUI** が開く（金額の変更はOPのみ）。GUIに並ぶ金額は poker.yml の `bet_options` で変更可能
     - `start`: 開始看板。クリックでゲーム開始（OP専用）
     - `card1`〜`card5`: 公開札看板
+    - `delete`（`remove` でも可）: 視線先の登録済み看板を解除（公開札看板の場合は登録を取り消し）
 
     手書きの場合は、参加看板は1行目を `[Poker]` / `[Poker参加]` / `[PokerJoin]` のいずれかに、離脱看板は `[PokerLeave]` / `[Poker離脱]` のいずれかにして設置できます（設置時に自動整形）。
 
@@ -171,6 +172,7 @@ modules:
 | `/poker setstartspawn` | `poker.admin.setup` | 現在地を離脱スポーン座標に設定 |
 | `/poker setsign card<1-5>` | `poker.admin.setup` | 見ている看板を公開札看板に登録（poker.yml の `signs.sign1`〜`sign5`） |
 | `/poker setsign <join\|leave\|bet\|start>` | `poker.admin.setup` | 見ている看板を参加／離脱／SB掛け金GUI／開始看板として登録（自動整形） |
+| `/poker setsign <delete\|remove>` | `poker.admin.setup` | 見ている登録済み看板を解除する |
 | `/poker bet <額>` | `poker.admin.setup` | スモールブラインド（SB）額を設定（BB はその2倍。ゲーム進行中は変更不可） |
 | `/poker raisemoney <額>` | `poker.admin.setup` | レイズ上限を設定（poker.yml に保存される） |
 | `/poker getraisemoney` | なし | 現在のレイズ上限を表示 |
