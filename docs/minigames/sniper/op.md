@@ -164,7 +164,7 @@
 ```
 
 !!! note "アイテムプールの動作"
-    各チェストには、開始時に `chest.items-min`〜`chest.items-max`（既定3〜6）種のアイテムが補充されます。アイテムは **重み（`weight`）に応じて抽選** され、それぞれ `min-amount`〜`max-amount` の個数で配置されます。既定では弾丸（矢）・回復／スピード／ジャンプの各ポーション・煙幕の5種が初期投入されています。
+    各チェストには、開始時に `chest.items-min`〜`chest.items-max`（既定3〜6）種のアイテムが補充されます。アイテムは **重み（`weight`）に応じて抽選** され、それぞれ `min-amount`〜`max-amount` の個数で配置されます。既定では弾丸（鉄塊・判定は `tag: bullet`）・回復／スピード／ジャンプの各ポーション・煙幕の5種が初期投入されています。
 
 ## config.yml 設定項目
 
@@ -188,11 +188,14 @@
 | `weapon.ray-size` | 0.3 | 命中判定の太さ |
 | `weapon.body-damage` | 2.0 | 胴体1発のダメージ（最大体力6.0→3発でキル） |
 | `weapon.headshot-instant` | true | ヘッドショット即死 |
+| `weapon.fire-on-left-click` | true | 左クリック（腕を振る動作）で発砲する。基本の操作 |
+| `weapon.fire-on-sneak` | true | しゃがみでも発砲する。**ズーム中の発砲手段はこちら**（ズーム中は左クリックがサーバーに届かないため）。※ `fire-on-left-click` と両方 false にすると撃てなくなる（起動時警告） |
+| `weapon.require-scope` | false | trueで「望遠鏡を覗いている間だけ発砲できる」従来操作。false（既定）なら覗かなくても手に持っていれば撃てる。統合版は false 推奨。trueにする場合は `fire-on-sneak` も true に |
 | `weapon.reload-ms` | 2000 | リロード時間（ミリ秒） |
 | `weapon.use-item-cooldown` | false | バニラのクールダウン表示を出す（trueだとリロード中スコープ不可） |
 | `weapon.shot-volume` | 4.0 | 銃声の音量（大きいほど遠くまで聞こえる。4.0≒64ブロック） |
 | `weapon.trail` | true | 弾道パーティクル |
-| `weapon.max-arrows` | 32 | 弾（矢）の最大所持数 |
+| `weapon.max-arrows` | 32 | 弾（鉄塊）の最大所持数 ※キー名は互換のため `max-arrows` のまま |
 
 ### 体力・環境
 
@@ -205,6 +208,7 @@
 | `jump-potion-no-fall` | true | ジャンプポーション中は落下ダメージ無効 |
 | `jump-potion-fall-limit` | 0 | 落下ダメージを無効にする落下距離の上限（ブロック）。0=距離に関係なく無効。高所からの飛び降りだけ罰したい場合に使用（目安12前後。6以下はバニラ仕様で効果なし・起動時警告） |
 | `melee-damage` | false | 近接攻撃を許可（false＝純狙撃戦） |
+| `protect-blocks` | true | 試合中の参加者がステージのブロックを壊す・置くのを禁止する。左クリック発砲では押しっぱなしが採掘になってしまうため、基本はtrue推奨 |
 | `hide-nametags` | true | 試合中の参加者のネームタグ（頭上の名前）を消す。trueで壁越しに名前で位置がバレなくなる（ロビー・通常ワールドには影響なし） |
 | `keep-food` | true | 満腹度を減らさない |
 
@@ -218,6 +222,7 @@
 | `border.min-size` | 20 | これ以下には縮まない停止サイズ |
 | `border.speed` | 5 | 縮小にかける秒数（壁が動く演出） |
 | `border.outside-damage` | 0.5 | 圏外での1秒あたりダメージ |
+| `border.actionbar-warning` | true | 圏外にいる間、アクションバーに「安全地帯の外！ 北へ 32m」と警告を出す。統合版はボーダーの壁が見えにくいため true 推奨 |
 | `border.warn-before` | `[30, 10]` | 縮小の予告タイミング（秒前） |
 
 ### チェスト・煙幕・観戦
@@ -227,11 +232,21 @@
 | `chest.items-min` | 3 | 1チェストに入る種類数の最小 |
 | `chest.items-max` | 6 | 1チェストに入る種類数の最大 |
 | `chest.refill-interval` | 0 | 再補充間隔（秒）。0=無効 |
-| `smoke.radius` | 4.0 | 煙幕の半径（ブロック） |
+| `smoke.radius` | 4.0 | 煙幕の半径（ブロック・弾道を遮る範囲） |
 | `smoke.duration` | 10 | 煙幕の持続時間（秒） |
-| `smoke.density` | 25 | 1tickあたりのパーティクル数 |
 | `smoke.blindness` | false | trueで煙の中のプレイヤーに盲目を付与 |
 | `smoke.block-line-of-fire` | true | 煙越しの狙撃を遮断する |
+| `smoke.render-interval` | 4 | 何tickごとに描画するか（1〜10）。小さいほど濃いが負荷増 |
+| `smoke.view-range` | 64 | この距離内のプレイヤーにだけ送る（配り過ぎ防止） |
+| `smoke.participants-only` | true | 参加者・観戦者にだけ送る（falseでロビーの人にも見える） |
+| `smoke.max-active` | 6 | 同時に存在できる煙の上限（超えると古いものから消える） |
+| `smoke.smoke-density` | 60 | 外側の自然な煙の量（1回の描画あたり） |
+| `smoke.core-enabled` | true | 中心部を大きめパーティクルで埋めるか |
+| `smoke.core-density` | 150 | 中心部の量（濃さの主役） |
+| `smoke.rim-ratio` | 1.0 | 縁を埋める量（横から覗かれるときは上げる） |
+| `smoke.rim-points` | 16 | 縁を作る球面上の点の数（4〜20） |
+| `smoke.core-size` | 3.5 | 大きめパーティクルのサイズ（1.0〜4.0・上げるほど遮蔽が強い） |
+| `smoke.core-color` | `"9E9E9E"` | 大きめパーティクルの色（16進） |
 | `spectator.chat-isolate` | true | 観戦者チャットを観戦者間のみに制限 |
 | `pending-expire-days` | 30 | 復元待ちデータ（players.yml）の保持日数 |
 | `messages.prefix` | `[スナイパー]` | メッセージの接頭辞 |
@@ -248,6 +263,21 @@
 | `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し体力・満腹度を全回復 |
 | `lobby-inventory.reset-exp` | true | ロビー入場時に経験値とレベルを0にする |
 | `lobby-inventory.expire-days` | 30 | 復元されずに残った退避データの保持日数 |
+
+### 敗者復活モード（ゾンビスナイパー・`revival`）
+
+**バトロワ系ステージでのみ有効**な追加モードです。ONにすると、通常プレイヤーに倒された人は一定秒数後に「ゾンビスナイパー」として復活し、通常プレイヤーを倒すと完全復活します。ゾンビに倒された通常プレイヤーは完全脱落（復活不可）。試合中は `/sniper revival <on|off>` で切り替えられます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `revival.enabled` | false | 敗者復活モードを使うか |
+| `revival.respawn-seconds` | 20 | 倒されてからゾンビとして復活するまでの秒数 |
+| `revival.wipe-at` | 2 | 通常プレイヤーがこの人数まで減った時点で、残るゾンビを全員脱落させる（以降は復活なしの決着戦） |
+| `revival.ammo-minimum` | 15 | 完全復活時に保証する最低弾数（最初の死亡時の所持数がこれ以上ならその数を引き継ぐ） |
+| `revival.zombie-health` | 1.0 | ゾンビの体力（1.0＝ハート0.5） |
+| `revival.zombie-glow` | false | ゾンビを緑に光らせる（発光は壁越しに見え位置がバレるため既定false。ネームタグの `[Z]` とサイドバーで見分け可） |
+| `revival.zombie-body-damage` | 1.0 | ゾンビの胴体ダメージ |
+| `revival.zombie-headshot-damage` | 1.5 | ゾンビのヘッドショットダメージ（ゾンビは即死させない） |
 
 !!! success "看板は複数設置できます"
     参加・離脱・開始の各看板を **複数拠点に設置** できます（`signs` は座標リスト形式）。`/sniper setsign <join|leave|start <ステージ>>` は上書きではなく **追記** され、`/sniper setsign delete` は視線先の1枚だけ解除します。
@@ -279,6 +309,7 @@
 | `/sniper stagelist` | ステージ一覧を表示 |
 | `/sniper delstage <ステージ>` | 指定ステージを削除 |
 | `/sniper lobbyfix <プレイヤー> [force]` | ロビーに入る前の持ち物が戻らないときの復旧。`force` で退避データを破棄してロックだけ解除 |
+| `/sniper revival <on\|off>` | 敗者復活（ゾンビスナイパー）モードの切替（バトロワ系ステージ限定） |
 | `/sniper stop` | ゲームを停止する |
 | `/sniper reset` | 在籍・試合データを全消去（緊急リセット） |
 | `/sniper reload` | config を再読み込み |
@@ -309,7 +340,7 @@
     `/sniper status` と `/sniper stagelist` で設定を確認してください。対象ステージにフィールド範囲が未設定だと開始できません。また、ロビーに最低人数（既定2人）以上いる必要があります。スポーン地点が未設定の場合はフィールド内のランダム地点で代用されます。
 
 ??? failure "プレイヤーが「撃てない」と言っている"
-    操作方法を案内してください。望遠鏡を **右クリック長押しで構え**、構えたまま **しゃがみ（Shift）を押した瞬間**に発砲します。弾（矢）が0だと撃てないので、チェストで補充が必要です。1発ごとに約2秒（`weapon.reload-ms`）のリロードがあります。
+    操作方法を案内してください。既定ではライフルを手に持って **左クリック**で発砲、**右クリック長押しでズーム**、ズーム中は左クリックが届かないため **しゃがみ（Shift）で発砲** します（`weapon.fire-on-left-click` / `fire-on-sneak` / `require-scope` で切替）。弾（鉄塊）が0だと撃てないので、チェストで補充が必要です。1発ごとに約2秒（`weapon.reload-ms`）のリロードがあります。
 
 ??? failure "チェストにアイテムが入らない"
     抽選プールが空、またはチェストが未登録の可能性があります。`/sniper itemlist` でプールを、`/sniper stagelist` でチェスト登録数を確認してください。登録した座標が実際にチェストでないと補充されません。
