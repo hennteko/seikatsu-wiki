@@ -175,6 +175,10 @@ nav:
           - minigames/scrap/index.md
           - 👤 プレイヤー向け: minigames/scrap/player.md
           - 🛠️ OP・運営向け: minigames/scrap/op.md
+      - Shotgun（ショットガンルーレット）:
+          - minigames/shotgun/index.md
+          - 👤 プレイヤー向け: minigames/shotgun/player.md
+          - 🛠️ OP・運営向け: minigames/shotgun/op.md
   - 03 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md

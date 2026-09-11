@@ -155,7 +155,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `loot.count-per-round` | 12 | 候補地点から抽選する個数 |
+| `loot.count-per-round` | `[16, 18, 20]` | ラウンドごとの出現数（整数1つでも可）。候補地点が足りなければ全部＋警告 |
 | `loot.value-variance` | 0.3 | 価値のバラツキ（±30%） |
 | `loot.base-value` | small:150 / medium:500 / large:1500 | サイズ別の基準価値 |
 | `loot.speed-penalty` | small:0.15 / medium:0.40 / large:0.40 | サイズ別の移動速度低下 |
@@ -164,6 +164,9 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `loot.damage.monster-hit` | 0.25 | 運搬者が被弾したときの減額割合 |
 | `loot.damage.large-separation` | 0.20 | 2人運搬の距離超過での減額割合 |
 | `loot.display-items` | サイズ別のリスト | 回収物の見た目に使うアイテム候補 |
+| `loot.noisy-names` | `[古い鐘, オルゴール, 蓄音機]` | 担いでいる間、定期的に鳴って怪異を呼ぶ回収物の名前（価値ボーナスあり） |
+| `loot.noisy-bonus` | 1.3 | 音の出る回収物の価値倍率 |
+| `loot.noisy-interval-ticks` | 60 | 音の出る回収物が鳴る間隔（tick） |
 
 ### 音（`noise`）
 
@@ -179,6 +182,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `noise.lantern` | 6 | ランタン点灯中 |
 | `noise.shout` | 30 | チャットで叫ぶ（`!`始まり） |
 | `noise.decoy` | 40 | おとり |
+| `noise.noisy-loot` | 14 | 音の出る回収物が鳴ったとき |
 
 ### 怪異（`monsters`）
 
@@ -192,6 +196,12 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `monsters.mimic-hint` | true | 擬態の価値表示の末尾を7にする（見抜くヒント） |
 | `monsters.brightness` | 6 | 怪異の見た目の明るさ（0〜15） |
 | `monsters.collector-seconds` | 45 | 残りこの秒数で督促者が出現（0で無効） |
+| `monsters.footsteps` | true | 怪異が歩いている間、位置で足音を鳴らす（聞き耳は無音） |
+| `monsters.footstep-volume` | 1.5 | 足音の音量 |
+| `monsters.excite.speed` | 1.6 | 近くで大きな音がしたときの加速倍率（1.0で無効） |
+| `monsters.excite.range` | 16 | この距離以内の音に反応 |
+| `monsters.excite.threshold` | 10 | この半径以上の音のみ対象（歩行4は対象外、走る/跳ぶ/扉は対象） |
+| `monsters.excite.seconds` | 3 | 加速が続く秒数（音が続けば延長） |
 | `monsters.default-waves` | 0秒WANDERER / 60秒LISTENER / 120秒WATCHER / 180秒WANDERER | エリア作成時に複製される既定ウェーブ |
 | `monsters.types.*` | 種類ごとの速度・聴覚・視認など | LISTENER / WATCHER / MIMIC / WANDERER / COLLECTOR のパラメータ |
 | `monsters.looks.*` | 種類ごとの見た目 | 頭テクスチャ（Base64）・頭/胴ブロック・スケール等 |
@@ -203,13 +213,24 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `horror.darkness` | true | 全生存者に常時Darknessを付与（falseで夜固定のみ） |
+| `horror.darkness` | true | 視界エフェクトを有効化（falseで全部切り、夜固定のみ） |
+| `horror.vision-mode` | both | 視界の種類（`darkness`＝暗闇・弱・走れる／`blindness`＝盲目・強・約5ブロック先が真っ黒で走れない／`both`＝両方・最強） |
 | `horror.darkness-amplifier` | 0 | Darknessの強さ |
+| `horror.blindness-near-monster` | 0 | `vision-mode: darkness` のとき、怪異がこの距離以内に来たら盲目を追加（0で無効・例8） |
 | `horror.fix-night` | true | 試合中は夜固定（終了時に復元） |
 | `horror.heartbeat-range` | 30 | 心拍BossBarが反応する最寄り怪異との距離 |
 | `horror.ambience-interval-seconds` | 20 | 環境演出の間隔 |
 | `horror.torch-blackout` | true | 松明を一時的に消灯する演出 |
-| `horror.fake-footsteps` | true | 偽の足音を鳴らす演出 |
+| `horror.fake-footsteps` | true | 背後の偽の足音（誰もいない） |
+| `horror.fake-delivery` | true | 遠くで偽の納品音 |
+| `horror.fake-heartbeat-per-round` | 2 | 偽の心拍（1人あたり1ラウンドに最大何回・0で無効） |
+| `horror.whisper-direction` | true | ささやきが本当の怪異の方向（前/後ろ/左/右）を告げる |
+| `horror.whisper-direction-range` | 24 | 方向ささやきが働く距離 |
+| `horror.silence-range` | 6 | 怪異がこの距離以内なら環境音・音楽を止め心拍だけにする（0で無効） |
+| `horror.door-creak-range` | 12 | 怪異が扉を開けたとき、この距離内の人にだけ低い「ギィ……」 |
+| `horror.watcher-breath-range` | 12 | 見つめ返す者から目を離している間、背後で呼吸音 |
+| `horror.scream-volume` | 6.0 | 死亡時の悲鳴の音量（エリア全体に届く・0で無効） |
+| `horror.radio-noise` | true | チャットが届かない距離の仲間には「ザザッ」だけ届く |
 | `horror.whispers` | 文言リスト | チャットに流れる囁きの文言 |
 | `chat-range` | 15 | 距離制限チャットの範囲（`!`始まりで2倍） |
 | `lantern.initial` | 2 | 開始時にチームへ配るランタン数 |
@@ -231,6 +252,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `shop.HARNESS` | 2500 | 運搬ハーネス（運搬の速度低下を半減・中型のジャンプ解除） |
 | `shop.MEDKIT` | 1000 | 医療キット（HP全回復・1回） |
 | `shop.STUN_BAT` | 3000 | スタンバット（怪異を気絶。3回で壊れる） |
+| `shop.SHOP_TERMINAL` | 0 | 取引端末（全員に配布。0＝販売しない） |
 
 ### ロビー共通インベントリ（`lobby-inventory`）
 

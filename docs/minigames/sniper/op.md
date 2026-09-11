@@ -164,7 +164,7 @@
 ```
 
 !!! note "アイテムプールの動作"
-    各チェストには、開始時に `chest.items-min`〜`chest.items-max`（既定3〜6）種のアイテムが補充されます。アイテムは **重み（`weight`）に応じて抽選** され、それぞれ `min-amount`〜`max-amount` の個数で配置されます。既定では弾丸（鉄塊・判定は `tag: bullet`）・回復／スピード／ジャンプの各ポーション・煙幕の5種が初期投入されています。
+    各チェストには、開始時に `chest.items-min`〜`chest.items-max`（既定3〜6）種のアイテムが補充されます。アイテムは **重み（`weight`）に応じて抽選** され、それぞれ `min-amount`〜`max-amount` の個数で配置されます。既定では弾丸（鉄塊・判定は `tag: bullet`）・回復／スピード／ジャンプの各ポーション・煙幕・グラップリングフック（釣り竿・`tag: hook`）が初期投入されています。
 
 ## config.yml 設定項目
 
@@ -250,6 +250,20 @@
 | `spectator.chat-isolate` | true | 観戦者チャットを観戦者間のみに制限 |
 | `pending-expire-days` | 30 | 復元待ちデータ（players.yml）の保持日数 |
 | `messages.prefix` | `[スナイパー]` | メッセージの接頭辞 |
+
+### グラップリングフック（`hook`）
+
+チェストから拾える釣り竿型の移動アイテムです。狙ったブロックへ右クリックで自分を引き寄せます（人や物には引っかからない・耐久は減らない）。抽選プールに `material: FISHING_ROD` ＋ `tag: hook` で登録されています。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `hook.power` | 1.2 | 引き寄せの強さの倍率（大きいほど速く飛ぶ） |
+| `hook.vertical-boost` | 0.35 | 上向きの補正（0だと屋上の縁に引っかかって登れない） |
+| `hook.max-speed` | 2.2 | 速度の上限（飛びすぎ・マップ外への吹っ飛び防止） |
+| `hook.max-distance` | 32.0 | これより遠い針は引っ張らない |
+| `hook.cooldown-seconds` | 5 | 引き寄せ後のクールダウン（秒・0でなし。バニラのクールダウン表示を使う） |
+| `hook.no-fall` | true | 引き寄せ後の落下ダメージを無効にする |
+| `hook.no-fall-seconds` | 4 | 落下ダメージ無効が続く秒数（`cooldown-seconds` より短くする） |
 
 ### ロビー共通インベントリ（`lobby-inventory`）
 
