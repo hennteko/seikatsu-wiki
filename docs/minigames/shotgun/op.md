@@ -21,44 +21,51 @@
 
 1. ビルドした `Shotgun-1.0.0.jar` をサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動すると `plugins/Shotgun/config.yml` が自動生成される。
-3. `/shotgun setstartspawn`・`/shotgun setlobby` で初期スポーンとロビーを設定する。
-4. 円卓の **席（1〜4）** を `/shotgun setseat <番号>` で登録し、観戦地点を設定する。
+3. `/shotgun setstartspawn`・`/shotgun setlobby` で初期スポーンと共通ロビーを設定する。
+4. 円卓の **席（1〜4）** を `/shotgun setseat <エリア> <番号>` で登録し、観戦地点を設定する（席を登録するとエリアが自動作成される）。
 5. 参加・離脱・開始の看板を設置する。
-6. `/shotgun status` で設定状況を確認する。
+6. `/shotgun status`・`/shotgun arenalist` で設定状況を確認する。
+
+!!! info "複数エリア対応（同時進行）"
+    席・ロビー・観戦・看板は **エリア（卓）ごと** に登録でき、**複数エリアで試合を同時進行** できます。各コマンドは `<エリア>` を取りますが、**エリアが1つだけのときはエリア名を省略可**（省略時は唯一のエリア、無ければ `main` を自動作成）。**旧バージョンの設定（席・観戦・参加看板）は起動時にエリア `main` へ自動移行** されます。設定のやり直しは不要です。
 
 !!! tip "席は中央を向いて登録"
-    `/shotgun setseat <1-4>` は **実行者の位置・向き** を席として保存します。円卓の中央を向いて実行してください。着席は透明アーマースタンドで固定され、プレイヤーは席から降りられません。
+    `/shotgun setseat <エリア> <1-4>` は **実行者の位置・向き** を席として保存します。円卓の中央を向いて実行してください。着席は透明アーマースタンドで固定され、プレイヤーは席から降りられません。
 
 ## セットアップ手順（コマンド）
 
-地点・席系は **実行した位置**、看板系は看板を **見ながら（6ブロック以内）** 実行します。すべて `shotgun.admin` 権限が必要です。
+地点・席系は **実行した位置**、看板系は看板を **見ながら（6ブロック以内）** 実行します。すべて `shotgun.admin` 権限が必要です。エリアが1つだけなら `<エリア>` は省略できます。
 
 ```text title="初期スポーン（離脱時の戻り先／その場に立って実行）"
 /shotgun setstartspawn
 ```
 
-```text title="受付ロビー（その場に立って実行）"
+```text title="共通ロビー（その場に立って実行。エリア別は setlobby <エリア>）"
 /shotgun setlobby
 ```
 
-```text title="席を登録（1〜4・中央を向いて実行）"
-/shotgun setseat 1
+```text title="エリア別ロビー（その場に立って実行）"
+/shotgun setlobby main
 ```
 
-```text title="観戦地点（未設定時は席の重心の2ブロック上にフォールバック）"
-/shotgun setspectate
+```text title="席を登録（エリア＋1〜4・中央を向いて実行。エリア自動作成）"
+/shotgun setseat main 1
 ```
 
-```text title="参加看板を登録"
-/shotgun setsign join
+```text title="観戦地点（エリア指定・未設定時は席の重心の2ブロック上にフォールバック）"
+/shotgun setspectate main
 ```
 
-```text title="離脱看板を登録"
+```text title="参加看板を登録（エリア指定）"
+/shotgun setsign join main
+```
+
+```text title="離脱看板を登録（エリア不問）"
 /shotgun setsign leave
 ```
 
-```text title="開始看板を登録（モード指定・br/dealer/team）"
-/shotgun setsign start br
+```text title="開始看板を登録（エリア＋モード指定・br/dealer/team）"
+/shotgun setsign start main br
 ```
 
 ```text title="視線先の看板の登録を解除（種別を自動判別・テキストもクリア）"
@@ -66,7 +73,7 @@
 ```
 
 !!! success "看板は複数設置できます"
-    参加・離脱・開始の各看板を **複数拠点に設置** できます（開始看板はモード `br`/`dealer`/`team` ごと）。登録は上書きではなく **追記** され、`/shotgun setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join` / `signs.leave`（`"ワールド名,x,y,z"` のリスト）・`signs.start.<br|dealer|team>`（リスト）です。
+    参加・離脱・開始の各看板を **複数拠点に設置** できます（参加はエリアごと、開始はエリア＋モード `br`/`dealer`/`team` ごと、離脱はエリア不問）。登録は上書きではなく **追記** され、`/shotgun setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join.<エリア>` / `signs.leave`（リスト）・`signs.start.<エリア>.<br|dealer|team>`（リスト）です。
 
 ## 設定GUIとクイック設定コマンド
 
@@ -113,7 +120,6 @@
 | `shells.jitter` | 1 | 総弾数のブレ幅 |
 | `sudden-death.after-reloads` | 3 | この回数目の再装填以降、金リンゴを配布しない（0で無効） |
 | `gun.aim-range` | 8.0 | 視線判定の距離 |
-| `gun.stun-on-hit` | true | 実弾で撃たれた人は次の手番をスキップ |
 
 ### アイテム
 
@@ -163,17 +169,19 @@
 
 | コマンド | 説明 |
 |---|---|
-| `/shotgun setstartspawn` | 初期スポーン地点を設定 |
-| `/shotgun setlobby` | 受付ロビー地点を設定 |
-| `/shotgun setseat <1-4>` | 席を登録（実行者の位置・向き） |
-| `/shotgun setspectate` | 観戦地点を設定 |
+| `/shotgun setstartspawn` | 初期スポーン地点を設定（共通） |
+| `/shotgun setlobby [エリア]` | ロビー地点を設定（エリア省略で共通ロビー） |
+| `/shotgun setseat <エリア> <1-4>` | 席を登録（実行者の位置・向き。エリア自動作成。単一エリアなら `<エリア>` 省略可） |
+| `/shotgun setspectate [エリア]` | 観戦地点を設定 |
+| `/shotgun arenalist` | エリア一覧を表示 |
+| `/shotgun delarena <エリア>` | エリアを削除（席・看板登録も削除・試合中は不可） |
 | `/shotgun setlives <n>` | 残機の初期値を設定（1〜10・次の試合から） |
 | `/shotgun settimer <秒>` | 手番タイマーを設定（10〜120・次の試合から） |
 | `/shotgun settings` | OP用設定アイテム（設定GUI）を配布 |
-| `/shotgun setsign <join\|leave\|start <br\|dealer\|team>\|delete>` | 看板を設定／解除 |
+| `/shotgun setsign <join [エリア]\|leave\|start <エリア> <br\|dealer\|team>\|delete>` | 看板を設定／解除 |
 | `/shotgun lobbyfix <プレイヤー> [force]` | ロビー退避データを手動で復旧する |
-| `/shotgun stop` | ゲームを強制終了（結果なしでロビーへ） |
-| `/shotgun reset` | 緊急リセット（アーマースタンド・TextDisplay・BossBar・GUIを完全消去） |
+| `/shotgun stop [エリア]` | ゲームを強制終了（結果なしでロビーへ） |
+| `/shotgun reset` | 緊急リセット（全エリアのアーマースタンド・TextDisplay・BossBar・GUIを完全消去） |
 | `/shotgun reload` | config を再読み込み（試合中は不可） |
 | `/shotgun status` | 設定状況・現在の状況を確認（全員可） |
 

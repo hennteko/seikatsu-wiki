@@ -16,7 +16,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | データ | `plugins/CasinoPlugin/accounts.yml`、各モジュール用ファイル |
 
 !!! info "CasinoPlugin の構成"
-    CasinoPlugin は **銀行（bank）＋8ゲームの計9モジュール** を1つのjarに統合したプラグインです。`ModuleRegistry` が `config.yml` の `modules.<id>.enabled` を見て、有効なモジュールだけを起動します。あるモジュールが起動に失敗しても他のモジュールは動き続ける設計です。
+    CasinoPlugin は **銀行（bank）＋9ゲームの計10モジュール**（ポーカー／スロット／宝くじ／チンチロ／ブラックジャック／競馬／育成馬／クイズ／ルーレット）を1つのjarに統合したプラグインです。加えて、カジノ共通の **イベント機能**（`/casino event`）を備えます。`ModuleRegistry` が `config.yml` の `modules.<id>.enabled` を見て、有効なモジュールだけを起動します。あるモジュールが起動に失敗しても他のモジュールは動き続ける設計です。
 
 ## 導入手順
 
@@ -42,9 +42,10 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `horse` | 競馬（7種類の馬券） | `horse/` 配下 |
 | `emhorse` | 育成馬（EmeraldHorse・馬を育てて競馬に出走） | `emhorse_data.yml` / `modules/emhorse.yml` |
 | `quiz` | クイズ（デイリー＋タワー） | `quiz/` 配下 |
+| `roulette` | ルーレット（ヨーロピアン盤・ソロGUI＋マルチ卓） | `modules/roulette.yml` |
 
 !!! note "未記載モジュールは既定で有効"
-    `config.yml` の `modules:` ブロックには全9モジュール（`bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse`）が記載されています。仮に何らかのモジュールの項目が未記載でも、未記載のモジュールは **既定で有効（true）** として起動します。無効化したい場合のみ `modules.<id>.enabled: false` を手動で追記してください。
+    `config.yml` の `modules:` ブロックには全10モジュール（`bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse` / `roulette`）が記載されています。仮に何らかのモジュールの項目が未記載でも、未記載のモジュールは **既定で有効（true）** として起動します。無効化したい場合のみ `modules.<id>.enabled: false` を手動で追記してください。
 
 !!! note "各ゲームの詳細は個別ページへ"
     上記モジュールの個別設定（座標設定・配当率・確率調整など）は、このページでは深掘りしません。各ゲームの個別ページにまとめられています。
@@ -61,7 +62,7 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `debug.verbose` | `false` | true で各モジュールの詳細ログを出力（本番では false 推奨） |
 
 !!! tip "モジュールの ON / OFF"
-    `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse` の9項目があります。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
+    `modules:` ブロックには `bank` / `poker` / `slot` / `lottery` / `tintiro` / `blackjack` / `horse` / `quiz` / `emhorse` / `roulette` の10項目があります。不要なゲームを `enabled: false` にすると、そのコマンドとリスナーは一切登録されず、サーバーが軽くなります。`bank` だけは前述の通り true 固定が前提です。
 
 !!! warning "config.yml の新キーは自動追記されません"
     本体は起動時に `saveDefaultConfig()` を呼びますが、これは `config.yml` が **存在しない場合のみ** 同梱版を書き出す動作です（`copyDefaults` は使っていません）。そのため、プラグイン更新で新しい設定キーが増えても、既存サーバーの `config.yml` には自動で追記されません。新しく追加された設定キーを使いたい場合は手動で追記するか、一度 `config.yml` を退避してから再生成してください。
@@ -69,6 +70,12 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 ## 権限ノード
 
 ゲーム別に整理します。各モジュールごとに個別の権限ノードがあります。
+
+### カジノ共通（イベント）
+
+| 権限 | 既定 | 用途 |
+|---|---|---|
+| `casino.admin` | OP | カジノ共通イベントの手動開始/停止・設定編集ツール（`/casino event start\|stop`・`/casino admin`）。イベント状況の確認（`/casino event status`）は全員可 |
 
 ### 銀行（bank）
 
@@ -159,6 +166,13 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 
 ゲーム別に整理します。
 
+### カジノ共通（イベント）
+
+| コマンド | エイリアス | 説明 |
+|---|---|---|
+| `/casino event <status\|start <種別> [分]\|stop <種別>>` | ― | カジノイベントの確認（status は全員可）／開始・停止（`casino.admin`） |
+| `/casino admin <item\|open>` | ― | カジノ共通の設定編集ツール・GUI（`casino.admin`） |
+
 ### 銀行（bank）
 
 | コマンド | エイリアス | 説明 |
@@ -217,6 +231,12 @@ CasinoPlugin の導入・共通設定・モジュール構成・権限・コマ�
 | `/qd` | ― | デイリークイズの直接起動（権限 `quiz.use`） |
 | `/qt` | ― | クイズタワーの直接起動（権限 `quiz.use`） |
 | `/quizsign [create\|remove\|update\|list]` | ― | ランキング看板の管理（権限 `quiz.admin`） |
+
+### ルーレット（roulette）
+
+| コマンド | エイリアス | 説明 |
+|---|---|---|
+| `/roulette [play\|join\|leave\|status\|start\|setwheel\|setsign\|reload]` | `/rl` | ルーレット（play/join/leave/status は全員可、start/setwheel/setsign/reload は OP）。詳細は[ルーレットの個別ページ](../roulette/op.md) |
 
 !!! note "各ゲームのサブコマンドの詳細"
     上記の各コマンドのサブコマンドの細かい使い方（座標設定・運営フローなど）は、それぞれのゲームの個別ページにまとめられています。

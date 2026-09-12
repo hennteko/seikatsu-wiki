@@ -1,16 +1,16 @@
 # CasinoPlugin <span class="badge done">公開中</span>
 
-エメラルド銀行と **8つのゲーム**（ポーカー / スロット / 宝くじ / チンチロ / ブラックジャック / 競馬 / 育成馬 / クイズ）を1つのjarに統合した **カジノ基盤プラグイン** です。生活鯖ではこれ1本でサーバーの経済とカジノ・クイズが動いています。
+エメラルド銀行と **9つのゲーム**（ポーカー / スロット / 宝くじ / チンチロ / ブラックジャック / 競馬 / 育成馬 / クイズ / ルーレット）を1つのjarに統合した **カジノ基盤プラグイン** です。生活鯖ではこれ1本でサーバーの経済とカジノ・クイズが動いています。
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎰 カジノ・ギャンブル</span></div>
-  <div class="quick-card"><span class="label">構成</span><span class="value">銀行＋8ゲーム（9モジュール）</span></div>
+  <div class="quick-card"><span class="label">構成</span><span class="value">銀行＋9ゲーム（10モジュール）</span></div>
   <div class="quick-card"><span class="label">共通通貨</span><span class="value">エメラルド</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! info "CasinoPlugin の位置づけ"
-    CasinoPlugin は「銀行（エメラルドの口座管理）」を中心に、その上で動く8つのゲームを **モジュール式** にまとめた統合プラグインです。`config.yml` で使いたいモジュールだけを ON / OFF できます。各ゲームや銀行の詳しい遊び方・設定は、**それぞれの個別ページ** にまとめてあります。このページは「全体像」を案内するための入口です。
+    CasinoPlugin は「銀行（エメラルドの口座管理）」を中心に、その上で動く9つのゲームを **モジュール式** にまとめた統合プラグインです。`config.yml` で使いたいモジュールだけを ON / OFF できます。各ゲームや銀行の詳しい遊び方・設定は、**それぞれの個別ページ** にまとめてあります。このページは「全体像」を案内するための入口です。
 
 ## ページを選ぶ
 

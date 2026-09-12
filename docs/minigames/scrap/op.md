@@ -155,7 +155,9 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `loot.count-per-round` | `[16, 18, 20]` | ラウンドごとの出現数（整数1つでも可）。候補地点が足りなければ全部＋警告 |
+| `loot.count-per-round` | `[30, 35, 40]` | ラウンドごとの出現数（整数1つでも可） |
+| `loot.auto-fill` | true | 候補地点が足りないとき、登録地点の周囲に自動で散らして補う |
+| `loot.scatter-radius` | 5 | 自動配置の散らばり半径（ブロック） |
 | `loot.value-variance` | 0.3 | 価値のバラツキ（±30%） |
 | `loot.base-value` | small:150 / medium:500 / large:1500 | サイズ別の基準価値 |
 | `loot.speed-penalty` | small:0.15 / medium:0.40 / large:0.40 | サイズ別の移動速度低下 |
@@ -202,8 +204,8 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `monsters.excite.range` | 16 | この距離以内の音に反応 |
 | `monsters.excite.threshold` | 10 | この半径以上の音のみ対象（歩行4は対象外、走る/跳ぶ/扉は対象） |
 | `monsters.excite.seconds` | 3 | 加速が続く秒数（音が続けば延長） |
-| `monsters.default-waves` | 0秒WANDERER / 60秒LISTENER / 120秒WATCHER / 180秒WANDERER | エリア作成時に複製される既定ウェーブ |
-| `monsters.types.*` | 種類ごとの速度・聴覚・視認など | LISTENER / WATCHER / MIMIC / WANDERER / COLLECTOR のパラメータ |
+| `monsters.default-waves` | 0秒WANDERER / 30秒DOPPEL / 60秒LISTENER / 120秒WATCHER / 150秒TALL / 180秒WANDERER | エリア作成時に複製される既定ウェーブ（種類: WANDERER/LISTENER/WATCHER/COLLECTOR/TALL/DOPPEL） |
+| `monsters.types.*` | 種類ごとの速度・聴覚・視認など | LISTENER / WATCHER / MIMIC / WANDERER / COLLECTOR / TALL（巨人・一撃死・ほぼ止められない）/ DOPPEL（ドッペルゲンガー・近づくと正体を現す）のパラメータ |
 | `monsters.looks.*` | 種類ごとの見た目 | 頭テクスチャ（Base64）・頭/胴ブロック・スケール等 |
 
 !!! note "怪異の見た目はリソースパック不要"
@@ -231,11 +233,25 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `horror.watcher-breath-range` | 12 | 見つめ返す者から目を離している間、背後で呼吸音 |
 | `horror.scream-volume` | 6.0 | 死亡時の悲鳴の音量（エリア全体に届く・0で無効） |
 | `horror.radio-noise` | true | チャットが届かない距離の仲間には「ザザッ」だけ届く |
+| `horror.fear.hit` | true | 被弾時の画面演出（真っ赤＋視点が傾く＋目の前に怪異の顔） |
+| `horror.fear.spotted` | true | 発見された瞬間の点滅＋「！」 |
+| `horror.fear.proximity` | true | 怪異が近いほど画面の縁が赤くなる |
+| `horror.fear.proximity-range` | 10 | この距離から赤くなり始める |
+| `horror.fear.proximity-full` | 3 | この距離でほぼ全面 |
+| `horror.fear.death` | true | 死亡ジャンプスケア（固定→赤→黒→顔→観戦） |
+| `horror.fear.death-freeze-ticks` | 40 | 死亡演出の固定時間（tick・0で即観戦） |
+| `horror.power-outage.enabled` | true | 停電（ラウンド中1回、全員のランタンが消えて点けられない） |
+| `horror.power-outage.chance` | 0.7 | ラウンドごとの停電発生確率 |
+| `horror.power-outage.seconds` | 10 | 停電の継続秒数 |
+| `horror.cart-malfunction.enabled` | true | 最終ラウンド出発時にカートが故障して延長（督促者が来る） |
+| `horror.cart-malfunction.chance` | 0.5 | カート故障の発生確率 |
+| `horror.cart-malfunction.extra-seconds` | 10 | 故障による延長秒数 |
 | `horror.whispers` | 文言リスト | チャットに流れる囁きの文言 |
 | `chat-range` | 15 | 距離制限チャットの範囲（`!`始まりで2倍） |
 | `lantern.initial` | 2 | 開始時にチームへ配るランタン数 |
 | `lantern.per-area` | 1 | エリア内に置かれる拾得数 |
 | `lantern.light-level` | 13 | 点灯時の明るさ |
+| `lantern.vision-while-lit` | darkness | 点灯中の視界（`off`=明るい／`darkness`=薄暗い・既定／`blindness`／`both`） |
 | `lantern.sight-multiplier` | 2.0 | 点灯中の怪異の視認範囲倍率 |
 | `items.stun-bat-uses` | 3 | スタンバットの使用回数 |
 | `items.decoy-seconds` | 10 | おとりの持続秒数 |
@@ -253,6 +269,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `shop.MEDKIT` | 1000 | 医療キット（HP全回復・1回） |
 | `shop.STUN_BAT` | 3000 | スタンバット（怪異を気絶。3回で壊れる） |
 | `shop.SHOP_TERMINAL` | 0 | 取引端末（全員に配布。0＝販売しない） |
+| `shop.SETUP_WAND` | 0 | OP用設定ツール（`/scrap wand` で入手。0＝販売しない） |
 
 ### ロビー共通インベントリ（`lobby-inventory`）
 
@@ -290,6 +307,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `/scrap arealist` | エリア一覧・ルート一覧を表示 |
 | `/scrap delarea <エリア>` | エリアを削除（開始看板の登録も解除） |
 | `/scrap leave <プレイヤー>` | 指定プレイヤーを強制離脱させる |
+| `/scrap wand` | OP用の設定ツール（SETUP_WAND）を入手する |
 | `/scrap lobbyfix <プレイヤー> [force]` | ロビー退避データを手動で復旧する |
 | `/scrap stop` | ゲームを強制終了（全員復元してロビーへ） |
 | `/scrap reset` | 緊急リセット（回収物・怪異・頭・光源・BossBarを完全消去） |

@@ -212,6 +212,10 @@ nav:
           - casino/quiz/index.md
           - 👤 プレイヤー向け: casino/quiz/player.md
           - 🛠️ OP・運営向け: casino/quiz/op.md
+      - ルーレット:
+          - casino/roulette/index.md
+          - 👤 プレイヤー向け: casino/roulette/player.md
+          - 🛠️ OP・運営向け: casino/roulette/op.md
   - 04 サバイバルOP向け:
       - Ranking:
           - economy/ranking/index.md

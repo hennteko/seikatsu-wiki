@@ -126,7 +126,8 @@
 | `knight.can-guard-self` | false | 騎士が自分自身を守れるか |
 | `knight.notify-target` | false | 守られた側に通知するか |
 | `knight.notify-attacker` | true | 守りで防がれたとき攻撃側に通知するか |
-| `death.show-killer` | false | trueで「AはBに倒された」、falseで「Bが倒れた」 |
+| `death.announce` | false | trueで「&lt;name&gt; が倒れた」を全員に流す（falseは観戦者にだけ通知。離脱は常に通知） |
+| `death.show-killer` | false | `announce: true` のとき、trueで「AはBに倒された」、falseで「Bが倒れた」 |
 | `death.reveal-role` | false | 死亡時に役職を公開するか（終了時は必ず全公開） |
 
 ### ボタン・特殊アイテム
