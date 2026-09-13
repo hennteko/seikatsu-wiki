@@ -118,7 +118,7 @@
 | `shells.max` | 8 | 1装填の最大総弾数 |
 | `shells.per-player` | 2 | 総弾数＝生存者数 × per-player ± jitter |
 | `shells.jitter` | 1 | 総弾数のブレ幅 |
-| `sudden-death.after-reloads` | 3 | この回数目の再装填以降、金リンゴを配布しない（0で無効） |
+| `sudden-death.after-reloads` | 3 | この回数目の再装填以降、金リンゴの代わりに「怪しい薬」（SUSPICIOUS）を配布する（0で無効） |
 | `gun.aim-range` | 8.0 | 視線判定の距離 |
 
 ### アイテム
@@ -126,10 +126,10 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `items.per-reload` | `[1, 2, 3, 3, 4]` | n回目の装填での配布個数（以降は最後の値） |
-| `items.enabled.*` | 全12種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
+| `items.enabled.*` | 全13種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
 | `items.pool.2` / `.3` / `.4` | 生存者数ごとのリスト | 抽選プール（重複記載で重み付け可）。2人戦はエンダーパール・盾・ベルを外す等 |
 
-アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）の12種です。
+アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）/ `SUSPICIOUS`（怪しい薬）の13種です。`SUSPICIOUS` は **サドンデス以降のみ** 配布され、金リンゴの枠を置き換えます（50%で残機+1・50%で残機-1）。
 
 ### モード・HUD・予想・環境
 

@@ -148,14 +148,19 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `depart-countdown` | 5 | 全員乗車後に出発するまでの秒数 |
 | `revive-hp` | 10 | 復活時の体力 |
 | `keep-food` | true | 満腹度を減らさない |
-| `quotas` | `[1000, 2500, 5000]` | ラウンドごとのノルマ金額（要素数＝ラウンド数）。未達で即ゲームオーバー |
+| `rounds` | 10 | ラウンド数（0＝エンドレス。全滅かノルマ未達まで続く） |
+| `quotas` | `[1000, 2500, 4000, 6000, 8000]` | ラウンドごとのノルマ金額。未達で即ゲームオーバー |
+| `quota-growth` | 1.3 | `quotas` の範囲外は「最後の値 × 1.3^超過数」（100単位に丸め） |
 | `surplus-to-funds` | true | ノルマ超過分のみをチーム資金にする |
+| `allow-join-in-shop` | true | ショップ時間中の途中参加を許可（次ラウンドから潜入） |
+| `late-join-lantern` | false | 途中参加者にランタンを1個渡す |
 
 ### 回収物（`loot`）
 
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `loot.count-per-round` | `[30, 35, 40]` | ラウンドごとの出現数（整数1つでも可） |
+| `loot.count-growth` | 3 | リストの範囲外は最後の値に毎ラウンド+3 |
 | `loot.auto-fill` | true | 候補地点が足りないとき、登録地点の周囲に自動で散らして補う |
 | `loot.scatter-radius` | 5 | 自動配置の散らばり半径（ブロック） |
 | `loot.value-variance` | 0.3 | 価値のバラツキ（±30%） |
@@ -194,6 +199,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `monsters.attack-range` | 1.7 | 攻撃の届く距離 |
 | `monsters.stun-seconds` | 8 | スタンバットの気絶秒数 |
 | `monsters.scale-by-players` | 6 | この人数以上で各ウェーブ+1 |
+| `monsters.round-bonus-every` | 3 | このラウンド数ごとに各ウェーブ+1（0で無効） |
 | `monsters.mimic-count` | `[1, 2, 3]` | ラウンドごとの擬態数 |
 | `monsters.mimic-hint` | true | 擬態の価値表示の末尾を7にする（見抜くヒント） |
 | `monsters.brightness` | 6 | 怪異の見た目の明るさ（0〜15） |
@@ -243,9 +249,10 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `horror.power-outage.enabled` | true | 停電（ラウンド中1回、全員のランタンが消えて点けられない） |
 | `horror.power-outage.chance` | 0.7 | ラウンドごとの停電発生確率 |
 | `horror.power-outage.seconds` | 10 | 停電の継続秒数 |
-| `horror.cart-malfunction.enabled` | true | 最終ラウンド出発時にカートが故障して延長（督促者が来る） |
+| `horror.cart-malfunction.enabled` | true | 出発時にカートが故障して延長（督促者が来る）。最終ラウンド、または `from-round` 以降で判定 |
 | `horror.cart-malfunction.chance` | 0.5 | カート故障の発生確率 |
 | `horror.cart-malfunction.extra-seconds` | 10 | 故障による延長秒数 |
+| `horror.cart-malfunction.from-round` | 3 | このラウンド以降でも故障判定を行う |
 | `horror.whispers` | 文言リスト | チャットに流れる囁きの文言 |
 | `chat-range` | 15 | 距離制限チャットの範囲（`!`始まりで2倍） |
 | `lantern.initial` | 2 | 開始時にチームへ配るランタン数 |

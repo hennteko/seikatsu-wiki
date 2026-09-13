@@ -74,6 +74,10 @@ nav:
           - minigames/minecraft-moba/index.md
           - 👤 プレイヤー向け: minigames/minecraft-moba/player.md
           - 🛠️ OP・運営向け: minigames/minecraft-moba/op.md
+      - Overcook（オーバークック風）:
+          - minigames/overcook/index.md
+          - 👤 プレイヤー向け: minigames/overcook/player.md
+          - 🛠️ OP・運営向け: minigames/overcook/op.md
       - SplatoonPlugin（スプラトゥーン）:
           - minigames/splatoon/index.md
           - 👤 プレイヤー向け: minigames/splatoon/player.md
