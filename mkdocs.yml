@@ -78,6 +78,14 @@ nav:
           - minigames/overcook/index.md
           - 👤 プレイヤー向け: minigames/overcook/player.md
           - 🛠️ OP・運営向け: minigames/overcook/op.md
+      - PowerWash（洗浄・開発中）:
+          - minigames/powerwash/index.md
+          - 👤 プレイヤー向け: minigames/powerwash/player.md
+          - 🛠️ OP・運営向け: minigames/powerwash/op.md
+      - Supermarket（スーパー経営）:
+          - minigames/supermarket/index.md
+          - 👤 プレイヤー向け: minigames/supermarket/player.md
+          - 🛠️ OP・運営向け: minigames/supermarket/op.md
       - SplatoonPlugin（スプラトゥーン）:
           - minigames/splatoon/index.md
           - 👤 プレイヤー向け: minigames/splatoon/player.md
@@ -183,6 +191,10 @@ nav:
           - minigames/shotgun/index.md
           - 👤 プレイヤー向け: minigames/shotgun/player.md
           - 🛠️ OP・運営向け: minigames/shotgun/op.md
+      - WindPvP（ウインドチャージPVP）:
+          - minigames/windpvp/index.md
+          - 👤 プレイヤー向け: minigames/windpvp/player.md
+          - 🛠️ OP・運営向け: minigames/windpvp/op.md
   - 03 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
@@ -220,6 +232,10 @@ nav:
           - casino/roulette/index.md
           - 👤 プレイヤー向け: casino/roulette/player.md
           - 🛠️ OP・運営向け: casino/roulette/op.md
+      - ヨット（ヤッツィー）:
+          - casino/yacht/index.md
+          - 👤 プレイヤー向け: casino/yacht/player.md
+          - 🛠️ OP・運営向け: casino/yacht/op.md
   - 04 サバイバルOP向け:
       - Ranking:
           - economy/ranking/index.md

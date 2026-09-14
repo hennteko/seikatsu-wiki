@@ -126,10 +126,10 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `items.per-reload` | `[1, 2, 3, 3, 4]` | n回目の装填での配布個数（以降は最後の値） |
-| `items.enabled.*` | 全13種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
+| `items.enabled.*` | 全14種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
 | `items.pool.2` / `.3` / `.4` | 生存者数ごとのリスト | 抽選プール（重複記載で重み付け可）。2人戦はエンダーパール・盾・ベルを外す等 |
 
-アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）/ `SUSPICIOUS`（怪しい薬）の13種です。`SUSPICIOUS` は **サドンデス以降のみ** 配布され、金リンゴの枠を置き換えます（50%で残機+1・50%で残機-1）。
+アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）/ `SUSPICIOUS`（怪しい薬）/ `DOUBLE_SHOT`（二連発）の14種です。`SUSPICIOUS` は **サドンデス以降のみ** 配布され、金リンゴの枠を置き換えます（50%で残機+1・50%で残機-1）。`DOUBLE_SHOT` は次に相手を撃つとき2発連続で撃ちます。
 
 ### モード・HUD・予想・環境
 

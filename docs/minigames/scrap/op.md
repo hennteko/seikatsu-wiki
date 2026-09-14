@@ -210,8 +210,8 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `monsters.excite.range` | 16 | この距離以内の音に反応 |
 | `monsters.excite.threshold` | 10 | この半径以上の音のみ対象（歩行4は対象外、走る/跳ぶ/扉は対象） |
 | `monsters.excite.seconds` | 3 | 加速が続く秒数（音が続けば延長） |
-| `monsters.default-waves` | 0秒WANDERER / 30秒DOPPEL / 60秒LISTENER / 120秒WATCHER / 150秒TALL / 180秒WANDERER | エリア作成時に複製される既定ウェーブ（種類: WANDERER/LISTENER/WATCHER/COLLECTOR/TALL/DOPPEL） |
-| `monsters.types.*` | 種類ごとの速度・聴覚・視認など | LISTENER / WATCHER / MIMIC / WANDERER / COLLECTOR / TALL（巨人・一撃死・ほぼ止められない）/ DOPPEL（ドッペルゲンガー・近づくと正体を現す）のパラメータ |
+| `monsters.default-waves` | 0秒WANDERER / 30秒DOPPEL / 60秒LISTENER / 90秒WRAITH / 120秒WATCHER / 150秒TALL / 180秒WANDERER | エリア作成時に複製される既定ウェーブ（種類: WANDERER/LISTENER/WATCHER/COLLECTOR/TALL/DOPPEL/WRAITH） |
+| `monsters.types.*` | 種類ごとの速度・聴覚・視認など | LISTENER / WATCHER / MIMIC / WANDERER / COLLECTOR / TALL（巨人・一撃死・ほぼ止められない）/ DOPPEL（ドッペルゲンガー・近づくと正体を現す）/ WRAITH（亡霊・壁の中に潜んで壁抜けで一直線に追い、一撃離脱）のパラメータ |
 | `monsters.looks.*` | 種類ごとの見た目 | 頭テクスチャ（Base64）・頭/胴ブロック・スケール等 |
 
 !!! note "怪異の見た目はリソースパック不要"
