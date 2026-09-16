@@ -62,15 +62,15 @@ Overcook（オーバークック風・協力調理ミニゲーム）の導入・
 ```
 
 ```text title="ステーションを登録／解除（対象ブロックを見て実行）"
-/overcook setstation stage1 <board|stove|plate|table|serve|trash|ingredient|delete> [食材ID]
+/overcook setstation stage1 <board|stove|pot|fryer|rice_cooker|plate|table|serve|trash|extinguisher|gate|ingredient|delete> [食材ID]
 ```
 
 ```text title="食材チェストの登録は食材ID付き（例：牛肉）"
 /overcook setstation stage1 ingredient beef
 ```
 
-!!! note "ステーションの種類"
-    `board`（まな板）/ `stove`（コンロ）/ `plate`（皿置き場）/ `table`（作業台）/ `serve`（提供口）/ `trash`（ゴミ箱）/ `ingredient`（食材チェスト）の7種です。食材チェスト（`ingredient`）は **食材ID** を付けて登録します（食材IDは `recipes.yml` の定義。既定は `beef` / `lettuce` / `tomato` / `fish`）。同じ種類を複数ブロック登録できます。`delete` は見ているブロックの登録を解除します。
+!!! note "ステーションの種類（12種）"
+    `board`（まな板）/ `stove`（コンロ・焼く）/ `pot`（鍋・煮る）/ `fryer`（フライヤー・揚げる）/ `rice_cooker`（炊飯器・炊く）/ `plate`（皿置き場）/ `table`（作業台）/ `serve`（提供口）/ `trash`（ゴミ箱）/ `extinguisher`（消火器置き場）/ `gate`（開閉ブロック）/ `ingredient`（食材チェスト）です。食材チェスト（`ingredient`）は **食材ID** を付けて登録します（食材IDは `recipes.yml` の定義。既定は `beef`/`lettuce`/`tomato`/`fish`/`bread`/`apple`/`rice`/`egg`/`basil`/`potato`/`chicken`/`carrot`）。同じ種類を複数ブロック登録できます。`delete` は見ているブロックの登録を解除します。加熱ステーション（stove/pot/fryer/rice_cooker）はそれぞれ対応する調理法で食材を加熱します。
 
 ## 看板の設置
 
@@ -104,6 +104,17 @@ Overcook（オーバークック風・協力調理ミニゲーム）の導入・
 | `settings.board-clicks` | 5 | まな板で切るのに必要な右クリック回数 |
 | `settings.stove-cook-seconds` | 8 | コンロで焼き上がるまでの秒数 |
 | `settings.stove-burn-seconds` | 10 | 焼き上がり後、焦げるまでの猶予秒数 |
+| `settings.pot-cook-seconds` | 12 | 鍋（煮る）の秒数。焦げない |
+| `settings.fryer-cook-seconds` | 5 | フライヤー（揚げる）の秒数 |
+| `settings.fryer-burn-seconds` | 4 | フライヤー：揚がった後、焦げるまでの猶予秒数 |
+| `settings.rice-cook-seconds` | 15 | 炊飯器（炊く）の秒数。焦げない |
+| `settings.rice-portions` | 3 | 炊飯器：1回で炊ける人前 |
+| `settings.fire-delay-seconds` | 8 | 焦げを放置してから発火するまでの秒数（火事ONステージ） |
+| `settings.fire-spread-seconds` | 10 | 火事が延焼を試みる間隔（秒） |
+| `settings.fire-spread-radius` | 3 | 延焼する範囲（ブロック） |
+| `settings.extinguish-clicks` | 6 | 消火に必要な右クリック回数 |
+| `settings.rush-order-multiplier` | 2 | 急ぎ注文の得点倍率 |
+| `settings.gate-closed-block` | IRON_BARS | 開閉ブロックが「閉」のときに置くブロック |
 | `settings.combo-max` | 3 | コンボ倍率の上限（連続提供2回ごとに+1） |
 | `settings.order-warning-seconds` | 10 | 注文の残り秒数がこれ以下で赤表示 |
 | `settings.expire-penalty` | 20 | 注文期限切れの減点 |
@@ -126,6 +137,20 @@ Overcook（オーバークック風・協力調理ミニゲーム）の導入・
 | `easy-seconds` | 45 | 序盤の易しい時間（この間は tier2 以上の料理は出ない） |
 | `target-scores` | `[500, 1000, 1500]` | 星1／星2／星3 の目標スコア |
 | `menu` | 料理ID→重み | このステージで出る料理と出現重み（例：`{ salad: 3, steak: 3, grilled_fish: 2, steak_set: 1 }`） |
+| `gimmicks` | 下記マップ | ステージのギミック設定（火事・開閉ブロック・提供口移動・ネズミ・急ぎ注文） |
+
+#### ステージギミック（`stages.<id>.gimmicks`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `fire-enabled` | 0 | 火事を有効化（1でON。焦げ放置で発火・延焼） |
+| `max-fire` | 2 | 同時に存在できる火の最大数 |
+| `gate-open-seconds` | 0 | 開閉ブロックが「開」でいる秒数（0で常時開＝ギミック無効） |
+| `gate-closed-seconds` | 5 | 開閉ブロックが「閉」でいる秒数 |
+| `serve-rotate-seconds` | 0 | 提供口が移動する間隔（0で固定） |
+| `rat-seconds` | 0 | ネズミが出る間隔（0で出ない。食材を狙う） |
+| `rush-chance` | 0 | 急ぎ注文が出る確率 |
+| `rush-time-seconds` | 0 | 急ぎ注文の制限時間（秒） |
 
 !!! note "自動生成される領域（手動編集は座標以外のみ推奨）"
     `lobby-spawn` / `default-spawn` / `signs` / `stages.<id>.spawn` / `field` / `stations` はコマンド・ツールで自動保存されます。座標データの手動編集は非推奨です。`time-limit-seconds` や `menu` / `target-scores` などのステージ調整値は `config.yml` で編集できます。
@@ -134,10 +159,10 @@ Overcook（オーバークック風・協力調理ミニゲーム）の導入・
 
 食材と料理は `recipes.yml` で定義し、`/overcook reload` で再読み込みできます。
 
-- **ingredients（食材）** … `item`（生の見た目）/ `cut-item`（切った後）/ `cooked-item`（焼いた後）/ `can-cut`（切れるか）/ `can-cook`（焼けるか）/ `cook-requires-cut`（切ってからでないと焼けないか）。
-- **dishes（料理）** … `requires`（`"食材ID:状態"` のリスト。状態＝`raw`/`cut`/`cooked`/`cut_cooked`）/ `score`（基本点）/ `tier`（1＝序盤から出る、2以上＝`easy-seconds` の間は出ない）/ `icon`（設定GUIでの見た目）。
+- **ingredients（食材）** … `item`（生の見た目）/ `cut-item`（切った後）/ 加熱後の見た目 `cooked-item`（焼く）/ `boiled-item`（煮る）/ `fried-item`（揚げる）/ `steamed-item`（炊く）/ 加熱可否 `can-cut`・`can-cook`・`can-boil`・`can-fry`・`can-steam` / `requires-cut`（切ってからでないと加熱できない。旧 `cook-requires-cut` も可）。
+- **dishes（料理）** … `requires`（`"食材ID:状態"` のリスト。同じ食材を2つ書けば2個必要。状態＝`raw`/`cut`/`cooked`/`cut_cooked`/`boiled`/`cut_boiled`/`fried`/`cut_fried`/`steamed`/`cut_steamed`）/ `score`（基本点）/ `tier`（1＝序盤から出る、2以上＝`easy-seconds` の間は出ない）/ `icon`（設定GUIでの見た目）。
 
-既定では食材 `beef`（牛肉・焼く）/ `lettuce`（レタス・切る）/ `tomato`（トマト・切る）/ `fish`（魚・切ってから焼く）、料理 `salad`（サラダ）/ `steak`（ステーキ）/ `grilled_fish`（焼き魚）/ `steak_set`（ステーキ定食）が定義されています。
+既定では食材12種（`beef`/`lettuce`/`tomato`/`fish`/`bread`/`apple`/`rice`/`egg`/`basil`/`potato`/`chicken`/`carrot`）、料理12種（サラダ／ステーキ／焼き魚／ステーキ定食／ハンバーガー／フィッシュサラダ／フルーツ盛り／フライドポテト／唐揚げ／野菜スープ／ミックスグリル／ガパオライス）が定義されています。**加熱法は 焼く（コンロ）／煮る（鍋）／揚げる（フライヤー）／炊く（炊飯器）** の4種で、食材の `can-*` フラグで対応法が決まります。
 
 ## 管理コマンド
 
