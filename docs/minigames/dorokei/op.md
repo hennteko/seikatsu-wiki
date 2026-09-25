@@ -290,6 +290,10 @@ chest-settings:
 | `/dorokei removechest` | OP | 視線先のラッキーチェストを1か所解除する |
 | `/dorokei removechest clear` | OP | ラッキーチェストの登録を全て解除する |
 | `/dorokei setcop <人数> <警官数>` | OP | 人数別の警官数を設定する |
+| `/dorokei setcopratio <割合%> [最大人数]` | OP | 警官人数表を割合で一括再計算する |
+| `/dorokei setresultwait <秒>` | OP | 結果発表からロビーに戻るまでの待機時間を設定する |
+| `/dorokei loadout <cop\|civilian> ...` | OP | 警官／市民の配布装備の中身を編集する |
+| `/dorokei tool` | OP | OP専用の設定アイテムを入手する（右クリックでGUIメニュー） |
 | `/dorokei settime <秒>` | OP | 制限時間を設定する（10秒以上） |
 | `/dorokei setmax <人数>` | OP | ロビー最大人数を設定する（1以上） |
 | `/dorokei setmin <人数>` | OP | 開始に必要な最低人数を設定する（1以上） |

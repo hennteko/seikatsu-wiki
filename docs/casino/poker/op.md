@@ -48,6 +48,35 @@ modules:
 | `settings.maxRaiseAmount` | `1000` | 1ハンドあたりの合計ベット額の上限（レイズ上限）。`/poker raisemoney` でも変更でき、変更内容はこのキーに保存される |
 | `bet_options` | （未設定） | （任意・トップレベルキー）SB掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000）を使用。コマンドからは書き込まれないため、変更する場合のみ手動で追記する |
 
+### input（アクション入力・統合版対応）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `input.click-debounce-ms` | 250 | 同じプレイヤーの連続クリックを無視する間隔（統合版の二重入力対策） |
+| `input.action-gui.bedrock` | true | 統合版（Geyser/Floodgate）プレイヤーに手番でアクションGUIを自動表示 |
+| `input.action-gui.all-players` | false | Java版を含む全員にアクションGUIを自動表示する |
+
+### solo（ソロモード・Bot対戦・キャッシュゲーム）
+
+人が集まらなくてもBot相手に1人で遊べるソロモードの設定です。看板は `/poker setsign solo <卓ID>`、着席位置は `/poker setsolospawn` で設定します（自動保存）。プレイヤーは `[Poker Solo]` 看板または `/poker solo <卓ID>` で着席します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.result-seconds` | 6 | ハンド結果を見せる秒数 |
+| `solo.action-timeout-seconds` | 60 | 無操作でチェック/フォールドするまでの秒数 |
+| `solo.auto-leave-after-timeouts` | 3 | 連続タイムアウトで自動離席 |
+| `solo.bot-count` | 4 | 1卓のBot数（1〜5） |
+| `solo.bot-buyin-bb` | 100 | Botの着席スタック（BB倍） |
+| `solo.bust-threshold-bb` | 5 | これ未満になったBotは離席して入れ替わる |
+| `solo.rake-percent` | 3 | レーキ（%）。フロップ以降のポットのみ。0で無し |
+| `solo.rake-cap-bb` | 5 | レーキ上限（BB倍） |
+| `solo.simulations` | 200 | Botの勝率計算の試行回数（大きいほど賢く重い） |
+| `solo.tables.<id>` | low/mid/high | 卓（レート）ごとの `display`・`small-blind`・`big-blind`・`min-buyin-bb`・`max-buyin-bb`。既定は low(5/10)・mid(50/100)・high(500/1000) |
+| `solo.bots.<id>` | 6体の既定Bot | Botの `name`・`style`（TAG/LAG/ROCK/STATION/MANIAC）・`mistake-rate`・`tell`（NONE/SLOW_STRONG/FAST_STRONG）・思考時間・台詞など |
+
+!!! note "ソロ看板・着席位置はコマンドで保存"
+    `/poker setsign solo <卓ID>`（`[Poker Solo]` 看板を登録）・`/poker setsolospawn`（着席位置）で設定した内容は `poker.yml` の `solo-signs` などへ自動保存されます。Botのレート表（`tables`）や性格（`bots`）は `poker.yml` を直接編集して調整できます。
+
 ### signs（公開札看板の位置）
 
 `signs.sign1` 〜 `signs.sign5` に、公開カードを表示する5枚の看板の座標が保存されます。`/poker setsign card1`〜`/poker setsign card5` コマンドで設定され、各エントリは `world` / `x` / `y` / `z` を持ちます。
@@ -129,6 +158,20 @@ modules:
 ```text title="⑦ 設定状況を確認（3座標・ベット額・待機人数）"
 /poker status
 ```
+
+### ソロモード（Bot対戦）の設置
+
+ソロ卓を使う場合は、卓ごとに着席看板と着席位置を設定します（マルチ対戦の会場とは独立して設置できます）。
+
+```text title="着席位置を現在地に設定"
+/poker setsolospawn
+```
+
+```text title="[Poker Solo] 看板を卓IDに紐付けて登録（看板を見て実行）"
+/poker setsign solo <卓ID>
+```
+
+卓ID は既定で `low` / `mid` / `high`（`poker.yml` の `solo.tables`）です。プレイヤーは `[Poker Solo]` 看板または `/poker solo <卓ID>` で着席します。
 
 !!! tip "公開札看板の役割"
     `card1`〜`card5`（poker.yml では `signs.sign1`〜`sign5`）の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。

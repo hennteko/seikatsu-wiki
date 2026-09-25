@@ -2,10 +2,10 @@
 
 # PowerWash ― OP・運営ガイド { .page-op #powerwash-op }
 
-PowerWash（協力洗浄ミニゲーム）の現在実装済み（Phase 1）のセットアップ・config をまとめます。
+PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・config をまとめます。
 
-!!! warning "現在開発中（Phase 1）です"
-    実装済みのコマンドは **ステージ作成・フィールド／スポーン設定・セル生成（scan）・汚れ設定・設定ツール・テスト用洗浄機配布・status・reload** です。`join`/`start`/`shop`/`hint`/`list` などのプレイループ系は **Phase 2 以降** で追加予定です。config には将来のフェーズ用のキーもあらかじめ用意されていますが、Phase 1 で実際に読み込まれるのは `resolution` / `max-cells` / `washer.base-*` のみです。
+!!! note "実装状況（Phase 2）"
+    **参加・開始のプレイループ**（`join`/`leave`/`start`）・**制限時間**・**ロビー**・**看板** に対応しています。加えて Phase 1 のステージ作成・セル生成（scan）・汚れ設定・設定ツールも利用できます。`shop`/`hint`/お金・アップグレード・洗剤などは **今後のフェーズ** で追加予定で、config にキーだけ先行して用意されています（現時点では読み込まれません）。
 
 ## 基本情報
 
@@ -19,7 +19,32 @@ PowerWash（協力洗浄ミニゲーム）の現在実装済み（Phase 1）の�
 | 設定ファイル | `plugins/PowerWash/config.yml` |
 | 権限ノード | `powerwash.admin`（既定OP） |
 
-## セットアップ手順（Phase 1）
+## ロビー・看板の設定（Phase 2）
+
+プレイループ用に、共通ロビーと参加・離脱・開始の看板を設定します。
+
+```text title="共通ロビー地点を設定"
+/pw setlobby
+```
+
+```text title="初期スポーン（離脱時の戻り先）を設定"
+/pw setstartspawn
+```
+
+```text title="参加／離脱／開始の看板を登録（看板を見て実行）"
+/pw setsign join
+/pw setsign leave
+/pw setsign start <識別子>
+```
+
+```text title="視線先の看板の登録を解除"
+/pw setsign delete
+```
+
+!!! success "看板は複数設置できます"
+    参加（`sign`）・離脱（`leave-sign`）看板は複数設置でき、開始（`start-sign`）看板は **識別子ごと** に複数設置できます。座標は config に自動保存されます。
+
+## セットアップ手順（ステージ作成）
 
 ステージは「領域を選択 → 作成 → スキャンでセル生成 → 汚れ設定」の流れで用意します。
 
@@ -65,12 +90,17 @@ PowerWash（協力洗浄ミニゲーム）の現在実装済み（Phase 1）の�
 
 ## config.yml 設定項目
 
-### Phase 1 で有効なキー
+### 有効なキー（Phase 1〜2）
 
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `resolution` | 2 | 1 / 2 / 4。1面あたりの分割数（`resolution^2`）。scan後の変更は既存セルに遡及しない |
 | `max-cells` | 5000 | 1ステージあたりのセル上限。超過するscanは実行せず警告 |
+| `lobby-spawn` | null | 共通ロビー地点（`/pw setlobby`） |
+| `default-spawn` | null | 初期スポーン（離脱時の戻り先。`/pw setstartspawn`） |
+| `sign` / `leave-sign` / `start-sign` | リスト | 参加／離脱／開始看板の座標（`/pw setsign` で自動保存） |
+| `session.time-options-minutes` | `[5,10,15,20,30]` | 時間選択GUIに出す分数の候補（「無制限」は別ボタンで常設） |
+| `session.max-minutes` | 180 | `/pw start <識別子> <分>` で指定できる分の上限（0＝上限なし） |
 | `washer.material` | IRON_HOE | 高圧洗浄機のアイテム |
 | `washer.custom-model-data` | 1001 | 高圧洗浄機のカスタムモデルデータ |
 | `washer.base-power` | 1.0 | 洗浄の基本出力 |
@@ -79,9 +109,9 @@ PowerWash（協力洗浄ミニゲーム）の現在実装済み（Phase 1）の�
 | `performance.particle-tick-interval` | 3 | パーティクルの描画間隔（tick） |
 | `performance.display-spawn-per-tick` | 200 | scan後にBlockDisplayを生成する1tickあたりの上限 |
 
-### 将来のフェーズ用（Phase 1 では未読込）
+### 将来のフェーズ用（現時点では未読込）
 
-`washer.nozzle`（ノズル：jet/fan）・`detergent`（洗剤）・`reward`（報酬）・`upgrade`（出力/半径/射程のアップグレード）・`hint`（ヒント）・`admin-tool`（OP用設定ツール）・`lobby-spawn`／`default-spawn`／`sign`／`leave-sign`／`start-sign`（地点・看板）は、将来のフェーズで使用するために **キー名だけ先行して確保** されています。現時点では読み込まれません。
+`washer.nozzle`（ノズル：jet/fan）・`detergent`（洗剤）・`reward`（報酬）・`upgrade`（出力/半径/射程のアップグレード）・`hint`（ヒント）・`admin-tool`（OP用設定ツール）は、将来のフェーズで使用するために **キー名だけ先行して確保** されています。現時点では読み込まれません。
 
 ## 管理コマンド
 
@@ -93,17 +123,21 @@ PowerWash（協力洗浄ミニゲーム）の現在実装済み（Phase 1）の�
 | `/pw setspawn <識別子>` | 開始位置を設定 |
 | `/pw scan <識別子>` | 汚れセルを自動生成 |
 | `/pw dirt <識別子> <種類>` | 選択範囲の汚れ種類を上書き |
+| `/pw setlobby` / `setstartspawn` | 共通ロビー／初期スポーンを設定 |
+| `/pw setsign <join\|leave\|start <識別子>\|delete>` | 看板を設定／解除 |
 | `/pw testwasher` | テスト用の高圧洗浄機を入手 |
-| `/pw status [識別子]` | 設定状況を確認（全員可） |
+| `/pw status [識別子]` | 設定・洗浄状況を確認（全員可） |
 | `/pw reload` | 設定を再読み込み |
+
+プレイヤー用（全員可）は `/pw join`・`/pw leave`・`/pw start <識別子> [分]`・`/pw status`・`/pw help` です。
 
 ## 権限ノード
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `powerwash.admin` | OP | セットアップ系コマンド（wand/create/setfield/setspawn/scan/dirt/reload/testwasher） |
+| `powerwash.admin` | OP | セットアップ系（wand/create/setfield/setspawn/scan/dirt/setlobby/setstartspawn/setsign/reload/testwasher） |
 
-`/pw status`・`/pw help` は権限不要で全員が使えます。
+`/pw join`・`/pw leave`・`/pw start`・`/pw status`・`/pw help` は権限不要で全員が使えます。
 
 ---
 

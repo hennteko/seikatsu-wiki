@@ -78,7 +78,7 @@ nav:
           - minigames/overcook/index.md
           - 👤 プレイヤー向け: minigames/overcook/player.md
           - 🛠️ OP・運営向け: minigames/overcook/op.md
-      - PowerWash（洗浄・開発中）:
+      - PowerWash（協力洗浄）:
           - minigames/powerwash/index.md
           - 👤 プレイヤー向け: minigames/powerwash/player.md
           - 🛠️ OP・運営向け: minigames/powerwash/op.md
@@ -195,6 +195,14 @@ nav:
           - minigames/windpvp/index.md
           - 👤 プレイヤー向け: minigames/windpvp/player.md
           - 🛠️ OP・運営向け: minigames/windpvp/op.md
+      - Inoubattle（異能バトル）:
+          - minigames/inoubattle/index.md
+          - 👤 プレイヤー向け: minigames/inoubattle/player.md
+          - 🛠️ OP・運営向け: minigames/inoubattle/op.md
+      - Othello（オセロ）:
+          - minigames/othello/index.md
+          - 👤 プレイヤー向け: minigames/othello/player.md
+          - 🛠️ OP・運営向け: minigames/othello/op.md
   - 03 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
