@@ -86,6 +86,10 @@ nav:
           - minigames/supermarket/index.md
           - 👤 プレイヤー向け: minigames/supermarket/player.md
           - 🛠️ OP・運営向け: minigames/supermarket/op.md
+      - DragonRTA（エンドラRTA）:
+          - minigames/dragonrta/index.md
+          - 👤 プレイヤー向け: minigames/dragonrta/player.md
+          - 🛠️ OP・運営向け: minigames/dragonrta/op.md
       - SplatoonPlugin（スプラトゥーン）:
           - minigames/splatoon/index.md
           - 👤 プレイヤー向け: minigames/splatoon/player.md
