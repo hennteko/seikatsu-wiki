@@ -44,8 +44,8 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 !!! note "残機・無敵・人数の設定は config に保存されます"
     `/zankipvp setzanki <数字>`・`/zankipvp setprotection <秒>`・`/zankipvp setmax <数字>`・`/zankipvp setmin <数字>` で設定した値は **`config.yml` に即保存され、サーバー再起動後も維持** されます。`config.yml` の `settings.*` / `game.*` を直接編集して `/zankipvp reload` で反映することもできます。
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみのため、旧バージョンから更新した場合 `min-players` / `respawn-delay` / `game.respawn-invincible-seconds` / `game.result-seconds` / `loadout` 等の新キーは既存 `config.yml` に自動追記されません（コード側に既定値があるため動作はします）。値をファイルで変更したい場合は手動追記、または `/zankipvp setprotection` 等のコマンドで設定してください。
+!!! note "config は自動で追記されるようになりました"
+    共通改修により、**起動時・`reload` 時に不足している config キーを既定値＋コメント付きで自動追記** します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。`min-players` / `respawn-delay` / `game.respawn-invincible-seconds` / `game.result-seconds` / `loadout` / `display-name` / `messages.*` などの新キーも自動で補われます。値をファイルで変更したい場合は該当キーを編集するか、`/zankipvp setprotection` 等のコマンドで設定してください。
 
 !!! success "旧 respawn-protection は自動移行されます"
     旧バージョンの `settings.respawn-protection` キーは、プラグイン起動時に自動で `game.respawn-invincible-seconds` へ移行され、旧キーは削除されます（移行はログに出力されます）。
@@ -147,6 +147,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `/zankipvp setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録 |
 | `/zankipvp setsign delete` | 視線先の看板の登録を解除 |
 | `/zankipvp stop` | ゲームを強制終了する（コマンドブロック対応） |
+| `/zankipvp forceunlock <名前> [confirm]` | 参加中フラグ（他ゲーム参加ロック）を強制解除する（`confirm` で確定） |
 | `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上・config保存） |
 | `/zankipvp setprotection <秒>` | リスポーン無敵時間を設定（0以上・config保存） |
 | `/zankipvp setmax <数字>` | 最大参加人数を設定（2以上・config保存） |
@@ -190,6 +191,29 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 ??? failure "リスポーン地点や設定が反映されない"
     `/zankipvp reload` で config.yml を再読み込みしてください。なお `setup` 系コマンドでの地点設定は即座に config.yml へ保存されます。
+
+---
+
+## 全ゲーム共通の改修（2026-09）
+
+全ミニゲーム共通の改修が入り、本ゲームにも適用されています。
+
+- **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ゲーム名】名前」になり、離脱で元に戻ります（表示名は config の `display-name`）。
+- **参加/離脱の全体告知** … 参加・離脱時にサーバー全体へ「【ゲーム名】名前 が参加しました (N人)」等を通知します。
+- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `/<コマンド> forceunlock <プレイヤー>` で解除できます。
+- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/<プラグイン>/vault/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（退避・復元は各1回、試合終了時は復元しません）。
+
+### 追加された config キー
+
+| キー | 説明 |
+|---|---|
+| `display-name` | ゲーム表示名（「【…】」の中身） |
+| `messages.join-broadcast` | 参加の全体告知文 |
+| `messages.leave-broadcast` | 離脱の全体告知文 |
+| `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+
+!!! note "config は自動で追記されるようになりました"
+    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。座標・看板・会場・ステージなどのデータ領域は補完対象外です。
 
 ---
 
