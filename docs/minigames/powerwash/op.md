@@ -56,8 +56,15 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 /pw create <識別子>
 ```
 
-```text title="フィールド範囲を現在地で設定（角1／角2）"
+```text title="フィールド範囲：ワンドの選択範囲をそのまま反映（角番号を省略）"
+/pw setfield <識別子>
+```
+
+```text title="フィールド範囲：現在地を角1に設定"
 /pw setfield <識別子> 1
+```
+
+```text title="フィールド範囲：現在地を角2に設定"
 /pw setfield <識別子> 2
 ```
 
@@ -73,7 +80,15 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 /pw dirt <識別子> <種類>
 ```
 
-```text title="（Phase1テスト用）高圧洗浄機を入手"
+```text title="選択範囲の汚れセルを削除（面を省略すると全方向）"
+/pw removecells <識別子>
+```
+
+```text title="選択範囲の汚れセルを面指定で削除（up/down/north/south/east/west）"
+/pw removecells <識別子> <面>
+```
+
+```text title="テスト用の高圧洗浄機を入手（未参加の管理者のみ・進行中でないステージで試用可）"
 /pw testwasher
 ```
 
@@ -87,6 +102,20 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 
 !!! note "セルとスキャン"
     `scan` は、フィールド範囲内の表面ブロックを **1面あたり `resolution^2` 個のセル** に分割して生成します。生成後は BlockDisplay で表示されます。1ステージあたりのセル数は `max-cells`（既定5000）で制限され、超過するスキャンは実行されず警告のみ表示されます。`resolution` を変更しても、既存のセルには遡及しません（再スキャンが必要）。
+
+## 汚れの種類（`/pw dirt` で指定）
+
+`/pw scan` は元ブロックの種類から汚れ種類を自動割り当てします。`/pw dirt <識別子> <種類>` で選択範囲のセルを任意の種類に上書きできます。種類と落としにくさ（HP倍率）は `dirt-types.yml` で定義されています。
+
+| 種類（指定名） | 表示名 | HP倍率 | 必要洗浄力Lv | 自動割り当ての例 |
+|---|---|---|---|---|
+| `MUD` | 泥（既定） | 1.0 | 0 | 土・粗い土・農地・ポドゾル |
+| `MOSS` | 苔・サビ | 2.0 | 0 | 苔ブロック・苔石・酸化した銅系 |
+| `OIL` | 油汚れ | 4.0 | 0 | 黒色コンクリート・黒曜岩系・ネザーラック・石炭ブロック |
+| `STUBBORN` | 頑固な汚れ | 5.0 | 3 | 黒曜石・古代の瓦礫・灰色コンクリート |
+
+!!! note "必要洗浄力レベル"
+    `STUBBORN`（頑固な汚れ）は必要洗浄力レベル3が設定されています。洗浄力レベルを上げる強化（アップグレード）は今後のフェーズで追加予定のため、現時点で高難度セルを配置する場合はご注意ください。自動割り当てで `STUBBORN` になるブロック（黒曜石など）も同様です。
 
 ## config.yml 設定項目
 
@@ -123,11 +152,13 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 | `/pw setspawn <識別子>` | 開始位置を設定 |
 | `/pw scan <識別子>` | 汚れセルを自動生成 |
 | `/pw dirt <識別子> <種類>` | 選択範囲の汚れ種類を上書き |
+| `/pw removecells <識別子> [面]` | 選択範囲の汚れセルを削除（面: up/down/north/south/east/west／進行中は不可） |
 | `/pw setlobby` / `setstartspawn` | 共通ロビー／初期スポーンを設定 |
 | `/pw setsign <join\|leave\|start <識別子>\|delete>` | 看板を設定／解除 |
 | `/pw testwasher` | テスト用の高圧洗浄機を入手 |
 | `/pw status [識別子]` | 設定・洗浄状況を確認（全員可） |
 | `/pw reload` | 設定を再読み込み |
+| `/pw forceunlock <プレイヤー> [confirm]` | 参加中フラグの強制解除・退避データの復元（コンソール可） |
 
 プレイヤー用（全員可）は `/pw join`・`/pw leave`・`/pw start <識別子> [分]`・`/pw status`・`/pw help` です。
 
@@ -135,9 +166,32 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `powerwash.admin` | OP | セットアップ系（wand/create/setfield/setspawn/scan/dirt/setlobby/setstartspawn/setsign/reload/testwasher） |
+| `powerwash.admin` | OP | セットアップ系（wand/create/setfield/setspawn/scan/dirt/removecells/setlobby/setstartspawn/setsign/reload/testwasher/forceunlock） |
 
 `/pw join`・`/pw leave`・`/pw start`・`/pw status`・`/pw help` は権限不要で全員が使えます。
+
+---
+
+## 全ゲーム共通の改修（2026-09）
+
+全ミニゲーム共通の改修が入り、本ゲームにも適用されています。
+
+- **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ゲーム名】名前」になり、離脱で元に戻ります（表示名は config の `display-name`）。
+- **参加/離脱の全体告知** … 参加・離脱時にサーバー全体へ「【ゲーム名】名前 が参加しました (N人)」等を通知します。
+- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `/<コマンド> forceunlock <プレイヤー>` で解除できます。
+- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/<プラグイン>/vault/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（退避・復元は各1回、試合終了時は復元しません）。PowerWash は旧 `players.yml` を起動時に vault へ移行します（旧ファイルは `players.yml.migrated` へ改名）。
+
+### 追加された config キー
+
+| キー | 説明 |
+|---|---|
+| `display-name` | ゲーム表示名（「【…】」の中身） |
+| `messages.join-broadcast` | 参加の全体告知文 |
+| `messages.leave-broadcast` | 離脱の全体告知文 |
+| `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+
+!!! note "config は自動で追記されるようになりました"
+    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml`（PowerWash は `messages.yml` も）へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `.bak` を保存）。座標・看板・会場・ステージなどのデータ領域は補完対象外です。
 
 ---
 
