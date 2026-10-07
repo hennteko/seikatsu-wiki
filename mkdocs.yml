@@ -127,6 +127,10 @@ nav:
           - minigames/windpvp/index.md
           - 👤 プレイヤー向け: minigames/windpvp/player.md
           - 🛠️ OP・運営向け: minigames/windpvp/op.md
+      - PillarPvP（一本柱PvP）:
+          - minigames/pillarpvp/index.md
+          - 👤 プレイヤー向け: minigames/pillarpvp/player.md
+          - 🛠️ OP・運営向け: minigames/pillarpvp/op.md
   - 03 鬼ごっこ・逃走:
       - Yukioni（雪鬼）:
           - minigames/yukioni/index.md

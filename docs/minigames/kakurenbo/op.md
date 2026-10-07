@@ -153,21 +153,50 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `seeker.snowball-amount` | 16 | 鬼に配る雪玉の数（投擲後に自動補充） |
 | `seeker.snowball-name` | `&f雪玉 …` | 雪玉の表示名 |
 
+### firework セクション（隠れ側の花火アイテム）
+
+隠れる側に配られる **花火**（ホットバー2番目・無限使用）の設定です。擬態中にスロットを選ぶと打ち上がり、位置の自己申告・演出に使えます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `firework.item-material` | `FIREWORK_ROCKET` | 花火アイテムの種別 |
+| `firework.item-name` | `&d花火 …` | 花火アイテムの表示名 |
+| `firework.cooldown-seconds` | 3 | 手動打ち上げの連打防止クールダウン（秒・0で無効） |
+| `firework.forced-interval-seconds` | 60 | 鬼が動き出してから、隠れ側全員の花火を強制で一斉に打ち上げる間隔（秒・0で無効） |
+| `firework.power` | 1 | 打ち上げの高さ（飛行時間 0〜3） |
+| `firework.colors` | 10色 | 打ち上げ色のリスト（毎回ランダム）。染料色名または `#RRGGBB` |
+| `firework.types` | `BALL_LARGE` ほか | 形のリスト（ランダム）: `BALL` / `BALL_LARGE` / `STAR` / `BURST` / `CREEPER` |
+| `firework.flicker` | `true` | きらめき効果 |
+| `firework.trail` | `true` | 尾を引く効果 |
+| `firework.sound` | `entity.firework_rocket.launch` | 打ち上げ時に追加で鳴らす音（`""`で追加音なし・バニラ破裂音は常に鳴る） |
+| `firework.sound-volume` | 3.0 | 追加音の音量（3.0でおよそ48ブロック先まで） |
+| `firework.sound-pitch` | 1.0 | 追加音のピッチ |
+
+### reveal セクション（終盤の擬態ブロック公開）
+
+残り時間が一定以下になると、隠れ側の擬態ブロックを **発光・パーティクル** で鬼にわかるようにして膠着を防ぎます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `reveal.seconds-left` | 60 | 残り何秒から擬態ブロックを光らせるか（0で無効） |
+| `reveal.glow-color` | `#FF5555` | 発光色（Java版の輪郭・パーティクル色）。染料色名または `#RRGGBB` |
+| `reveal.particle` | `true` | 擬態ブロック上にパーティクルを出す（統合版は発光が見えないための代替） |
+
 ### blocks / messages / sign / gui
 
 - `blocks` … 擬態パレット（`addblock` / `removeblock` で編集・自動保存）。
-- `messages` … 各種通知文（`&` カラーコード対応）。`prefix` ほか役割通知・捕獲・残り時間・鬼立候補・ロビー参加/退出ブロードキャストなど。
+- `messages` … 各種通知文（`&` カラーコード対応）。`prefix` ほか役割通知・捕獲・残り時間・鬼立候補・花火（`firework-cooldown` / `firework-forced`）・終盤公開（`reveal-start`）・ロビー参加/退出ブロードキャストなど。
 - `sign.{lobby,leave,start,block,oni}` … 各看板の表示文。参加看板の4行目は `%current%/%max%` で人数、鬼立候補看板の4行目は `%count%` で立候補人数を表示。
 - `gui.block-select-title` … ブロック選択GUIのタイトル。
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみで、既存の `config.yml` に新キーを自動追記しません（コード側に既定値があるため動作はします）。メッセージ等を調整する場合は手動追記、または config を退避して再生成してください。地点・看板は `locations.yml` にコマンドで保存されます。
+!!! note "config は不足キーを自動追記します"
+    起動時および `/kakurenbo reload` 時に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更せず、更新があった場合は `config.yml.bak` を保存）。このため `firework` / `reveal` などの新セクションも、既存サーバーで自動的に補完されます。座標・看板などのデータ領域（`locations.yml`）は補完対象外で、コマンドで保存されます。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・join/leave の他プレイヤー指定 |
+| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・forceunlock・join/leave の他プレイヤー指定 |
 | `kakurenbo.play` | 全員 | ゲームへの参加（`join`） |
 
 !!! note "join / leave / start / status は権限不要で全員可"
@@ -189,6 +218,7 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `/kakurenbo addblock` / `removeblock` | `kakurenbo.admin` | 手持ちブロックを擬態パレットに追加 / 削除 |
 | `/kakurenbo stop` | `kakurenbo.admin` | ゲームを強制終了 |
 | `/kakurenbo reload` | `kakurenbo.admin` | config を再読み込み |
+| `/kakurenbo forceunlock <プレイヤー>` | `kakurenbo.admin` | 他ゲーム参加中フラグが異常に残った場合の強制解除（コンソール可） |
 
 ## トラブルシューティング
 
@@ -203,6 +233,29 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 ??? failure "看板をクリックしても反応しない"
     看板は `/kakurenbo setsign <種別>` で登録した位置で判定されます。登録済みか `/kakurenbo status` で確認してください（手書きでは機能しません）。
+
+---
+
+## 全ゲーム共通の改修（2026-09）
+
+全ミニゲーム共通の改修が入り、本ゲームにも適用されています。
+
+- **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ゲーム名】名前」になり、離脱で元に戻ります（表示名は config の `display-name`）。
+- **参加/離脱の全体告知** … 参加・離脱時にサーバー全体へ「【ゲーム名】名前 が参加しました (N人)」等を通知します。
+- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `/<コマンド> forceunlock <プレイヤー>` で解除できます。
+- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/<プラグイン>/vault/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（退避・復元は各1回、試合終了時は復元しません）。
+
+### 追加された config キー
+
+| キー | 説明 |
+|---|---|
+| `display-name` | ゲーム表示名（「【…】」の中身） |
+| `messages.join-broadcast` | 参加の全体告知文 |
+| `messages.leave-broadcast` | 離脱の全体告知文 |
+| `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+
+!!! note "config は自動で追記されるようになりました"
+    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。座標・看板・会場・ステージなどのデータ領域（`locations.yml`）は補完対象外です。
 
 ---
 

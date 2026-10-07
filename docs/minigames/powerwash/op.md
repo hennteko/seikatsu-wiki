@@ -125,6 +125,7 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 |---|---|---|
 | `resolution` | 2 | 1 / 2 / 4。1面あたりの分割数（`resolution^2`）。scan後の変更は既存セルに遡及しない |
 | `max-cells` | 5000 | 1ステージあたりのセル上限。超過するscanは実行せず警告 |
+| `skip-covered-faces` | true | scan時、葉・ガラス・カーペット・ハーフブロック等で完全に覆われた面（見えない／洗えない汚れ）のセルを作らない |
 | `lobby-spawn` | null | 共通ロビー地点（`/pw setlobby`） |
 | `default-spawn` | null | 初期スポーン（離脱時の戻り先。`/pw setstartspawn`） |
 | `sign` / `leave-sign` / `start-sign` | リスト | 参加／離脱／開始看板の座標（`/pw setsign` で自動保存） |
