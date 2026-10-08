@@ -356,5 +356,28 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 
 ---
 
+## 全ゲーム共通の改修（2026-09）
+
+全ミニゲーム共通の改修が入り、本ゲームにも適用されています。スプラは **PvP（`pvp`）とサーモンラン（`salmon`）を別ゲーム扱い** で管理します（ロックID・退避先・config キーが分かれます）。
+
+- **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ゲーム名】名前」になり、離脱で元に戻ります（表示名は config の `display-name`）。
+- **参加/離脱の全体告知** … 参加・離脱時にサーバー全体へ「【ゲーム名】名前 が参加しました (N人)」等を通知します。
+- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `forceunlock <プレイヤー>` 相当で解除できます。
+- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/SplatoonPlugin/vault/pvp/<UUID>.yml` ／ `vault/salmon/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します。
+
+### 追加された config キー
+
+| キー | 説明 |
+|---|---|
+| `display-name` | ゲーム表示名（「【…】」の中身） |
+| `messages.join-broadcast` | 参加の全体告知文 |
+| `messages.leave-broadcast` | 離脱の全体告知文 |
+| `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+
+!!! note "config は自動で追記されるようになりました"
+    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。座標・看板・会場・ステージなどのデータ領域は補完対象外です（同梱configから旧形式の `arena`・`sign`・`leave-sign`・`start-sign` は整理されました）。
+
+---
+
 [← 👤 プレイヤー向けページへ](player.md){ .md-button }
 [← SplatoonPlugin 概要へ](index.md){ .md-button }

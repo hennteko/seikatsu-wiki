@@ -131,6 +131,10 @@ nav:
           - minigames/pillarpvp/index.md
           - 👤 プレイヤー向け: minigames/pillarpvp/player.md
           - 🛠️ OP・運営向け: minigames/pillarpvp/op.md
+      - SPIKE（スパイク設置・解除）:
+          - minigames/spike/index.md
+          - 👤 プレイヤー向け: minigames/spike/player.md
+          - 🛠️ OP・運営向け: minigames/spike/op.md
   - 03 鬼ごっこ・逃走:
       - Yukioni（雪鬼）:
           - minigames/yukioni/index.md
