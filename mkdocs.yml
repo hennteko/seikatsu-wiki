@@ -135,6 +135,10 @@ nav:
           - minigames/spike/index.md
           - 👤 プレイヤー向け: minigames/spike/player.md
           - 🛠️ OP・運営向け: minigames/spike/op.md
+      - PvPバトル（FFA・チーム戦・大将戦）:
+          - minigames/pvpbattle/index.md
+          - 👤 プレイヤー向け: minigames/pvpbattle/player.md
+          - 🛠️ OP・運営向け: minigames/pvpbattle/op.md
   - 03 鬼ごっこ・逃走:
       - Yukioni（雪鬼）:
           - minigames/yukioni/index.md
