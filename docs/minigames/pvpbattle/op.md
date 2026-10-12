@@ -17,13 +17,13 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 
 ## セットアップ手順
 
-導入後、おおまかに **設定ツール取得 → ロビー・初期スポーン → 使うモードの地点 → 看板 → 各種調整** の順に設定します。地点系は **実行した位置** を登録し、看板系は看板を **見ながら**（5ブロック以内）実行します。地点・数値はすべて設定GUI（`/pvpbattle tool`）からも操作できます。
+導入後、おおまかに **設定ツール取得 → ロビー・初期スポーン → 使うモードの地点 → 看板 → 各種調整** の順に設定します。地点系は **実行した位置** を登録し、看板系は看板を **見ながら**（5ブロック以内）実行します。地点・数値はすべて設定GUI（`/pvpbattle wand`）からも操作できます。
 
 1. ビルドした `PvpBattle` の jar を `plugins/` に入れてサーバーを起動すると、`config.yml` が自動生成されます。
 2. 設定ツール（ネザースター）を受け取り、右クリックで設定GUIを開けます。
 
-```text title="設定ツール（ネザースター）を受け取る"
-/pvpbattle tool
+```text title="設定ツール（ネザースター）を受け取る（旧名 tool も使用可）"
+/pvpbattle wand
 ```
 
 ```text title="受付ロビー（その場に立って実行）"
@@ -78,6 +78,10 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 /pvpbattle setsign start taisho
 ```
 
+```text title="ソロ看板を登録（看板を見て実行）"
+/pvpbattle setsign solo
+```
+
 ```text title="視線先のPvPバトル看板の登録を解除"
 /pvpbattle setsign delete
 ```
@@ -125,12 +129,12 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 
 | コマンド | 説明 |
 |---|---|
-| `/pvpbattle tool` | 設定ツール（右クリックで設定GUI）を受け取る |
+| `/pvpbattle wand` | 設定ツール（右クリックで設定GUI）を受け取る（旧名 `tool`） |
 | `/pvpbattle setlobby` | ロビー地点を設定（現在地） |
 | `/pvpbattle setstartspawn` | 初期スポーン（途中抜け・離脱時の戻り先）を設定（現在地） |
 | `/pvpbattle setfield <1\|2>` | FFAフィールド範囲の角を設定（2点・現在地） |
 | `/pvpbattle setspawn <teamA\|teamB\|taishoA\|taishoB>` | 各モードのスポーンを設定（現在地） |
-| `/pvpbattle setsign <join\|leave\|start <mode>\|delete>` | 看板を登録／解除（看板を見て実行） |
+| `/pvpbattle setsign <join\|leave\|solo\|start <mode>\|delete>` | 看板を登録／解除（看板を見て実行） |
 | `/pvpbattle settime <秒>` | FFA制限時間（最低10秒） |
 | `/pvpbattle setffaprotection <秒>` | FFAリスポーン無敵（0以上） |
 | `/pvpbattle setrounds <数>` | チーム戦の先取ラウンド数（最低1） |
@@ -139,10 +143,13 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 | `/pvpbattle setteammode <random\|manual\|draft>` | チーム分け方式 |
 | `/pvpbattle join <名前>` | 指定プレイヤーを参加させる |
 | `/pvpbattle leave <名前>` | 指定プレイヤーを退出させる |
-| `/pvpbattle stop` | 進行中のゲームを強制終了する |
+| `/pvpbattle solo <名前> [モード] [難易度]` | 指定プレイヤーをソロに参加させる（コンソール・コマンドブロック可） |
+| `/pvpbattle ranking reset <名前\|all> [モード\|all] [難易度\|all]` | ソロの記録を削除（コマンドブロック不可） |
+| `/pvpbattle stop` | 進行中のゲームを強制終了する（ソロの挑戦者にはソロメニューを開く） |
+| `/pvpbattle lobbyfix <名前> [force\|legacy]` | 持ち物の手動復元。`force` は退避データを破棄してロックのみ解除、`legacy` は以前の版で戻らなかった持ち物を返す |
 | `/pvpbattle reload` | 設定・看板・成績を再読み込みする |
 
-!!! tip "設定GUI（/pvpbattle tool）"
+!!! tip "設定GUI（/pvpbattle wand）"
     人数・FFA制限時間・FFA無敵・先取ラウンド・チーム分け方式の増減と、ロビー・初期スポーン・FFAフィールド2点・チーム戦/大将戦スポーンの「現在地に設定」を1画面でまとめて操作できます。地点ボタンを押すと、その場にいる座標が登録されます。
 
 ## プレイヤー用コマンド
@@ -154,6 +161,16 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 | `/pvpbattle start <ffa\|team\|taisho>` | ゲームを開始（開始看板と同等・全員可／コンソール・コマンドブロックも可） |
 | `/pvpbattle status` | 設定・状況を確認（全員可・読み取り専用） |
 | `/pvpbattle stats [名前]` | 成績を確認（全員可・読み取り専用） |
+| `/pvpbattle solo [モード] [難易度]` | ソロ（CPU対戦）に参加（モード指定ですぐ開始・全員可） |
+| `/pvpbattle ranking solo <モード> [難易度]` | ソロのランキング（全員可・読み取り専用） |
+
+## ソロ（CPU対戦）
+
+ソロ（`/pvpbattle solo`）は **ボット相手に1人で** 遊ぶモードです。アリーナは通常戦と共用で、通常戦とソロを合わせて同時に1試合だけ動きます。地点も通常戦のものを使います（FFA＝`setfield` のフィールド範囲、大将抜き＝`taishoA`・`taishoB` のスポーン）。専用の地点設定は不要で、ソロ看板（`/pvpbattle setsign solo`）を置くとワンクリックで参加できます。
+
+- **モード** … `ffa`（FFAサバイバル／複数ボットのデスマッチ・ボット同士も戦う）と `taisho`（大将抜き／1対1の勝ち抜き。最後の相手は1段上の難易度の大将）。それぞれ config の `solo.modes` で ON/OFF・ボット数・制限時間などを調整できます。
+- **難易度** … `easy`（よわい）・`normal`（ふつう）・`hard`（つよい）。反応速度・移動速度・狙いのブレ・跳び斬り/横移動/盾の割合・回復の閾値を `solo.difficulty` で定義します。
+- 記録は `plugins/PvpBattle/solo-records.yml` に保存され、`/pvpbattle ranking solo` で参照、`/pvpbattle ranking reset` で削除できます。
 
 ## config.yml 設定項目
 
@@ -176,6 +193,23 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 | `loadout.ffa.*` | 鉄装備一式 | FFAの配布装備（armor/items/offhand） |
 | `loadout.team.*` | ダイヤ装備一式＋金リンゴ5 | チーム戦の配布装備 |
 | `loadout.taisho.*` | ダイヤ装備一式＋金リンゴ5 | 大将戦の配布装備（チーム戦と同一） |
+| `solo.enabled` | true | ソロ（CPU対戦）の有効化 |
+| `solo.default-difficulty` | normal | モード指定時に難易度を省略したときの難易度 |
+| `solo.countdown-seconds` | 3 | 開始前カウントダウン（挑戦者・ボットとも動けない・秒） |
+| `solo.result-seconds` | 3 | 結果表示からロビー復帰までの秒数 |
+| `solo.menu-delay` | 3 | ロビー復帰からソロメニューを開くまでの秒数 |
+| `solo.ranking-size` | 10 | `/pvpbattle ranking solo` の表示人数 |
+| `solo.broadcast-top` | true | ランキング1位更新をサーバー全体に告知 |
+| `solo.max-bots` | 8 | 同時に出すボットの上限 |
+| `solo.bot-speed-scale` | 1.0 | ボットの移動速度の微調整 |
+| `solo.modes.ffa.*` | enabled/bots 5/time-limit 300/bot-infight | FFAサバイバルのボット数・制限時間・ボット同士の戦闘 |
+| `solo.modes.taisho.*` | enabled/opponents 5 | 大将抜きの勝ち抜く相手の人数 |
+| `solo.difficulty.<id>` | easy/normal/hard | ボット難易度（reaction-ticks・speed・aim-error・crit/strafe/shield-chance・heal-below） |
+| `protect.enabled` | true | アリーナ保護（在籍者＝ロビー/試合中/ソロの人とボットのブロック破壊・設置・各種操作・爆発破壊などを止める） |
+| `protect.allow-interact` / `allow-break` / `allow-place` | `[]` | 保護の例外として操作・破壊・設置を許すブロック一覧 |
+
+!!! note "アリーナ保護（protect）"
+    在籍中（ロビー待機・試合中・ソロ）のプレイヤーとボットによるブロック破壊・設置・バケツ・着火・爆発破壊・ドア/ボタン/チェスト等の操作・感圧板・矢による的操作・額縁/絵画/防具立てを止めます。**OP も在籍中は同じ制限を受けます**（アリーナを直すときは一度 `/pvpbattle leave` してください）。在籍していない人には作用しません。
 
 !!! note "ローダウト（配布装備）の書き方"
     `loadout.<モード>` に `armor`（helmet/chestplate/leggings/boots）・`items`（スロット番号 0〜8 → アイテム）・`offhand` を定義します。各アイテムは `material` / `amount` / `name` / `enchantments{名:Lv}` / `potion-effects[{type,amplifier,duration}]` を指定できます。不明な material・エンチャント・効果はスキップされ、起動ログに警告が出ます。
@@ -184,10 +218,10 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `pvpbattle.admin` | OP | `tool`・各 `set` 系・`setsign`・`stop`・`reload`、他プレイヤーの `join`/`leave`、PvPバトル看板の破壊 など管理系すべて |
+| `pvpbattle.admin` | OP | `wand`（旧 `tool`）・各 `set` 系・`setsign`・`stop`・`reload`・`lobbyfix`・`ranking reset`、他プレイヤーの `join`/`leave`/`solo`、PvPバトル看板の破壊 など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/pvpbattle join`・`leave`（自分）・`start`・`status`・`stats` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます（この場合 manual/draft は自動割り当てになります）。
+    `/pvpbattle join`・`leave`（自分）・`start`・`status`・`stats`・`solo`（自分）・`ranking solo` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます（この場合 manual/draft は自動割り当てになります）。`/pvpbattle solo <名前>` で他人を指定できるのは OP・コンソール・コマンドブロックだけです。
 
 ## トラブルシューティング
 
