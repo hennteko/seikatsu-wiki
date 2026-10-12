@@ -4,8 +4,8 @@
 
 PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・config をまとめます。
 
-!!! note "実装状況（Phase 2）"
-    **参加・開始のプレイループ**（`join`/`leave`/`start`）・**制限時間**・**ロビー**・**看板** に対応しています。加えて Phase 1 のステージ作成・セル生成（scan）・汚れ設定・設定ツールも利用できます。`shop`/`hint`/お金・アップグレード・洗剤などは **今後のフェーズ** で追加予定で、config にキーだけ先行して用意されています（現時点では読み込まれません）。
+!!! note "実装状況"
+    **参加・開始のプレイループ**（`join`/`leave`/`start`）・**制限時間**・**ロビー**・**看板**・**ソロ（清掃タイムアタック）とランキング**・**ゲーム強制停止**（`stop`）に対応しています。加えてステージ作成・セル生成（scan）・汚れ設定・設定ツールも利用できます。`shop`/`hint`/お金・アップグレード・洗剤・ノズル・OP用設定ツールなどは **今後のフェーズ** で追加予定で、config にキーだけ先行して用意されています（現時点では読み込まれません）。
 
 ## 基本情報
 
@@ -31,9 +31,10 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 /pw setstartspawn
 ```
 
-```text title="参加／離脱／開始の看板を登録（看板を見て実行）"
+```text title="参加／離脱／ソロ／開始の看板を登録（看板を見て実行）"
 /pw setsign join
 /pw setsign leave
+/pw setsign solo
 /pw setsign start <識別子>
 ```
 
@@ -42,7 +43,7 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 ```
 
 !!! success "看板は複数設置できます"
-    参加（`sign`）・離脱（`leave-sign`）看板は複数設置でき、開始（`start-sign`）看板は **識別子ごと** に複数設置できます。座標は config に自動保存されます。
+    参加（`sign`）・離脱（`leave-sign`）・ソロ（`solo-sign`）看板は複数設置でき、開始（`start-sign`）看板は **識別子ごと** に複数設置できます。座標は config に自動保存されます。看板は視線の先（6ブロック以内）のものが対象です。
 
 ## セットアップ手順（ステージ作成）
 
@@ -96,6 +97,10 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 /pw status [識別子]
 ```
 
+```text title="進行中のゲームを強制停止（識別子省略で進行中が1つなら自動選択・在籍は維持）"
+/pw stop [識別子]
+```
+
 ```text title="設定を再読み込み"
 /pw reload
 ```
@@ -117,6 +122,21 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 !!! note "必要洗浄力レベル"
     `STUBBORN`（頑固な汚れ）は必要洗浄力レベル3が設定されています。洗浄力レベルを上げる強化（アップグレード）は今後のフェーズで追加予定のため、現時点で高難度セルを配置する場合はご注意ください。自動割り当てで `STUBBORN` になるブロック（黒曜石など）も同様です。
 
+## ソロ（清掃タイムアタック）の運営
+
+ソロは1人用のタイムアタックモードです。プレイヤーはソロ看板や `/pw solo` で開始し、記録とランキングが `solo` 設定とステージごとの記録ファイルに残ります。
+
+```text title="ソロ看板を登録（看板を見て実行）"
+/pw setsign solo
+```
+
+```text title="ソロ記録をリセット（プレイヤー省略でステージ全体）"
+/pw solo reset <ステージ> [プレイヤー]
+```
+
+!!! note "ソロの挙動"
+    同じステージは同時に1人までしか使えません（通常ゲーム進行中・他プレイヤーのソロ中は空くまで待機）。結果の全体通知・制限時間・カウントダウン・ランキング表示人数は config の `solo.*` で調整できます。`solo.enabled: false` でソロを無効化できます。
+
 ## config.yml 設定項目
 
 ### 有効なキー（Phase 1〜2）
@@ -128,9 +148,15 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 | `skip-covered-faces` | true | scan時、葉・ガラス・カーペット・ハーフブロック等で完全に覆われた面（見えない／洗えない汚れ）のセルを作らない |
 | `lobby-spawn` | null | 共通ロビー地点（`/pw setlobby`） |
 | `default-spawn` | null | 初期スポーン（離脱時の戻り先。`/pw setstartspawn`） |
-| `sign` / `leave-sign` / `start-sign` | リスト | 参加／離脱／開始看板の座標（`/pw setsign` で自動保存） |
+| `sign` / `leave-sign` / `solo-sign` / `start-sign` | リスト | 参加／離脱／ソロ／開始看板の座標（`/pw setsign` で自動保存） |
 | `session.time-options-minutes` | `[5,10,15,20,30]` | 時間選択GUIに出す分数の候補（「無制限」は別ボタンで常設） |
 | `session.max-minutes` | 180 | `/pw start <識別子> <分>` で指定できる分の上限（0＝上限なし） |
+| `solo.enabled` | true | ソロ（清掃タイムアタック）の有効／無効 |
+| `solo.menu-delay` | 3 | ソロ終了後にソロメニューを開き直すまでの秒数 |
+| `solo.countdown-seconds` | 3 | 開始前カウントダウンの秒数（計測はカウントダウン明けから） |
+| `solo.time-limit-minutes` | 30 | ソロの制限時間（分・0で無制限／時間切れは記録なし） |
+| `solo.broadcast` | new-top | 結果の全体通知: `none` / `new-top`（ステージ1位更新時）/ `all`（クリアのたび） |
+| `solo.ranking-size` | 10 | `/pw ranking` に表示する人数 |
 | `washer.material` | IRON_HOE | 高圧洗浄機のアイテム |
 | `washer.custom-model-data` | 1001 | 高圧洗浄機のカスタムモデルデータ |
 | `washer.base-power` | 1.0 | 洗浄の基本出力 |
@@ -155,21 +181,23 @@ PowerWash（協力洗浄ミニゲーム）の導入・セットアップ・confi
 | `/pw dirt <識別子> <種類>` | 選択範囲の汚れ種類を上書き |
 | `/pw removecells <識別子> [面]` | 選択範囲の汚れセルを削除（面: up/down/north/south/east/west／進行中は不可） |
 | `/pw setlobby` / `setstartspawn` | 共通ロビー／初期スポーンを設定 |
-| `/pw setsign <join\|leave\|start <識別子>\|delete>` | 看板を設定／解除 |
+| `/pw setsign <join\|leave\|solo\|start <識別子>\|delete>` | 看板を設定／解除 |
+| `/pw stop [識別子]` | 進行中のゲーム（通常・ソロ）を強制停止（在籍は維持） |
+| `/pw solo reset <ステージ> [プレイヤー]` | ソロ記録をリセット |
 | `/pw testwasher` | テスト用の高圧洗浄機を入手 |
 | `/pw status [識別子]` | 設定・洗浄状況を確認（全員可） |
 | `/pw reload` | 設定を再読み込み |
 | `/pw forceunlock <プレイヤー> [confirm]` | 参加中フラグの強制解除・退避データの復元（コンソール可） |
 
-プレイヤー用（全員可）は `/pw join`・`/pw leave`・`/pw start <識別子> [分]`・`/pw status`・`/pw help` です。
+プレイヤー用（全員可）は `/pw join`・`/pw leave`・`/pw start <識別子> [分]`・`/pw solo [ステージ\|retire]`・`/pw ranking [ステージ]`・`/pw status`・`/pw help` です。
 
 ## 権限ノード
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `powerwash.admin` | OP | セットアップ系（wand/create/setfield/setspawn/scan/dirt/removecells/setlobby/setstartspawn/setsign/reload/testwasher/forceunlock） |
+| `powerwash.admin` | OP | セットアップ・運営系（wand/create/setfield/setspawn/scan/dirt/removecells/setlobby/setstartspawn/setsign/stop/`solo reset`/reload/testwasher/forceunlock） |
 
-`/pw join`・`/pw leave`・`/pw start`・`/pw status`・`/pw help` は権限不要で全員が使えます。
+`/pw join`・`/pw leave`・`/pw start`・`/pw solo`・`/pw ranking`・`/pw status`・`/pw help` は権限不要で全員が使えます。
 
 ---
 

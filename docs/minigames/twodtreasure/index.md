@@ -4,13 +4,13 @@ Terraria風の **2D宝探しミニゲーム** プラグインです。横スク�
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">2人〜（既定の最低2人 / 看板表示は最大10人）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">2人〜（既定の最低2人 / 看板表示は最大10人）・ソロ1人</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">宝箱発見で即終了（マップ確認20秒＋探索）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! note "ゲームの特徴"
-    Z軸が固定された2D平面で遊ぶ宝探しミニゲームです。マップ生成のたびに宝箱と鉱石がランダムに配置されます。マップ確認タイムにスペクテイターで宝箱を探し、ゲーム開始後はサバイバルモードで地形を掘り進めて宝箱を目指します。参加・退出はロビーの看板クリックで行います。
+    Z軸が固定された2D平面で遊ぶ宝探しミニゲームです。マップ生成のたびに宝箱と鉱石がランダムに配置されます。マップ確認タイムにスペクテイターで宝箱を探し、ゲーム開始後はサバイバルモードで地形を掘り進めて宝箱を目指します。参加・退出はロビーの看板クリックで行います。1人で遊べる **スコアアタック（ソロ）** では、制限時間内に掘り当てた宝の価値の合計を競います。
 
 ## ページを選ぶ
 

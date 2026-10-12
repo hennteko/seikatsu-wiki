@@ -10,7 +10,7 @@
 </div>
 
 !!! info "CasinoPlugin のモジュールです"
-    チンチロは単体のjarではなく、エメラルド銀行と8ゲームを1つに統合した **CasinoPlugin** の中の **tintiro モジュール** として提供されています。賭け金や配当はすべて銀行口座のエメラルドでやり取りされ、他のゲームと残高は共通です。CasinoPlugin 全体の構成は [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
+    チンチロは単体のjarではなく、エメラルド銀行と10ゲームを1つに統合した **CasinoPlugin** の中の **tintiro モジュール** として提供されています。賭け金や配当はすべて銀行口座のエメラルドでやり取りされ、他のゲームと残高は共通です。CasinoPlugin 全体の構成は [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
 
 ## ページを選ぶ
 

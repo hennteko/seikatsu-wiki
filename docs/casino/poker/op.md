@@ -53,6 +53,7 @@ modules:
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `input.click-debounce-ms` | 250 | 同じプレイヤーの連続クリックを無視する間隔（統合版の二重入力対策） |
+| `input.turn-timeout-seconds` | 90 | マルチ卓の手番の制限時間（秒）。超えると自動でチェック（支払い不要時）/フォールド（支払い必要時）。残り10秒で警告。`0` で無効 |
 | `input.action-gui.bedrock` | true | 統合版（Geyser/Floodgate）プレイヤーに手番でアクションGUIを自動表示 |
 | `input.action-gui.all-players` | false | Java版を含む全員にアクションGUIを自動表示する |
 
@@ -64,18 +65,26 @@ modules:
 |---|---|---|
 | `solo.result-seconds` | 6 | ハンド結果を見せる秒数 |
 | `solo.action-timeout-seconds` | 60 | 無操作でチェック/フォールドするまでの秒数 |
+| `solo.rebuy-timeout-seconds` | 60 | バスト後のリバイ待ちの制限時間（秒）。過ぎると離席・精算 |
 | `solo.auto-leave-after-timeouts` | 3 | 連続タイムアウトで自動離席 |
 | `solo.bot-count` | 4 | 1卓のBot数（1〜5） |
 | `solo.bot-buyin-bb` | 100 | Botの着席スタック（BB倍） |
 | `solo.bust-threshold-bb` | 5 | これ未満になったBotは離席して入れ替わる |
 | `solo.rake-percent` | 3 | レーキ（%）。フロップ以降のポットのみ。0で無し |
 | `solo.rake-cap-bb` | 5 | レーキ上限（BB倍） |
-| `solo.simulations` | 200 | Botの勝率計算の試行回数（大きいほど賢く重い） |
-| `solo.tables.<id>` | low/mid/high | 卓（レート）ごとの `display`・`small-blind`・`big-blind`・`min-buyin-bb`・`max-buyin-bb`。既定は low(5/10)・mid(50/100)・high(500/1000) |
-| `solo.bots.<id>` | 6体の既定Bot | Botの `name`・`style`（TAG/LAG/ROCK/STATION/MANIAC）・`mistake-rate`・`tell`（NONE/SLOW_STRONG/FAST_STRONG）・思考時間・台詞など |
+| `solo.simulations` | 200 | Botの勝率計算の試行回数（50〜2000。大きいほど賢く重い） |
+| `solo.stats-save-interval-seconds` | 60 | ソロ戦績をファイルへ保存する間隔（秒） |
+| `solo.tables.<id>` | low/mid/high | 卓（レート）ごとの `display`・`small-blind`・`big-blind`・`min-buyin-bb`・`max-buyin-bb`（バイインはBB倍）。既定は low(SB5/BB10, 40〜200BB)・mid(SB50/BB100, 40〜200BB)・high(SB500/BB1000, 40〜150BB) |
+| `solo.bots.<id>` | 6体の既定Bot | Botの `name`・`style`（TAG/LAG/ROCK/STATION/MANIAC）・`mistake-rate`・`tell`（NONE/SLOW_STRONG/FAST_STRONG）・思考時間・台詞など。既定は マサル／おかん／ゲンさん／リン／ジャッキー／先生 の6体 |
 
 !!! note "ソロ看板・着席位置はコマンドで保存"
     `/poker setsign solo <卓ID>`（`[Poker Solo]` 看板を登録）・`/poker setsolospawn`（着席位置）で設定した内容は `poker.yml` の `solo-signs` などへ自動保存されます。Botのレート表（`tables`）や性格（`bots`）は `poker.yml` を直接編集して調整できます。
+
+!!! note "ダブルアップ・レーキフリーイベントは共通 config.yml で制御"
+    ポーカーは CasinoPlugin 共通機能とも連携します。これらは poker.yml ではなく本体の `plugins/CasinoPlugin/config.yml` で設定します。
+
+    - **ダブルアップ**：ハンドで利益が出たプレイヤーに「獲得分を賭けて倍にするか」を提案します。本体 `doubleup`（`enabled` / `max-rounds` / `cap-amount` / `tie-rule` / `timeout-seconds`）と `games.poker-solo` / `games.poker-multi` が有効なときに発生します。プレイヤーは `/poker doubleup` で画面を開き直せます。
+    - **レーキフリーイベント**：本体 `events.poker-no-rake`（既定 `enabled: false`、`duration-minutes: 30`）が稼働中は、ソロ卓のレーキ（`solo.rake-percent`）が一時的に無効になります。
 
 ### signs（公開札看板の位置）
 
@@ -177,7 +186,7 @@ modules:
     `card1`〜`card5`（poker.yml では `signs.sign1`〜`sign5`）の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。
 
 !!! note "看板の種類とフォーマット"
-    看板は視線先（6ブロック以内）を見ながら `/poker setsign <join|leave|bet|start|card1〜5|delete>` で登録します。種別ごとの動作は次のとおりです。
+    看板は視線先（5ブロック以内）を見ながら `/poker setsign <join|leave|bet|start|solo <卓ID>|card1〜5|delete>` で登録します。種別ごとの動作は次のとおりです。
 
     - `join`（`lobby` でも可）: 参加看板。クリックで待機リストに追加＆ロビーへ転送。参加人数（最大6人）を自動表示
     - `leave`: 離脱看板。クリックで待機リスト／ゲームから離脱
@@ -261,7 +270,7 @@ modules:
     `/poker status` で待機人数を、看板設定は `/poker setsign card1`〜`card5` の実行履歴を確認してください。
 
 ??? failure "/poker setsign で「看板を見ながら実行」と出る"
-    `/poker setsign <種別>` は、看板ブロックを見ながら（6ブロック以内）実行する必要があります。看板を設置してから、その看板に視点を合わせてコマンドを実行してください。
+    `/poker setsign <種別>` は、看板ブロックを見ながら（5ブロック以内）実行する必要があります。看板を設置してから、その看板に視点を合わせてコマンドを実行してください。
 
 ??? failure "ゲーム開始時にプレイヤーが転送されない"
     ゲーム開始時の転送先は `locations.gamearea`（着席地点）です。この座標が未設定だと転送がスキップされます（看板やプレイは続行できます）。`locations.gamearea` を設定するセットアップコマンドは無く、poker.yml に `world` / `x` / `y` / `z` / `yaw` / `pitch` の形式で手動記入する必要があります。なお `/poker setfield 1` / `2`（`locations.field1` / `field2`）はゲームエリアの範囲を記録する対角2点で、開始時の転送先ではありません。ゲーム終了時の転送先はロビー（`/poker setlobby`）です。

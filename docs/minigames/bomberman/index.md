@@ -4,13 +4,20 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">2人〜（スポーン数・最大人数で上限）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">2人〜（スポーン数・最大人数で上限）／ソロ：1人</span></div>
   <div class="quick-card"><span class="label">勝敗</span><span class="value">最後の1人で勝利（一発脱落・リスポーンなし）</span></div>
+  <div class="quick-card"><span class="label">ソロ</span><span class="value">CPU対戦（CPU ボマーを全員倒す）／パズル（決まった数のボムで全ブロックを壊す）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! success "ゲームの特徴"
     爆弾は設置後 約2.5秒で **十字に起爆**。爆風は火力のマス数だけ伸び、硬ブロックで止まり、軟ブロックを壊します。壊した軟ブロックからは一定確率で **パワーアップ**（火力／ボム数／スピード／貫通／フルファイア）が出現。被弾は **一発で脱落（観戦）** です。制限時間が来ると外周から硬ブロックがせり上がる **サドンデス** で決着を急かします。
+
+!!! tip "1人でも遊べる：ソロモード"
+    `/bomberman solo` またはソロ看板から、1人で遊べます。
+    **CPU対戦** … CPU ボマー（1〜3体）と対戦し、全員倒すまでの時間を競います（難易度：よわい／ふつう／つよい）。
+    **パズル** … 決まった数のボムで軟ブロックを全部壊す、詰め将棋型のステージです（7ステージ）。
+    どちらも自己ベストとランキングが残ります。
 
 !!! info "参加・操作はシンプル"
     参加・退出・開始は **看板のクリック** または **コマンド**（`/bomberman join`・`leave`・`start`、いずれも全員可）で行えます。爆弾は「ボム」アイテムを **右クリック** で足元の升目に設置します。
@@ -20,5 +27,5 @@
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … 遊び方、爆弾の置き方、パワーアップ、勝敗、操作。
-- **OP・運営向け** … フィールド設定、看板、`/bomberman` コマンド、config、権限。
+- **プレイヤー向け** … 遊び方、爆弾の置き方、パワーアップ、勝敗、操作、ソロモード（CPU対戦・パズル）。
+- **OP・運営向け** … フィールド設定、看板、`/bomberman` コマンド、config、権限、ソロの設定と puzzles.yml。

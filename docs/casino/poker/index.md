@@ -12,7 +12,7 @@
 </div>
 
 !!! info "CasinoPlugin のモジュールです"
-    ポーカーは、エメラルド銀行と8つのゲームを1つの jar に統合した **CasinoPlugin** の中の poker モジュールとして動いています。有効化は `plugins/CasinoPlugin/config.yml` の `modules.poker.enabled`、個別設定は `plugins/CasinoPlugin/modules/poker.yml` で行います。プラグイン全体の構成は [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
+    ポーカーは、エメラルド銀行と10のゲームを1つの jar に統合した **CasinoPlugin** の中の poker モジュールとして動いています。有効化は `plugins/CasinoPlugin/config.yml` の `modules.poker.enabled`、個別設定は `plugins/CasinoPlugin/modules/poker.yml` で行います。プラグイン全体の構成は [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
 
 ## ページを選ぶ
 

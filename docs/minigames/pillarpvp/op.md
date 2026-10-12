@@ -22,8 +22,11 @@
 2. サーバーを起動すると `config.yml` が自動生成される。
 3. `/pillar setstartspawn`・`/pillar setlobby` で初期スポーン（途中抜けの戻り先）とロビーを設定する。
 4. `/pillar setfield 1`・`2` で **柱を生成するフィールド範囲** を設定する（柱はこの範囲の中心に自動生成）。
-5. 参加・離脱・開始の看板を設置する。
+5. 参加・離脱・開始の看板（必要ならソロ看板も）を設置する。
 6. `/pillar status` で設定状況を確認する。
+
+!!! tip "コマンドを打たずに設定したい場合"
+    `/pillar wand` で **設定ツール（ブレイズロッド）** を受け取ると、見ているブロックや看板へ直接セットアップでき、しゃがみ＋右クリック（または `/pillar menu`）で GUI メニューも開けます。詳しくは下の「セットアップ手順」を参照してください。
 
 !!! warning "フィールド範囲は専用の空間に"
     試合の **前後にフィールド範囲内のブロックをすべて空気にします**。既存の建築が消えるので、必ず試合用の専用スペースを `setfield` で指定してください。範囲の **下端Y** が柱の底面になります。
@@ -31,6 +34,17 @@
 ## セットアップ手順（コマンド）
 
 地点系は **実行した位置**、看板系は看板を **見ながら**（5ブロック以内）実行します。すべて `pillar.admin` 権限が必要です。
+
+!!! tip "GUI でまとめて設定（おすすめ）"
+    `/pillar wand` で受け取れる **設定ツール（ブレイズロッド）** を使うと、コマンドを打たずに設定できます。見ているブロックを **左クリックでフィールド角1／右クリックで角2**、**看板を右クリックで登録**、**空中右クリックで設定状況の要約**。**しゃがみ＋右クリック**（または `/pillar menu`）で設定メニュー（GUI）が開き、地点・看板・制限時間・配布間隔・積み上げ上限・人数・試合の開始/停止をボタンで操作できます。統合版はタップ／スニークで同等の操作ができます。ロビー在籍中は受け取れないので、先に `/pillar leave` してください。
+
+```text title="OP用の設定ツール（ブレイズロッド）を受け取る"
+/pillar wand
+```
+
+```text title="設定メニュー（GUI）を開く"
+/pillar menu
+```
 
 ```text title="初期スポーン（途中抜け・離脱時の戻り先／その場に立って実行）"
 /pillar setstartspawn
@@ -58,6 +72,10 @@
 
 ```text title="開始看板を登録（看板を見て実行）"
 /pillar setsign start
+```
+
+```text title="ソロ看板を登録（看板を見て実行）"
+/pillar setsign solo
 ```
 
 ```text title="視線先の看板の登録を解除"
@@ -100,6 +118,10 @@
 
 ```text title="退避データを破棄してロックだけ解除（最終手段）"
 /pillar lobbyfix <プレイヤー> force
+```
+
+```text title="ソロの記録を消す（プレイヤー名または all／モードは省略で全モード）"
+/pillar ranking reset <プレイヤー|all> [モード]
 ```
 
 !!! note "設定の反映タイミング"
@@ -149,6 +171,21 @@
 | `combat.allow-item-drop` | false | true で試合中に配られたアイテムを捨てられる（参加者同士は拾える） |
 | `combat.no-hunger` | false | true で試合中は満腹度が減らない |
 
+### ソロモード（`solo`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | false にするとソロモードを始められない |
+| `solo.menu-delay` | 3 | 試合後ロビーへ戻ってからソロメニューを開くまでの秒数 |
+| `solo.countdown` | 3 | 柱に乗ってから開始までのカウントダウン（秒） |
+| `solo.result-seconds` | 2 | 終了からロビー復帰までの秒数（結果タイトルの表示時間） |
+| `solo.broadcast-result` | true | 記録をサーバー全体へ1行流す |
+| `solo.ranking-size` | 10 | `/pillar ranking` で表示する人数 |
+| `solo.modes.<id>` | `survival` | モード定義（キーがモードID。書いた分だけソロメニューにボタンが並ぶ・最大5つ） |
+
+!!! note "ソロのモード設定（`solo.modes.<id>`）"
+    各モードには `display`（表示名）・`description`（説明）・`stars`（難易度★1〜5）・`icon`（ボタンのアイコン Material）・`item-interval-seconds`（アイテム配布間隔）・`level-seconds`（Lv が上がる間隔）・`max-level`（Lv 上限）、`spawn.*`（Mob の湧く間隔・同時数・柱からの距離）、`mobs.<EntityType>`（`level`＝解禁 Lv ／ `weight`＝出やすさ）を指定します。既定モード `survival` はファントム・ハチ・ヴェックス・ブレイズ・ガストが Lv に応じて出ます。記録は `plugins/PillarPvP/solo-records.yml` に保存されます（`/pillar ranking reset` で消去可能・ConfigUpdater の対象外）。
+
 !!! note "自動保存される領域（手動編集不要）"
     `locations`（初期スポーン・ロビー）・`arena`（フィールド範囲・片付けフラグ）・`signs`（看板）はコマンドで自動保存されます。手書きは不要です。
 
@@ -156,10 +193,12 @@
 
 | コマンド | 説明 |
 |---|---|
+| `/pillar wand` | OP用の設定ツール（ブレイズロッド）を受け取る |
+| `/pillar menu` | 設定メニュー（GUI）を開く |
 | `/pillar setstartspawn` | 初期スポーン（途中抜けの戻り先）を設定 |
 | `/pillar setlobby` | ロビー地点を設定 |
 | `/pillar setfield <1\|2>` | フィールド範囲の角を設定（柱はこの範囲の中心に自動生成） |
-| `/pillar setsign <join\|leave\|start\|delete>` | 看板を登録／解除 |
+| `/pillar setsign <join\|leave\|start\|solo\|delete>` | 看板を登録／解除 |
 | `/pillar settime <秒>` | 制限時間を設定（10〜3600） |
 | `/pillar setinterval <秒>` | アイテム配布間隔を設定（1〜60） |
 | `/pillar setheight <ブロック>` | 柱の頂上からの積み上げ上限を設定（1〜64） |
@@ -167,6 +206,7 @@
 | `/pillar stop` | 試合を強制停止 |
 | `/pillar reload` | 設定を再読み込み |
 | `/pillar lobbyfix <プレイヤー> [force]` | ロビー前の持ち物の手動復旧（`force` で退避データ破棄・ロック解除） |
+| `/pillar ranking reset <プレイヤー\|all> [モード]` | ソロの記録を消す |
 | `/pillar status` | 設定状況・現在の状況を確認（全員可） |
 | `/pillar stats [名前]` | 成績を確認（全員可） |
 
@@ -177,6 +217,8 @@
 | `/pillar join` | ロビーに参加（参加看板と同等） |
 | `/pillar leave` | ロビーから離脱（離脱看板と同等） |
 | `/pillar start` | 試合を開始（開始看板と同等・コンソール/コマンドブロックも可） |
+| `/pillar solo [モード]` | ソロモードに入る（モード名を付けると即開始） |
+| `/pillar ranking [モード]` | ソロモードのランキングを表示 |
 | `/pillar status` | 設定・状況を確認（読み取り専用） |
 | `/pillar stats [名前]` | 成績（キル・デス・勝利・試合数）を確認 |
 
@@ -187,7 +229,7 @@
 | `pillar.admin` | OP | 看板設置・各種 set 系設定・`stop`・`reload`・`lobbyfix` など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/pillar join`・`/pillar leave`・`/pillar start`・`/pillar status`・`/pillar stats` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます。
+    `/pillar join`・`/pillar leave`・`/pillar start`・`/pillar solo`・`/pillar ranking`（`reset` を除く）・`/pillar status`・`/pillar stats` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます。`ranking reset` のみ `pillar.admin` が必要です。
 
 ## トラブルシューティング
 
@@ -202,6 +244,9 @@
 
 ??? failure "config を編集したのに反映されない"
     `/pillar reload` で再読み込みしてください（試合中は不可）。
+
+??? failure "ソロモードが始められない"
+    `solo.enabled` が true で、フィールド範囲（`setfield 1`・`2`）が設定されている必要があります。フィールドは通常戦と共用のため、通常戦が試合中・片付け中のときや、他の人がソロ挑戦中のときは始められません。空くまで待ってから再実行してください。
 
 ---
 

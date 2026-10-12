@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム（非対称）</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2〜20人（最低2人・鬼1＋逃げ1〜）</span></div>
   <div class="quick-card"><span class="label">役割</span><span class="value">鬼（キラー）／逃げ（サバイバー）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 1.21）</span></div>
 </div>
 
 !!! success "ゲームの特徴（非対称 × 発電機修理 × 吊り処刑）"

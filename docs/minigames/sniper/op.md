@@ -12,7 +12,7 @@
 | メインコマンド | `/sniper`（エイリアス `/sn`） |
 | api-version | 26.1.2 |
 | 作者 | henry |
-| 依存プラグイン | なし |
+| 依存プラグイン | なし（統合版対応に Geyser / Floodgate を任意利用） |
 | 設定ファイル | `plugins/Sniper/config.yml` |
 | 権限ノード | `sniper.admin`（既定OP） |
 
@@ -78,6 +78,13 @@
 ```text title="チェストを登録／解除（チェストを見ながら実行・複数可）"
 /sniper setchest stage1
 ```
+
+```text title="ステージの試合モードを設定（br=バトロワ / ffa / tdm）"
+/sniper setmode stage1 br
+```
+
+!!! note "ステージごとに試合モードを選べます"
+    各ステージは **バトロワ（`br`・既定）／FFA（個人戦）／TDM（チームデスマッチ）** のいずれかで動かせます。`/sniper setmode <ステージ> <br|ffa|tdm>` で切り替え、`/sniper stagelist` で現在のモードを確認できます。FFA・TDM の挙動は後述の「ゲームモード（FFA / TDM）」を参照してください。TDM ではスポーンを **チームごと** に登録します（`/sniper setspawn <ステージ> red` / `blue`）。
 
 ```text title="参加看板（看板を見ながら実行）"
 /sniper setsign join
@@ -206,7 +213,7 @@
 | `health.natural-regen` | false | 自然回復（false推奨。回復ポーションは別途有効） |
 | `fall-damage` | true | 落下ダメージ |
 | `jump-potion-no-fall` | true | ジャンプポーション中は落下ダメージ無効 |
-| `jump-potion-fall-limit` | 0 | 落下ダメージを無効にする落下距離の上限（ブロック）。0=距離に関係なく無効。高所からの飛び降りだけ罰したい場合に使用（目安12前後。6以下はバニラ仕様で効果なし・起動時警告） |
+| `jump-potion-fall-limit` | 0 | 落下ダメージを無効にする落下距離の上限（ブロック）。0=距離に関係なく無効。高所からの飛び降りだけ罰したい場合に使用（目安20前後。跳躍Xはバニラが元々10ブロック程度を無効化するため10以下は効果なし・起動時警告） |
 | `melee-damage` | false | 近接攻撃を許可（false＝純狙撃戦） |
 | `protect-blocks` | true | 試合中の参加者がステージのブロックを壊す・置くのを禁止する。左クリック発砲では押しっぱなしが採掘になってしまうため、基本はtrue推奨 |
 | `hide-nametags` | true | 試合中の参加者のネームタグ（頭上の名前）を消す。trueで壁越しに名前で位置がバレなくなる（ロビー・通常ワールドには影響なし） |
@@ -247,7 +254,7 @@
 | `smoke.rim-points` | 16 | 縁を作る球面上の点の数（4〜20） |
 | `smoke.core-size` | 3.5 | 大きめパーティクルのサイズ（1.0〜4.0・上げるほど遮蔽が強い） |
 | `smoke.core-color` | `"9E9E9E"` | 大きめパーティクルの色（16進） |
-| `spectator.chat-isolate` | true | 観戦者チャットを観戦者間のみに制限 |
+| `spectator.chat-isolate` | true | 観戦者のチャットを生存者に見せない（実況＝ゴースティング防止）。ロビーやサーバーの他プレイヤーには届く |
 | `pending-expire-days` | 30 | 復元待ちデータ（players.yml）の保持日数 |
 | `messages.prefix` | `[スナイパー]` | メッセージの接頭辞 |
 
@@ -263,8 +270,10 @@
 | `hook.max-distance` | 32.0 | これより遠い針は引っ張らない |
 | `hook.cooldown-seconds` | 5 | 引き寄せ後のクールダウン（秒・0でなし。バニラのクールダウン表示を使う） |
 | `hook.require-ground` | false | trueだと地面に立っているときだけ引き寄せられる（falseは空中でも使え落下脱出になる） |
-| `hook.no-fall` | true | 引き寄せ後の落下ダメージを無効にする（着地で解除） |
-| `hook.no-fall-seconds` | 30 | 落下ダメージ無効の保険の上限（秒・通常は着地で解除） |
+| `hook.max-fall-distance` | 3.0 | `require-ground` が true のとき、何ブロック以上落下していたら「落下中」とみなすか |
+| `hook.no-fall` | true | 引き寄せ後の落下ダメージを無効にする |
+| `hook.no-fall-seconds` | 5 | 落下ダメージ無効が有効な秒数（＝引き寄せ後にタダで落下できる猶予） |
+| `hook.no-fall-distance` | 64.0 | 何ブロックまでの落下を無効にするか（これを超える落下は普通にダメージ） |
 
 !!! note "針が刺さるのは足場の面"
     グラップリングフックは1回目の右クリックで釣り針を飛ばし、地面に届いた状態でもう一度右クリック（巻き取り）でその地点へ引っ張られます。**刺さるのは地面・床・屋上などの面**で、垂直な壁には刺さりません（バニラの釣り針の仕様）。人や物には引っかけられません。
@@ -278,8 +287,10 @@
 | `leap.height` | 15.0 | 跳ぶ高さ（ブロック・0.5〜61。到達高度から初速を自動計算） |
 | `leap.cooldown-seconds` | 5 | 次に跳べるまでの秒数（0でなし） |
 | `leap.require-ground` | true | trueで地面に立っているときだけ跳べる（落下ダメージ帳消し防止のため推奨） |
-| `leap.no-fall` | true | 跳んだあとの落下ダメージを無効にする（着地で解除） |
-| `leap.no-fall-seconds` | 30 | 落下ダメージ無効の保険の上限（秒） |
+| `leap.max-fall-distance` | 3.0 | 何ブロック以上落下していたら「落下中」とみなすか（3なら1〜2ブロックの段差を降りた直後でも跳べる） |
+| `leap.no-fall` | true | 跳んだあとの落下ダメージを無効にする |
+| `leap.no-fall-seconds` | 5 | 落下ダメージ無効が有効な秒数（＝跳んだあとタダで落下できる猶予） |
+| `leap.no-fall-distance` | 26.5 | 何ブロックまでの落下を無効にするか（目安は「跳んだ高さ ＋ 11.5」） |
 
 ### ロビー共通インベントリ（`lobby-inventory`）
 
@@ -309,11 +320,202 @@
 | `revival.zombie-body-damage` | 1.0 | ゾンビの胴体ダメージ |
 | `revival.zombie-headshot-damage` | 1.5 | ゾンビのヘッドショットダメージ（ゾンビは即死させない） |
 
+### ゲームモード（FFA / TDM）
+
+ステージは `/sniper setmode <ステージ> <br|ffa|tdm>` で試合モードを切り替えられます（既定は `br`＝バトロワ）。**FFA・TDM はバトロワと挙動が大きく異なります**。
+
+- **FFA（個人戦）** … 全員が敵の個人戦。**弾薬は無限**（チェスト・ワールドボーダーは使いません）。死亡すると数秒後に **リスポーン** し、制限時間終了時に **最多キル** が勝利（同数は引き分け）。開始・リスポーン時に煙幕・グラップリングフック・ジャンプの羽を配ります。リスポーン地点は `/sniper setspawn <ステージ>` の登録地点から、できるだけ敵の近くを避けて選ばれます。
+- **TDM（チームデスマッチ）** … レッド／ブルーに分かれて戦うチーム戦。**弾薬は無限**。死亡すると数秒後にリスポーンし、先に **規定キル数** に達したチームが勝利（時間切れ時はキル数の多いチーム）。リスポーン直後は一定秒数の **無敵（発光）** が付き、時間経過か自分が撃った瞬間に解除されます。スポーンは `/sniper setspawn <ステージ> red` / `blue` でチームごとに登録します（マップの対角へ。近すぎると `status` で警告）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `ffa.time-limit` | 300 | FFA の制限時間（秒）。終了時に最多キルが勝利 |
+| `ffa.respawn-seconds` | 3 | FFA で死亡してからリスポーンするまでの秒数 |
+| `tdm.kill-limit` | 20 | TDM の勝利に必要なチームキル数 |
+| `tdm.time-limit` | 600 | TDM の制限時間（秒）。0=無制限。時間切れ時はキル数の多いチームが勝利 |
+| `tdm.respawn-seconds` | 3 | TDM で死亡してからリスポーンするまでの秒数 |
+| `tdm.spawn-protect-seconds` | 3 | リスポーン後の無敵時間（秒）。時間経過か、自分が撃った瞬間に解除 |
+| `tdm.auto-balance` | true | 開始時に自動で半分ずつチーム分けする（奇数のときはレッドが1人多い） |
+| `tdm.friendly-fire` | false | 味方への誤射を通すか |
+| `tdm.red-name` | `レッド` | レッドチーム名 |
+| `tdm.blue-name` | `ブルー` | ブルーチーム名 |
+
+FFA / TDM 共通の配布・通知は `mode-common` で設定します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `mode-common.smoke-count` | 2 | 開始時とリスポーン時に配る煙玉の数 |
+| `mode-common.give-hook` | true | 開始時とリスポーン時にグラップリングフックを配る |
+| `mode-common.give-leap` | true | 開始時とリスポーン時にジャンプの羽を配る |
+| `mode-common.avoid-radius` | 12.0 | リスポーン地点を選ぶとき、敵からこの距離以内はできるだけ避ける |
+| `mode-common.broadcast-kills` | true | キル通知をチャットに出す |
+
+### 統合版（Bedrock）・名前表示
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `bedrock.wax-signs` | true | 登録看板を蝋引きする（統合版でタップしても編集画面が開かない） |
+| `bedrock.swing-to-use` | true | 統合版は空中タップ（腕振り）でも特殊アイテム（ジャンプの羽など）を使えるようにする |
+| `bedrock.spectator-style` | AUTO | 観戦の方式。`AUTO`＝統合版だけゴースト観戦 / `GHOST`＝全員ゴースト / `VANILLA`＝全員観戦モード |
+| `bedrock.name-prefix` | `"."` | Floodgate が入っていないときに統合版と見なす名前の接頭辞 |
+| `name-tag.enabled` | true | 参加中の名前を「【ゲーム名】名前」表示にする（頭上・Tab・チャット） |
+| `name-tag.display-name` | スナイパーバトロワ | 【】に入れる正式名 |
+| `name-tag.color` | GOLD | 【ゲーム名】の色（`GOLD`/`AQUA`/`GREEN`/`RED`/`YELLOW` など） |
+| `name-tag.announce-join` | true | falseでサーバー全体への参加通知を出さない |
+
+!!! note "統合版の観戦方式"
+    統合版（Bedrock）は観戦モードにすると HUD ごと消え、チャット欄もサイドバーも見えなくなります。`AUTO` では統合版だけ「アドベンチャー＋透明＋飛行＋他人からは見えない」ゴースト観戦になり、表示が壊れない代わりに壁抜けはできません。
+
 !!! success "看板は複数設置できます"
     参加・離脱・開始の各看板を **複数拠点に設置** できます（`signs` は座標リスト形式）。`/sniper setsign <join|leave|start <ステージ>>` は上書きではなく **追記** され、`/sniper setsign delete` は視線先の1枚だけ解除します。
 
 !!! note "自動生成される領域（手動編集不要）"
     `stages`（フィールド・スポーン・チェスト）、`signs`（看板）、`default-spawn` / `lobby-spawn` はコマンドまたは設定ツールで自動生成・自動保存されます。手動編集は不要です。`config-version` はプラグインが管理するバージョン番号です。
+
+## 射撃訓練場（ソロモード）の設定
+
+1人用のタイムアタック「射撃訓練場」を使うための設定です。通常戦のステージとは **別の場所** に作ってください（同時に挑戦できるのは1人です）。
+
+!!! info "的はワールドを書き換えません"
+    止まった的は **挑戦者の画面にだけ** ターゲットブロックとして表示し、動く的は挑戦者にだけ見えるアーマースタンドを動かします。ワールドのブロックは変わらず、ほかのプレイヤー・ほかのゲームにも見えません。挑戦が終わる・止まると片付きます。
+
+### 手順
+
+1. 射撃位置（挑戦者が立つ場所）に立ち、撃たせたい方向を向いて実行します。開始時はこの向きになります。
+
+```text title="射撃位置を設定"
+/sniper setbooth
+```
+
+2. 止まった的にしたいブロックを見て実行します（何個でも。射程 `weapon.range` 以内）。登録したマスは2秒だけターゲットブロックに見えます。ブロックがあるマスでも、空中のマスでも構いません。
+
+```text title="止まった的を登録"
+/sniper addtarget
+```
+
+3. 動く的の経路を登録します。始点に立って1、終点に立って2を実行します（往復する経路が1本できます）。何本でも登録できます。
+
+```text title="動く的の始点"
+/sniper addmover 1
+```
+
+```text title="動く的の終点"
+/sniper addmover 2
+```
+
+4. 登録した的の位置を10秒間だけ確認します（止まった的＝ターゲットブロック、動く的の経路＝緑の粒、射撃位置＝炎）。
+
+```text title="的の位置を確認"
+/sniper showtargets
+```
+
+5. ソロ看板を設置します（看板を見ながら）。
+
+```text title="ソロ看板を設置"
+/sniper setsign solo
+```
+
+6. 設定状況を確認します（`[ソロモード（射撃訓練場）]` の欄）。
+
+```text title="設定状況"
+/sniper status
+```
+
+!!! tip "的の数の目安"
+    中級は同時に2個、上級は同時に3個出ます。**止まった的は5個以上、動く的の経路は4本以上** あると、同じ場所に続けて出にくくなります。枠が同時数より少ないときは、出る数が枠の数に減ります。
+
+!!! warning "射撃位置と同じワールドに置いてください"
+    別のワールドに登録した的は使われません。射撃位置から射程より遠い的は、登録時に警告が出ます（当たりません）。
+
+### 的の削除
+
+```text title="見ている止まった的を解除"
+/sniper deltarget
+```
+
+```text title="動く的の経路を番号で解除（番号は /sniper status で確認）"
+/sniper delmover 1
+```
+
+```text title="止まった的を全部解除"
+/sniper cleartargets block
+```
+
+```text title="動く的を全部解除"
+/sniper cleartargets mover
+```
+
+```text title="的を全部解除"
+/sniper cleartargets all
+```
+
+### 記録の管理
+
+記録は `plugins/Sniper/solo-records.yml` に保存されます（プレイヤー×難易度ごとに最速タイムを1件）。
+
+```text title="あるプレイヤーの記録を全部消す"
+/sniper ranking reset <プレイヤー>
+```
+
+```text title="ある難易度の記録を全員分消す"
+/sniper ranking reset all hard
+```
+
+```text title="全記録を消す"
+/sniper ranking reset all all
+```
+
+### 停止
+
+```text title="射撃訓練場の挑戦だけ止める"
+/sniper stop solo
+```
+
+挑戦者はロビーへ戻り、ソロメニューが開きます（記録は残りません。在籍は続きます）。`/sniper stop` を引数なしで実行すると、通常戦と射撃訓練場の両方を止めます。
+
+### config.yml（`solo`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | false でソロモードを無効にする |
+| `solo.menu-delay` | 3 | 挑戦が終わってロビーへ戻ってから、ソロメニューを開くまでの秒数 |
+| `solo.countdown` | 3 | 開始前のカウントダウン(秒) |
+| `solo.leash-radius` | 6.0 | 射撃位置からこの距離より離れると戻す。0 で無制限 |
+| `solo.block-during-match` | false | true にすると通常戦の試合中はソロを始められない（逆も同じ）。射撃訓練場を試合のステージの中に作った場合だけ true |
+| `solo.broadcast-result` | true | クリア時にサーバー全体へ結果を1行流す |
+| `solo.ranking-size` | 10 | `/sniper ranking solo <難易度>` の表示人数 |
+
+難易度は `solo.modes.<識別子>` に書きます。ソロメニューのボタンはここから自動で作られ、書いた順に並びます（メニューに出るのは7個まで）。
+
+| キー | 初級 easy | 中級 normal | 上級 hard | 説明 |
+|---|---|---|---|---|
+| `display` | 初級 | 中級 | 上級 | 表示名 |
+| `icon` | TARGET | ARMOR_STAND | SPECTRAL_ARROW | ボタンのアイテム |
+| `description` | | | | ボタンの説明文（リスト） |
+| `targets` | 8 | 10 | 12 | 撃つ的の総数（すべて当てたらゴール） |
+| `simultaneous` | 1 | 2 | 3 | 同時に出ている的の数 |
+| `types` | [block] | [block, mover] | [mover] | 使う的（block＝止まった的 / mover＝動く的） |
+| `mover-speed` | 0.08 | 0.1 | 0.18 | 動く的の速さ（ブロック/tick。0.1＝毎秒2ブロック） |
+| `time-limit` | 120 | 150 | 180 | 制限時間(秒)。0 で無制限。時間切れは記録なし |
+| `reload-ms` | 1000 | 1000 | 1000 | ソロ中のリロード(ミリ秒)。通常戦の `weapon.reload-ms` とは別 |
+| `miss-penalty` | 0.0 | 1.0 | 2.0 | 外したときにタイムへ足す秒数 |
+| `enabled` | （省略） | （省略） | （省略） | false にするとメニューに出さない |
+
+!!! warning "難易度の識別子と削除"
+    識別子（`easy` など）は記録の保存先です。名前を変えると記録が別扱いになります。既定の難易度は消しても起動時に書き戻されるので、使わないものは `enabled: false` にしてください。新しい難易度は `solo.modes` に識別子を足すだけで追加できます（識別子に `.` は使えません）。
+
+!!! note "射撃訓練場の設置データ（`solo-range`）"
+    `solo-range`（射撃位置・止まった的・動く的の経路）は上のコマンドで自動保存されます。手で書く必要はありません。
+
+### 通常戦との関係
+
+- ロビー（在籍・持ち物の退避・名前表示）は通常戦と共通です。ソロ在籍者は通常戦の **人数に数えず**、`/sniper start` でも試合に入りません。
+- `/sniper join` でソロ→通常戦、`/sniper solo` で通常戦の待機→ソロに切り替わります（在籍は続く）。
+- 試合中の `/sniper join` は、ロビーで待機して次の試合から参加する扱いになりました（共通ルール12章）。
+- ソロ在籍者がログアウトするとロビーから外れ、次にログインしたときに持ち物が戻って初期スポーンへ送られます。
+
+!!! warning "統合版（Bedrock）"
+    ソロメニュー（チェスト画面）はタップで操作できます。ボタンの説明文（lore）の見え方は実機で確認してください。ネザースターは空中タップ・持ってしゃがむ でも開きます。挑戦者にだけ見せるターゲットブロック・アーマースタンドは Geyser 経由でも表示されますが、初回は実機で見え方を確認してください。
 
 ## 管理コマンド
 
@@ -323,11 +525,19 @@
 | `/sniper menu` | 設定GUIメニューを開く |
 | `/sniper setstartspawn` | 初期スポーン地点を設定 |
 | `/sniper setlobby` | 受付ロビー地点を設定 |
-| `/sniper setspawn <ステージ>` | ゲームスポーン地点を追加 |
-| `/sniper delspawn <ステージ> <番号>` | 指定スポーン地点を削除 |
+| `/sniper setspawn <ステージ> [red\|blue]` | ゲームスポーン地点を追加（TDM はチーム指定） |
+| `/sniper delspawn <ステージ> [red\|blue] <番号>` | 指定スポーン地点を削除 |
 | `/sniper setfield <ステージ> <1\|2>` | フィールドの角1／角2を設定（ステージ自動作成） |
+| `/sniper setmode <ステージ> <br\|ffa\|tdm>` | ステージの試合モードを切り替え |
 | `/sniper setchest <ステージ>` | 見ているチェストを登録／解除 |
-| `/sniper setsign <join\|leave\|start <ステージ>\|delete>` | 参加／離脱／開始／解除看板を設定 |
+| `/sniper setsign <join\|leave\|start <ステージ>\|solo\|delete>` | 参加／離脱／開始／ソロ／解除看板を設定 |
+| `/sniper setbooth` | 射撃訓練場の射撃位置（今いる場所・向き） |
+| `/sniper addtarget` / `deltarget` | 見ているブロックを止まった的に登録／解除 |
+| `/sniper addmover <1\|2>` | 動く的の経路の始点／終点（今いる場所） |
+| `/sniper delmover <番号>` | 動く的の経路を解除 |
+| `/sniper cleartargets [block\|mover\|all]` | 的の登録をまとめて解除 |
+| `/sniper showtargets` | 的の位置を10秒間表示 |
+| `/sniper ranking reset <プレイヤー\|all> [難易度\|all]` | 射撃訓練場の記録を消す（コンソール可） |
 | `/sniper settime <秒>` | 制限時間を設定（0=無制限） |
 | `/sniper setmin <人数>` | 最低人数を設定 |
 | `/sniper setmax <人数>` | 最大参加人数を設定 |
@@ -340,7 +550,9 @@
 | `/sniper delstage <ステージ>` | 指定ステージを削除 |
 | `/sniper lobbyfix <プレイヤー> [force]` | ロビーに入る前の持ち物が戻らないときの復旧。`force` で退避データを破棄してロックだけ解除 |
 | `/sniper revival <on\|off>` | 敗者復活（ゾンビスナイパー）モードの切替（バトロワ系ステージ限定） |
-| `/sniper stop` | ゲームを停止する |
+| `/sniper give <leap\|hook\|smoke\|ammo\|speed\|jump\|heal>` | 指定アイテムを自分に渡す（動作確認用） |
+| `/sniper leapcheck` | ジャンプの羽が使えない原因を項目ごとに診断（`itemcheck` でも可） |
+| `/sniper stop [solo\|all]` | ゲームを停止する。`solo` で射撃訓練場だけ、省略／`all` で両方 |
 | `/sniper reset` | 在籍・試合データを全消去（緊急リセット） |
 | `/sniper reload` | config を再読み込み |
 | `/sniper status` | 設定状況・現在の状況を確認（全員可） |
@@ -352,6 +564,8 @@
 - **参加看板** … `[スナイパー]` / `参加` と、`現在人数 / 最大人数`・`待機中/進行中` を表示。クリックでロビー参加。
 - **離脱看板** … `[スナイパー]` / `離脱`。クリックで離脱。
 - **開始看板** … `[スナイパー]` / `開始` と対象ステージ名・`待機中/進行中` を表示。クリックでそのステージのゲーム開始（**開始は全員可**）。
+- **ソロ看板** … `[スナイパー]` / `ソロ` / `射撃訓練場` と `空き/挑戦中` を表示。クリックでソロ在籍してソロメニューを開く。
+- 参加看板の人数は **通常戦の待機者** だけを数えます（ソロ在籍者は含みません）。
 
 登録を解除したいときは、その看板を見ながら `/sniper setsign delete`（または設定ツールの登録解除モード）を実行すると config から削除され、看板の表示もクリアされます。
 
@@ -362,7 +576,7 @@
 | `sniper.admin` | OP | セットアップ・看板設置・強制停止など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/sniper join`・`/sniper leave`・`/sniper start <ステージ>`・`/sniper status` は権限チェックがなく、全プレイヤーが実行できます。`/sniper start` は看板クリックと同じく誰でもゲームを開始できる点に注意してください。それ以外のサブコマンド（wand / menu / set系 / stop / reset / reload など）は `sniper.admin`（既定OP）が必要です。
+    `/sniper join`・`/sniper leave`・`/sniper start <ステージ>`・`/sniper status`・`/sniper solo`・`/sniper ranking solo` は権限チェックがなく、全プレイヤーが実行できます。`/sniper start` は看板クリックと同じく誰でもゲームを開始できる点に注意してください。それ以外のサブコマンド（wand / menu / set系 / stop / reset / reload など）は `sniper.admin`（既定OP）が必要です。
 
 ## トラブルシューティング
 

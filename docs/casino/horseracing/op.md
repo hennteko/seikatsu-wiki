@@ -53,12 +53,13 @@ modules:
 | `betting.virtual_bet_amount` | `5000` | 同梱されているが、**実際に読み込まれるのは `race.virtual_bet_amount`** です（下記参照） |
 
 !!! warning "実際に効くオッズ調整キーは `race.virtual_bet_amount`"
-    オッズのバラつき（仮想ベットの合計エメラルド額）を制御する有効なキーは **`race.virtual_bet_amount`**（既定 `5000`）です。同梱 `horse.yml` の `betting.virtual_bet_amount` はコードが参照しないため、こちらを編集してもオッズは変わりません。`race.virtual_bet_amount` は初回起動時に horse モジュールが `horse.yml` へ自動追記します（既存ファイルにも未設定なら追記されます）。値を変えたいときは `race:` セクションの `virtual_bet_amount` を編集してください。なお `betting.takeout_rate` と `betting.minimum_odds` は現状のコードでは使われていません（オッズの控除・下限は内部ロジックで固定）。
+    オッズのバラつき（仮想ベットの合計エメラルド額）を制御する有効なキーは **`race.virtual_bet_amount`**（既定 `5000`）です。同梱 `horse.yml` の `betting.virtual_bet_amount` はコードが参照しないため、こちらを編集してもオッズは変わりません。`race.virtual_bet_amount` は初回起動時に horse モジュールが `horse.yml` へ自動追記します（既存ファイルにも未設定なら追記されます）。値を変えたいときは `race:` セクションの `virtual_bet_amount` を編集してください。なお `betting.takeout_rate` と `betting.minimum_odds` は現状のコードでは使われていません。控除率（払戻率）は `odds.payout-rate`、最低オッズは `odds.types.<券種>.min` で設定します（いずれも後述の「オッズ設定」を参照）。
 
 ### レース基本設定（`race`）
 
 | キー | 既定値 | 説明 |
 |---|---|---|
+| `race.min-betting-seconds` | `30` | 一般プレイヤーが開始看板／`/horseracing start` でレースを **発走** させられるまでの、ベット受付の最低秒数（誰かがすぐ発走させてベット期間を打ち切る荒らし対策）。OP・コンソールは即時発走可 |
 | `race.base_speed_multiplier` | `1.0` | 馬の移動速度に掛かる全体の倍率。大きくするとレースが速く進む |
 | `race.virtual_bet_amount` | `5000` | オッズにバラつきを持たせるための仮想ベットの合計エメラルド額（**実際に読み込まれるのはこのキー**）。大きいほどオッズの変動が緩やかになる |
 
@@ -77,6 +78,51 @@ modules:
 
 !!! note "オッズと能力スコアの関係"
     馬のオッズは「脚力 ×3 ＋ スタミナ ×2 ＋ 賢さ ×1」で算出した能力スコアをもとに決まります。ステータスの範囲を狭めると馬の実力差が小さくなり、広げると本命・穴馬の差が大きくなります。仮想ベット額（`virtual_bet_amount`）が大きいほどオッズの変動が緩やかになります。
+
+### オッズ設定（`odds`）
+
+7種類の馬券（単勝・複勝・馬連・馬単・ワイド・3連複・3連単）の払戻率・券種別オッズ範囲を設定します。未記載の項目は従来値で動作します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `odds.payout-rate` | `0.75` | 馬券7種の払戻率（残り約25%が控除）。`0.1`〜`1.0` にクランプ |
+| `odds.legacy-divisor` | `2.0` | 従来オッズ（各馬の表示オッズ）の算出に使う除数。最小 `0.5` |
+| `odds.legacy-min` | `0.5` | 従来オッズの下限。最小 `0.1` |
+| `odds.virtual-pool-multiplier` | `30` | 仮想ベット倍率。小さいほど実際のベットがオッズに強く効く。最小 `1` |
+| `odds.types.<券種>.base` | 券種ごと | 券種の基本係数（最小 `0.01`） |
+| `odds.types.<券種>.min` | 券種ごと | 券種の最小オッズ（最小 `1.0`） |
+| `odds.types.<券種>.max` | 券種ごと | 券種の最大オッズ（`min` 未満にはならない） |
+
+券種別の既定値（`base` / `min` / `max`）は次のとおりです。
+
+| 券種（キー） | base | min | max |
+|---|---|---|---|
+| 単勝（`WIN`） | `0.3` | `1.2` | `4.0` |
+| 複勝（`PLACE`） | `0.15` | `1.1` | `2.0` |
+| 馬連（`QUINELLA`） | `0.4` | `1.5` | `8.0` |
+| 馬単（`EXACTA`） | `1.2` | `3.0` | `25.0` |
+| ワイド（`WIDE`） | `0.3` | `1.3` | `5.0` |
+| 3連複（`TRIO`） | `1.0` | `3.0` | `20.0` |
+| 3連単（`TRIFECTA`） | `3.0` | `8.0` | `60.0` |
+
+### 配当ボーナス（`longshot` / `wild` / `streak`）
+
+的中配当に加算される3種類のボーナスを設定します。いずれも `enabled` で個別に無効化できます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `longshot.enabled` | `true` | 人気薄ボーナスの有効/無効 |
+| `longshot.rank-from` | `2` | 人気下位この順位以降の馬が1着なら対象（最小 `1`） |
+| `longshot.bonus-percent` | `50` | その馬が絡む的中配当への加算率（%） |
+| `wild.enabled` | `true` | 荒れレースの有効/無効 |
+| `wild.chance-percent` | `15` | 発走前に荒れレースが宣言される確率（%、`0`〜`100`） |
+| `wild.strength-variance` | `0.25` | 荒れレース時、各馬の速度に掛かる隠し補正（±25%、`0`〜`0.9`） |
+| `wild.max-odds-multiplier` | `1.5` | 荒れレース時の最大オッズ拡大倍率（最小 `1.0`） |
+| `streak.enabled` | `true` | 連続的中ボーナスの有効/無効 |
+| `streak.bonus-percent` | `20` | 前レースに続けて的中した人の配当への加算率（%） |
+
+!!! info "サーバー全体イベント「競馬オッズアップデー」"
+    CasinoPlugin 共通の `config.yml` にある `events.horse-odds-up` を有効化すると、開催中は的中配当に `bonus-percent`（既定 `50`%）が加算されます。既定は `enabled: false`。`check-interval-minutes`・`chance-percent`・`duration-minutes`・`cooldown-minutes` で開催頻度を調整します（slot-fever と同じ抽選方式）。これは horse.yml ではなく **共通 `config.yml`** 側の設定です。
 
 ## セットアップ手順
 
@@ -139,7 +185,7 @@ modules:
 /horseracing setsign getitem
 ```
 
-```text title="レース進行看板（クリックで /horseracing start 相当・OP用）"
+```text title="レース進行看板（クリックで /horseracing start 相当・全員可、一般は発走まで最低30秒）"
 /horseracing setsign start
 ```
 
@@ -154,7 +200,7 @@ modules:
 | 馬券販売看板（`getitem`） | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
 | レース進行看板（`start`） | クリックでレースを進行（`/horseracing start` と同じ。ベット開始 → 発走の順に進む） |
 
-手書き設置（1行目に `[HorseRacing]`、2行目に種類を入力）もサポートされています（`lobby` / `leave` / `getitem` / `start`）。看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。`/horseracing setsign remove` で看板の設定を解除できます。
+看板は必ず上記の `/horseracing setsign <種類>` で登録してください。登録座標と種類は `horse.yml` の `signs.registry` に保存され、クリック判定は看板の文字ではなく登録座標で行われます（**1行目 `[HorseRacing]` ＋ 2行目に種類を書くだけの手書き設置は廃止されました**。既存の手書き看板をクリックすると OP には登録を促す案内が表示されます）。看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。`/horseracing setsign remove`（または `delete`）で看板の登録を解除できます。
 
 ## レース運営コマンド
 
@@ -176,19 +222,20 @@ modules:
 
 ## プレイヤーも実行できるコマンド
 
-次の3つは権限不要で **一般プレイヤーも実行可能** です（看板の代わりに使えます）。
+次の4つは権限不要で **一般プレイヤーも実行可能** です（看板の代わりに使えます）。
 
 | コマンド | 説明 |
 |---|---|
 | `/horseracing join` | ロビー地点へテレポート（`lobby` 看板と同等） |
 | `/horseracing leave` | スポーン地点へテレポート（`leave` 看板と同等） |
+| `/horseracing start` | レースを進行（`start` 看板と同等）。一般プレイヤーは開始から `race.min-betting-seconds`（既定30秒）経過後まで発走させられない（OP は即時） |
 | `/horseracing status` | レースの設定状況（地点・看板）を表示（閲覧専用） |
 
 ## 管理コマンド一覧
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/horseracing start` | `horseracing.admin` | レース進行のトグル（停止中→ベット期間開始、ベット期間中→発走） |
+| `/horseracing start` | 全員可（一般は発走まで最低30秒） | レース進行のトグル（停止中→ベット期間開始、ベット期間中→発走）。コマンドブロック／コンソールからも実行可 |
 | `/horseracing stop` | `horseracing.admin` | レースを緊急停止し、馬を撤去して賭け金を全額返金 |
 | `/horseracing sethorse <頭数>` | `horseracing.admin` | 出走馬の数を設定（1〜18頭） |
 | `/horseracing sethousepoint <馬番号>` | `horseracing.admin` | 指定馬番号のスタート地点を現在地に設定（プレイヤー専用） |

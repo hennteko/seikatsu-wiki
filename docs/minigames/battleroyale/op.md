@@ -13,7 +13,7 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 | api-version | 26.1.2 |
 | メインコマンド | `/battleroyale`（エイリアス `/btr`） |
 | 作者 | henry |
-| 依存プラグイン | なし |
+| 依存プラグイン | なし（Geyser / Floodgate は任意。統合版対応に使用） |
 | 設定ファイル | `plugins/Battleroyale/config.yml` |
 
 ## 導入手順
@@ -83,8 +83,45 @@ Battleroyale の導入・初期設定・config・権限・管理コマンドを�
 !!! note "アイテムプールの動作"
     各チェストには、開始時に `itemPool` から **`chestItemsMin`〜`chestItemsMax`（既定3〜9）個** のアイテムが補充されます。アイテムは **重み（`weight`）に応じて抽選** され、それぞれ `min-amount`〜`max-amount` の個数でスタック配置されます。`itemPool` が空の場合、チェストにはアイテムが入りません。
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新しいキーは自動追記されません**。旧バージョンから更新した場合、`spawnMinY` / `spawnMaxY` / `chestItemsMin` / `chestItemsMax` や `itemPool` の重み付き新形式が書き込まれません（コード側に既定値があるため動作はします）。これらを調整するには手動追記、または config を退避して再生成してください。
+!!! success "config は起動時に自動で最新版へ更新されます"
+    本プラグインは起動時に **jar 内の最新 `config.yml` とサーバー側を比較し、足りないキーがあれば自動で追記** します（`ConfigUpdater`）。更新時は **設定済みの値・看板や地点などのデータ・旧キーを保持したまま**、最新版（説明コメント付き）へ書き換え、更新前のファイルを `config.yml.bak-日時` に退避します（バックアップは最新5世代まで保持）。旧バージョンから更新しても `spawnMinY` / `spawnMaxY` / `chestItemsMin` / `chestItemsMax` や各共通セクションが自動で揃うため、手動追記は不要です。サーバー側の `config.yml` が壊れて読めない場合だけは安全のため自動更新せず、警告のみ出します。
+
+### ロビー共通インベントリ（`lobby-inventory`）
+
+ロビー入場時に入る前の所持品を退避してインベントリを空にし、ロビー退室時に復元する共通システムです。退避データは `plugins/Battleroyale/lobby-inventory.yml` に自動保存され、サーバー再起動やクラッシュをまたいでも復元されます（試合の開始・終了では復元されず、ロビー在籍中はずっと空のまま）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `lobby-inventory.enabled` | true | falseでこの機能を丸ごと無効化（従来挙動に戻る） |
+| `lobby-inventory.gamemode` | ADVENTURE | ロビー滞在中のゲームモード（`ADVENTURE`/`SURVIVAL`/`CREATIVE`/`KEEP`） |
+| `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
+| `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し体力・満腹度を全回復 |
+| `lobby-inventory.reset-exp` | true | ロビー入場時に経験値とレベルを0にする |
+| `lobby-inventory.expire-days` | 30 | 復元されずに残った退避データの保持日数 |
+
+!!! tip "持ち物が戻らないときは `/btr lobbyfix`"
+    まれに退避した持ち物が戻らないままになった場合は `/btr lobbyfix <プレイヤー>` で個別に復旧できます。`force` を付けると退避データを破棄してロックだけ解除します。未復元の件数は `/btr status` の「持ち物の未復元」で確認できます。
+
+### 名前表示・参加通知（`name-tag`）
+
+ミニゲーム共通の表示システムです。参加すると頭上ネームタグ・Tabリスト・チャットの名前が `【ゲーム名】名前` になり、離脱・ログアウト・プラグイン停止で元に戻ります。参加時にはサーバー全体へ参加通知を出します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `name-tag.enabled` | true | false で名前表示を付けない |
+| `name-tag.display-name` | バトルロアイヤル | `【】` に入れる正式名 |
+| `name-tag.color` | GOLD | `【ゲーム名】` の色（GOLD / AQUA / GREEN / RED / YELLOW など） |
+| `name-tag.announce-join` | true | false でサーバー全体への参加通知を出さない |
+
+### 統合版対応（`bedrock`）
+
+Geyser / Floodgate 経由の統合版（Bedrock）プレイヤー向けの設定です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `bedrock.wax-signs` | true | 登録看板を蝋引きし、統合版でタップしても編集画面が開かないようにする |
+| `bedrock.spectator-style` | AUTO | 観戦方式。`AUTO`＝統合版だけゴースト観戦／`GHOST`＝全員ゴースト／`VANILLA`＝全員観戦モード（統合版は観戦モードでHUDが消えるため AUTO 推奨） |
+| `bedrock.name-prefix` | `"."` | Floodgate が無いときに統合版と見なす名前の接頭辞 |
 
 ## セットアップ手順
 
@@ -150,6 +187,10 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 /btr setmax <人数>
 ```
 
+```text title="ロビーの持ち物が戻らないときの復旧（force で退避データ破棄＋ロック解除）"
+/btr lobbyfix <プレイヤー> [force]
+```
+
 !!! note "ボーダーの初期範囲はコマンド不要"
     初期サイズはフィールド範囲（`setfield 1`/`2`）から自動算出されます。範囲を直接指定するコマンド（旧 `setarea`）はありません。縮小量・停止サイズ・縮小演出秒は `config.yml` の `shrinkAmount` / `minBorderSize` / `shrinkSpeed` で調整します。
 
@@ -179,6 +220,7 @@ OP権限で以下のコマンドを実行します。地点系のコマンドは
 | `/btr start` | ゲームを開始する |
 | `/btr stop` | ゲームを停止する |
 | `/btr reset` | 緊急リセット（ゲーム状態とワールドボーダーを強制解除） |
+| `/btr lobbyfix <プレイヤー> [force]` | ロビーに入る前の持ち物が戻らないときの復旧（`force` で退避データ破棄＋ロック解除） |
 | `/btr status` | 設定状況・現在の状況を確認 |
 
 !!! tip "ゲーム開始の前提条件"
@@ -193,7 +235,7 @@ plugin.yml には次の2つの権限が定義されています。コード上�
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `battleroyale.admin` | OP | 管理系（setstartspawn / setlobby / setfield / setsign / setchest / setitem / itemlist / setweight / removeitem / settime / setmax / setteam / stop / reset。`/btr join <名前>`・`/btr leave <名前>` の他プレイヤー指定も含む） |
+| `battleroyale.admin` | OP | 管理系（setstartspawn / setlobby / setfield / setsign / setchest / setitem / itemlist / setweight / removeitem / settime / setmax / setteam / stop / reset / lobbyfix。`/btr join <名前>`・`/btr leave <名前>` の他プレイヤー指定も含む） |
 | `battleroyale.play` | OP | `/btr team`（チーム参加）の使用権限 |
 
 !!! info "権限不要で全員が使えるコマンド"

@@ -11,7 +11,7 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | プラグイン名 | Spike |
 | バージョン | `${project.version}`（ビルド時に決定） |
 | メインコマンド | `/spike` |
-| api-version | 26.2 |
+| api-version | 26.1.2 |
 | softdepend | `floodgate` / `Geyser-Spigot`（統合版対応） |
 | 設定ファイル | `plugins/Spike/config.yml` |
 | 権限ノード | `spike.admin`（既定OP） |
@@ -108,6 +108,10 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 /spike setsign start <マップ>
 ```
 
+```text title="ソロ看板を登録（看板を見て実行）"
+/spike setsign solo
+```
+
 ```text title="視線先の看板の登録を解除"
 /spike setsign delete
 ```
@@ -115,9 +119,52 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 !!! note "設置サイト・試合範囲について"
     設置サイトは `A`・`B` のように名前を付けて2点（対角）で範囲指定します。複数サイトを登録できます。試合範囲（`setfield`）を設定すると、範囲外に出た生存者はスポーンへ戻されます（任意設定）。購入境界は購入フェーズ中に各チームが出られない水平範囲です。マップが試合で使用中のときは変更・削除できません。
 
+## 設定ツール・設定メニュー（コマンドを打たない設定）
+
+コマンドを打たずに、**設定ツール（ブレイズロッド）** と **設定メニュー（GUI）** でも地点・範囲・看板を設定できます。どちらも `spike.admin` 権限が必要です。
+
+```text title="設定ツール（ブレイズロッド）を受け取る"
+/spike wand
+```
+
+```text title="設定メニュー（GUI）を開く"
+/spike menu
+```
+
+- **設定メニュー** … 編集するマップの選択、初期スポーン／ロビー／攻撃側・防衛側スポーン／スパイク初期地点の「現在地を設定」、各範囲モード・看板モードの切り替え、設置サイトの追加・削除、開始（ランダム／自由選択）・強制停止・設定状況の表示・範囲表示のON/OFF・設定ツールの回収を、GUIからまとめて操作できます。メニューは `/spike menu` のほか、設定ツールを **しゃがみ＋右クリック（統合版はしゃがみ＋タップ）** でも開けます。
+- **範囲モード**（攻撃側／防衛側の購入境界・設置サイト・試合範囲）… メニューでモードを選び、設定ツールでブロックを **左クリック＝角1／右クリック＝角2**（統合版は長押し＝角1／タップ＝角2）で指定します。
+- **看板モード**（参加／離脱／編成／開始／解除）… メニューでモードを選び、設定ツールで看板を **右クリック／タップ** して登録・解除します。
+- 設定ツールを持っている間は、編集中マップの範囲・地点が **本人にだけパーティクル表示** されます（橙＝攻撃側／水色＝防衛側／赤＝サイト・スパイク／白＝試合範囲。メニューでON/OFF 切替）。設定ツールで空中を右クリック／タップすると設定状況の要約が出ます。
+
+!!! note "設定ツールの注意"
+    設定ツールはOP専用で、受け取り時・使用時の両方で `spike.admin` を確認します（非OPが入手しても使えません）。SPIKE に参加中は受け取れないので、先に `/spike leave` で離脱してから実行してください。不要になったら設定メニューの「設定ツールを回収」で片付けられます。
+
+## ソロ解除チャレンジの設定
+
+ソロ解除チャレンジ（`/spike solo`）は、選んだ **マップ** 上にスパイクと警備Mobを配置して遊びます。先に `/spike map <マップ>` で編集対象を選んでから、以下を **現在地** で登録します（すべて `spike.admin` 権限）。地点はマップごとに保存されます。
+
+```text title="スパイクの初期配置地点を追加（現在地。複数登録でき、挑戦ごとにいずれかが選ばれる）"
+/spike setsolospike
+```
+
+```text title="見張り（その場で首を振る警備）の配置地点を追加（現在地と向き）"
+/spike addpost
+```
+
+```text title="巡回兵（ルートを歩く警備）のルートに地点を追加（現在地）"
+/spike addroute <ルート>
+```
+
+```text title="ソロの地点を削除（spike=スパイク / post=見張り / route <ルート> / all=全部）"
+/spike clearsolo spike|post|route <ルート>|all
+```
+
+!!! note "ソロの配置について"
+    スパイク地点は1つ以上必要です（複数登録すると挑戦ごとに1つ選ばれます）。見張り（post）と巡回兵（route）は任意で、難易度の `guard-ratio` に応じて配置数が決まります。番兵（sentinel）はスパイクの周囲に `solo.sentinel-radius` の範囲で自動配置されるため、地点登録は不要です。巡回ルートは隣り合う地点が `solo.route-warn-distance`（既定24ブロック）より離れていると警告が出ます。`/spike clearsolo all` はプレイヤーが実行した場合、3秒以内に2回実行すると確定します。
+
 ## config.yml 設定項目
 
-コマンドで登録する地点・看板・マップのデータ（`default-spawn`・`lobby-spawn`・各 `*-sign`・`maps`）は自動保存されます。手書き不要です。以下は数値・経済などの設定項目です。
+コマンドで登録する地点・看板・マップのデータ（`default-spawn`・`lobby-spawn`・各 `*-sign`・`maps`）は自動保存されます。手書き不要です。先頭の `config-version` は設定ファイルの版（項目の名前変更・削除時の移行用）で、**手で変えないでください**。以下は数値・経済などの設定項目です。
 
 ### 試合（ラウンド・人数・時間）
 
@@ -189,6 +236,32 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 |---|---|---|
 | `ult.required-points` | 5 | ULT の使用に必要なポイント（キル・設置・解除・被撃破で貯まる） |
 
+### ソロ解除チャレンジ（`solo`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロ解除チャレンジの有効化（false でメニュー・看板・コマンドすべて受け付けない） |
+| `solo.countdown-seconds` | 3 | 開始前に動けない時間（秒） |
+| `solo.result-seconds` | 3 | 結果を見せてからロビーへ戻すまで（秒） |
+| `solo.menu-delay` | 2 | ロビーへ戻ってからソロメニューを開くまで（秒） |
+| `solo.default-difficulty` | normal | `/spike solo defuse` で難易度を省略したときの難易度 |
+| `solo.announce-top` | true | 1位を更新したらサーバー全体に知らせる |
+| `solo.route-warn-distance` | 24 | 巡回ルートの隣り合う地点がこれより離れていたら警告（ブロック） |
+| `solo.sentinel-radius` | 4 | 番兵を出す範囲（スパイクからの半径・ブロック） |
+| `solo.guard.patrol` | hp 20 / damage 3 | 巡回兵（ピリジャー・クロスボウ）の基本値 |
+| `solo.guard.lookout` | hp 20 / damage 3 / sweep-degrees 60 / sweep-seconds 4 | 見張り（スケルトン・弓）。首振り角度・1往復の秒数 |
+| `solo.guard.sentinel` | hp 24 / damage 6 | 番兵（ヴィンディケーター・斧）の基本値 |
+| `solo.guard.sneak-range-multiplier` | 0.6 | スニーク中の視界距離の倍率 |
+| `solo.guard.noise-radius` | 6 | 物音（ダッシュ・外れた矢）で振り向く距離（ブロック） |
+| `solo.guard.call-radius` | 12 | 見つけた警備が仲間を呼ぶ距離（ブロック） |
+| `solo.guard.lose-seconds` | 5 | 見失ってから捜索に入るまで（秒） |
+| `solo.guard.search-seconds` | 5 | 捜索をあきらめるまで（秒） |
+| `solo.difficulties.<id>` | easy/normal/hard | 難易度の定義（下表）。キーを足すとメニューのボタンが増える。キーは記録にも使う |
+
+各難易度は `display-name`・`icon`・`time-limit`（制限時間・秒）・`guard-ratio`（巡回・見張りを配置する割合）・`sentinels`（番兵の数）・`vision-range`／`vision-angle`（警備の視界）・`detect-seconds`（見つかるまでの秒数）・`damage-multiplier`（警備の攻撃力倍率）・`armor`（挑戦者の装備 none/light/regen/heavy）・`respawn-seconds`（倒されてから復帰まで）・`show-vision`（警備の視界を表示するか）を持ちます。既定は easy（かんたん）・normal（ふつう）・hard（むずかしい）の3段階です。
+
+ソロの記録は `plugins/Spike/solo-records.yml` にプレイヤー × マップ × 難易度ごとに保存され、`/spike ranking solo` で参照できます。
+
 ## ショップ品目
 
 購入フェーズ中、生存中のプレイヤーだけが利用できます。購入の取り消し・返金はありません。価格・追加ハートは上記 `armor` の config に連動します。
@@ -219,7 +292,15 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | `/spike setsite <サイト> <1\|2>` | 設置サイトの角を設定（2点） |
 | `/spike delsite <サイト>` | 設置サイトを削除 |
 | `/spike setfield <1\|2>` | 試合範囲の角を設定（任意） |
-| `/spike setsign <join\|leave\|start <マップ>\|weapon\|delete>` | 看板を登録／解除 |
+| `/spike setsign <join\|leave\|start <マップ>\|weapon\|solo\|delete>` | 看板を登録／解除 |
+| `/spike setsolospike` | ソロ用スパイク地点を追加（現在地） |
+| `/spike addpost` | ソロ用の見張りの配置地点を追加（現在地と向き） |
+| `/spike addroute <ルート>` | ソロ用の巡回ルートに地点を追加（現在地） |
+| `/spike clearsolo <spike\|post\|route <ルート>\|all>` | ソロの地点を削除 |
+| `/spike solo <プレイヤー>` | 指定した人をソロ解除チャレンジに参加させる（コンソール・コマンドブロック可） |
+| `/spike ranking reset <プレイヤー\|all> [難易度\|all] [マップ\|all]` | ソロの記録を削除 |
+| `/spike wand` | 設定ツール（ブレイズロッド）を受け取る |
+| `/spike menu` | 設定メニュー（GUI）を開く |
 | `/spike stop` | 試合を強制停止 |
 | `/spike lobbyfix <プレイヤー> [force]` | ロビー前の持ち物の手動復旧（`force` で退避データ破棄・ロック解除） |
 | `/spike status` | 設定状況・現在の状況を確認（全員可） |
@@ -232,15 +313,18 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | `/spike leave` | ロビーから離脱（離脱看板と同等。試合中は脱落扱い） |
 | `/spike start [マップ] [random\|select]` | 試合を開始（開始看板と同等・コンソール/コマンドブロックも可） |
 | `/spike status` | 設定・状況を確認（読み取り専用） |
+| `/spike solo` | ソロ解除チャレンジに参加（ソロ看板と同等） |
+| `/spike solo defuse [難易度] [マップ]` | ソロ解除チャレンジをすぐ始める |
+| `/spike ranking solo [難易度] [マップ]` | ソロ解除チャレンジのランキング |
 
 ## 権限ノード
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `spike.admin` | OP | 看板設置・マップ/地点の各 set 系・`delmap`・`delsite`・`stop`・`lobbyfix` など管理系すべて |
+| `spike.admin` | OP | 看板設置・マップ/地点の各 set 系・`delmap`・`delsite`・ソロ地点（`setsolospike`・`addpost`・`addroute`・`clearsolo`）・`solo <プレイヤー>`・`ranking reset`・`wand`・`menu`・`stop`・`lobbyfix` など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/spike join`・`/spike leave`・`/spike start`・`/spike status` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます。
+    `/spike join`・`/spike leave`・`/spike start`・`/spike status`・`/spike solo`（自分）・`/spike solo defuse`・`/spike ranking solo` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます。`/spike solo <プレイヤー>` で他人を指定できるのは OP・コンソール・コマンドブロックだけです。
 
 ## トラブルシューティング
 

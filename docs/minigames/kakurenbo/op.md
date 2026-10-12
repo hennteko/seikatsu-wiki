@@ -92,7 +92,7 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 ### 看板の設置
 
-参加・離脱・開始・ブロック選択・鬼立候補の **5種** の看板を登録できます。看板を見ながら（5ブロック以内）以下を実行します。
+参加・離脱・開始・ブロック選択・鬼立候補・ソロの **6種** の看板を登録できます。看板を見ながら（5ブロック以内）以下を実行します。
 
 ```text title="参加看板を登録"
 /kakurenbo setsign join
@@ -109,6 +109,9 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 ```text title="鬼立候補看板を登録（クリックで鬼に立候補・任意）"
 /kakurenbo setsign oni
 ```
+```text title="ソロ看板を登録（クリックでソロメニュー）"
+/kakurenbo setsign solo
+```
 ```text title="登録済み看板の登録を解除（視線先の看板を自動判別）"
 /kakurenbo setsign delete
 ```
@@ -117,6 +120,42 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 !!! tip "鬼立候補看板（setsign oni）"
     ロビー参加者がクリックすると **鬼に立候補**（もう一度クリックで取り消し）。看板の4行目に現在の立候補人数（`%count%`）が表示されます。開始時は立候補者から優先的に鬼を抽選し、不足分はランダム指名で補います。未設置でも従来どおり全員ランダムで鬼が決まります。
+
+### ソロモード「見つけて」の設定
+
+フィールド（`setfield 1`/`2`）・擬態パレット（`addblock`）・鬼スポーン（`setspawn seeker`）は通常戦と共用です。設定済みなら、追加の作業は **ソロ看板の設置だけ** です。
+
+```text title="ソロ看板を登録（看板を見ながら）"
+/kakurenbo setsign solo
+```
+```text title="設定を確認"
+/kakurenbo status
+```
+```text title="自分で試す（かんたん）"
+/kakurenbo solo easy
+```
+
+- ソロ看板の4行目には「空き／ソロ挑戦中／通常戦中」が自動で表示されます。
+- スタート地点は **鬼スポーン**（未設定ならロビー）です。CPU はスタート地点から `solo.min-distance-from-spawn`（既定10ブロック）以上離れた所に隠れます。
+- CPU は **挑戦者にだけ見える見た目のブロック** で、ワールドのブロックは変えません。サーバーが止まっても残骸は残りません。
+- 挑戦中は「見た目だけのブロック」の上に乗っても飛行キックされないよう、**挑戦者だけ飛行を許可** しています（実際に飛ぶ操作は止めています）。
+
+!!! tip "CPU の隠れ場所が足りないとき"
+    - CPU は **パレットのブロックに化けます**。むずかしい（`blend: strict`）は「周り6マスのうち3マス以上が同じパレットのブロック」の場所にしか隠れません。フィールドの床・壁にパレットのブロックを使ってください。
+    - 鬼スポーンがフィールドの中央にあると、近くに隠れられない分だけ場所が減ります。`solo.min-distance-from-spawn` を下げてください。
+    - フィールドが広いときは `solo.placement-attempts` を増やしてください。
+    - 置けた数が足りないときは、置けた数で始まり挑戦者に知らせます（1体も置けないと開始しません）。
+
+### ソロの記録を消す
+
+```text title="プレイヤーの「ふつう」の記録を消す（コンソール可）"
+/kakurenbo ranking reset <プレイヤー> normal
+```
+```text title="全員・全難易度の記録を消す（コンソール可）"
+/kakurenbo ranking reset all all
+```
+
+記録は `plugins/Kakurenbo/solo-records.yml` に保存されます（自動更新の対象外）。
 
 ## config.yml 主要項目
 
@@ -181,12 +220,51 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `reveal.seconds-left` | 60 | 残り何秒から擬態ブロックを光らせるか（0で無効） |
 | `reveal.glow-color` | `#FF5555` | 発光色（Java版の輪郭・パーティクル色）。染料色名または `#RRGGBB` |
 | `reveal.particle` | `true` | 擬態ブロック上にパーティクルを出す（統合版は発光が見えないための代替） |
+| `reveal.blink-block` | `REDSTONE_BLOCK` | 統合版の閲覧者にだけ擬態ブロックと交互に点滅表示するブロック（発光が見えない統合版向け） |
+| `reveal.blink-ticks` | 10 | 点滅の切り替え間隔（tick・20=1秒） |
+
+### solo セクション（ソロモード「見つけて」）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | `true` | false でソロを無効（メニュー・看板・コマンドとも開始不可） |
+| `solo.menu-delay` | 3 | 試合後、ロビーへ戻してからソロメニューを開くまでの秒数 |
+| `solo.hide-seconds` | 5 | CPU が隠れる時間（秒）。この間 挑戦者は動けない |
+| `solo.reach` | 5.0 | 叩いて届く距離（ブロック） |
+| `solo.miss-cooldown` | 0.5 | お手つきを数える最短間隔（秒） |
+| `solo.find-score` | 100 | CPU を1体見つけたときの点数 |
+| `solo.time-bonus-per-second` | 2 | クリア時、残り1秒あたりに加える点数 |
+| `solo.placement-attempts` | 1500 | 隠れ場所を探す回数（フィールドの列を調べる回数） |
+| `solo.min-distance-from-spawn` | 10 | スタート地点からこのブロック数以内には隠れない |
+| `solo.block-when-lobby-waiting` | `false` | true で、通常戦の待機者がいる間はソロ不可 |
+| `solo.broadcast-result` | `true` | 結果をサーバー全体に1行流す |
+| `solo.ranking-size` | 10 | `/kakurenbo ranking solo <難易度>` の表示人数 |
+
+難易度は `solo.modes.<名前>` で追加・削除できます（名前が `/kakurenbo solo <名前>` になる。`.` は使えない）。メニューに出せるのは7つまでです。
+
+| キー | easy | normal | hard | 説明 |
+|---|---|---|---|---|
+| `display` | `&aかんたん` | `&eふつう` | `&cむずかしい` | 表示名 |
+| `icon` | `GRASS_BLOCK` | `OAK_LOG` | `STONE_BRICKS` | メニューのアイコン |
+| `cpu-count` | 3 | 5 | 7 | CPU の数 |
+| `time` | 180 | 180 | 240 | 制限時間（秒） |
+| `blend` | `random` | `neighbor` | `strict` | 化けるブロックの選び方 |
+| `blend-min` | 3 | 3 | 3 | strict のとき周り6マスで必要な同じブロックの数 |
+| `spots` | `floor` | `floor` | `any` | `floor`＝床の上だけ／`any`＝床の上＋壁のくぼみ |
+| `min-spacing` | 8 | 6 | 4 | CPU どうしの最小距離 |
+| `hint-interval` | 30 | 45 | 60 | ヒントの花火の間隔（秒・0でなし） |
+| `reveal-seconds` | 60 | 30 | 0 | 残り何秒から光らせるか（0でなし） |
+| `miss-penalty` | 20 | 20 | 30 | お手つき1回の減点 |
+
+- 終盤に光るときの色・点滅は通常戦と同じ `reveal.glow-color` / `reveal.particle` / `reveal.blink-block` / `reveal.blink-ticks` を使います。ヒントの花火の色・形は `firework.*` を使います（打ち上げ音は挑戦者にだけ鳴らします）。
+- 既存サーバーでは、起動時に `solo` 一式・`sign.solo`・`messages.solo-*` が自動で追記されます（既存の値は変えません）。`solo.modes` は一度作られた後は中身を補完しません（消した難易度が復活しないように）。
 
 ### blocks / messages / sign / gui
 
 - `blocks` … 擬態パレット（`addblock` / `removeblock` で編集・自動保存）。
 - `messages` … 各種通知文（`&` カラーコード対応）。`prefix` ほか役割通知・捕獲・残り時間・鬼立候補・花火（`firework-cooldown` / `firework-forced`）・終盤公開（`reveal-start`）・ロビー参加/退出ブロードキャストなど。
-- `sign.{lobby,leave,start,block,oni}` … 各看板の表示文。参加看板の4行目は `%current%/%max%` で人数、鬼立候補看板の4行目は `%count%` で立候補人数を表示。
+- `sign.{lobby,leave,start,block,oni,solo}` … 各看板の表示文。参加看板の4行目は `%current%/%max%` で通常戦の人数（待機＋試合中）、鬼立候補看板の4行目は `%count%` で立候補人数、ソロ看板の4行目は `%state%` で状態を表示。
+- `messages.solo-*` … ソロモードの通知文（メニュー名・開始・発見・お手つき・ヒント・結果・全体告知など）。
 - `gui.block-select-title` … ブロック選択GUIのタイトル。
 
 !!! note "config は不足キーを自動追記します"
@@ -196,11 +274,11 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・forceunlock・join/leave の他プレイヤー指定 |
+| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・forceunlock・join/leave/solo の他プレイヤー指定・ranking reset |
 | `kakurenbo.play` | 全員 | ゲームへの参加（`join`） |
 
-!!! note "join / leave / start / status は権限不要で全員可"
-    `/kakurenbo join`・`leave`・`start`・`status` は権限チェックがなく全プレイヤーが使えます（看板と同等）。ただし `join <名前>` / `leave <名前>` のように **他プレイヤーを指定** する場合のみ `kakurenbo.admin` が必要です。設定・管理コマンドも `kakurenbo.admin` が必要です。
+!!! note "join / leave / start / status / solo / ranking は権限不要で全員可"
+    `/kakurenbo join`・`leave`・`start`・`status`・`solo`・`ranking` は権限チェックがなく全プレイヤーが使えます（看板と同等）。ただし `join <名前>` / `leave <名前>` のように **他プレイヤーを指定** する場合のみ `kakurenbo.admin` が必要です。設定・管理コマンドも `kakurenbo.admin` が必要です。
 
 ## 管理コマンド
 
@@ -208,15 +286,19 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 |---|---|---|
 | `/kakurenbo join [名前]` / `leave [名前]` / `start` | 全員（名前指定は admin） | 参加 / 退出 / 開始（看板と同等。名前指定で他プレイヤーを操作） |
 | `/kakurenbo status` | 全員 | 設定状況・進行状態を表示（読み取り専用） |
+| `/kakurenbo solo [難易度]` | 全員 | ソロ「見つけて」のメニューを開く／難易度を付けると即開始 |
+| `/kakurenbo ranking [solo] [難易度]` | 全員 | ソロのランキング |
+| `/kakurenbo solo <プレイヤー> [難易度]` | `kakurenbo.admin` | 指定した人をソロへ（コンソール・コマンドブロック可） |
+| `/kakurenbo ranking reset <プレイヤー\|all> [難易度\|all]` | `kakurenbo.admin` | ソロの記録を消す（コンソール可） |
 | `/kakurenbo setlobby` / `setstartspawn` | `kakurenbo.admin` | ロビー / 初期スポーンを設定 |
 | `/kakurenbo setspawn [seeker]` | `kakurenbo.admin` | 隠れ側スポーン（引数なし）／鬼スポーン（`seeker`）を設定 |
 | `/kakurenbo setstage` | `kakurenbo.admin` | 鬼の待機ステージ（隠れ時間中の隔離地点）を設定 |
 | `/kakurenbo setfield <1\|2>` | `kakurenbo.admin` | フィールド範囲の頂点を設定 |
-| `/kakurenbo setsign <join\|leave\|start\|block\|oni\|delete>` | `kakurenbo.admin` | 視線先の看板を各用途で登録 / 解除 |
+| `/kakurenbo setsign <join\|leave\|start\|block\|oni\|solo\|delete>` | `kakurenbo.admin` | 視線先の看板を各用途で登録 / 解除 |
 | `/kakurenbo setmax` / `setmin <人数>` | `kakurenbo.admin` | 最大 / 最小人数を設定 |
 | `/kakurenbo settime <秒>` / `setdelay <秒>` | `kakurenbo.admin` | 制限時間 / 隠れ時間を設定 |
 | `/kakurenbo addblock` / `removeblock` | `kakurenbo.admin` | 手持ちブロックを擬態パレットに追加 / 削除 |
-| `/kakurenbo stop` | `kakurenbo.admin` | ゲームを強制終了 |
+| `/kakurenbo stop` | `kakurenbo.admin` | 強制停止（通常戦・ソロとも）。勝敗・記録なしで止め、在籍者をロビーへ戻す（**在籍は解除しない**）。ソロ挑戦者にはソロメニューを開き直す |
 | `/kakurenbo reload` | `kakurenbo.admin` | config を再読み込み |
 | `/kakurenbo forceunlock <プレイヤー>` | `kakurenbo.admin` | 他ゲーム参加中フラグが異常に残った場合の強制解除（コンソール可） |
 
@@ -230,6 +312,12 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 ??? failure "隠れ側がフィールド外で始まってしまう"
     隠れ側スポーン未設定だとロビー位置から擬態が始まります。`/kakurenbo setspawn`（隠れ側スポーン）を設定するか、ロビーをフィールド内に配置してください。
+
+??? failure "ソロが始められない（メニューのボタンがバリアになっている）"
+    ボタンの説明に理由が出ます。「アリーナを使用中」は通常戦（カウントダウン・結果発表を含む）か、ほかの人のソロ挑戦が終わるまで待ってください。「フィールドが未設定」は `setfield 1`/`2`、「擬態ブロックが未登録」は `addblock` を行ってください。
+
+??? failure "ソロで「CPU の隠れ場所が見つかりません」と出る"
+    上の「CPU の隠れ場所が足りないとき」を確認してください。フィールドのチャンクが読み込まれていない場所は調べないため、挑戦者の近くにフィールドがあることも条件です。
 
 ??? failure "看板をクリックしても反応しない"
     看板は `/kakurenbo setsign <種別>` で登録した位置で判定されます。登録済みか `/kakurenbo status` で確認してください（手書きでは機能しません）。

@@ -35,8 +35,16 @@ modules:
 /roulette setwheel
 ```
 
-```text title="参加看板を登録（看板を見ながら実行・複数設置可）"
-/roulette setsign join
+```text title="卓を離れたとき・再接続時の戻り先を現在地に設定"
+/roulette setstartspawn
+```
+
+```text title="看板を登録（看板を見ながら実行・複数設置可）"
+/roulette setsign <play|join|leave|start>
+```
+
+```text title="登録済みの看板を解除（対象の看板を見ながら実行）"
+/roulette setsign delete
 ```
 
 ```text title="マルチ卓のスピンを手動開始（ベット受付を締め切って回す）"
@@ -47,8 +55,8 @@ modules:
 /roulette reload
 ```
 
-!!! success "看板は複数設置できます"
-    参加看板（`join`）は複数拠点に設置できます（`join-signs` に追記）。`setwheel` で保存される盤の位置は `wheel-location`（`"world;x;y;z;yaw"`）として自動保存されます。いずれも手編集不要です。
+!!! success "看板は4種類・複数設置できます"
+    看板は `play`（ソロGUIを開く）・`join`（卓に参加）・`leave`（卓から離脱）・`start`（スピン手動開始）の4種類を登録でき、それぞれ複数拠点に設置できます。登録内容は `signs.registry` に、`setwheel` で保存される盤の位置は `wheel-location`（`"world;x;y;z;yaw"`）、`setstartspawn` の戻り先は `start-spawn` として自動保存されます。いずれも手編集不要です。
 
 ## roulette.yml 設定項目
 
@@ -60,6 +68,7 @@ modules:
 | `multi.enabled` | true | マルチ卓を有効化 |
 | `multi.betting_seconds` | 30 | ベット受付時間（秒） |
 | `multi.min_players` | 1 | 開始に必要な最少参加人数（1人でも回せる） |
+| `multi.max_players` | 10 | 卓の最大人数（0以下で無制限。満員時は参加を拒否） |
 | `multi.clear_inventory` | false | 卓参加時にインベントリを預かる（退場で復元）か |
 
 ### ベット
@@ -94,20 +103,21 @@ modules:
 | `display.spins` | 4 | スピン時の周回数（演出） |
 
 !!! note "自動生成される領域（手編集不要）"
-    `wheel-location`（`/roulette setwheel`）・`join-signs`（`/roulette setsign join`）はコマンドで自動保存されます。
+    `wheel-location`（`/roulette setwheel`）・`start-spawn`（`/roulette setstartspawn`）・`signs.registry`（`/roulette setsign <play|join|leave|start>`）はコマンドで自動保存されます。
 
 ## 管理コマンド・権限
 
-`/roulette` の `play`/`join`/`leave`/`status` は全員可、`start`/`setwheel`/`setsign`/`reload` は **OP（コード側で判定）** です。
+`/roulette` の `play`/`join`/`leave`/`start`/`status` は全員可（`start` はコンソール・コマンドブロックからも実行可）、`setwheel`/`setstartspawn`/`setsign`/`reload` は **OP（コード側で判定）** です。
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/roulette play` | 全員 | ソロGUIを開く |
 | `/roulette join` / `leave` | 全員 | マルチ卓に参加／離脱 |
+| `/roulette start` | 全員 | マルチ卓のスピンを手動開始（コンソール/コマブロ可） |
 | `/roulette status` | 全員 | 状況確認 |
-| `/roulette start` | OP | マルチ卓のスピンを手動開始 |
 | `/roulette setwheel` | OP | 盤（疑似ホイール）の基準点を設定 |
-| `/roulette setsign join` | OP | 参加看板を登録（複数可） |
+| `/roulette setstartspawn` | OP | 卓を離れたとき・再接続時の戻り先を設定 |
+| `/roulette setsign <play\|join\|leave\|start>` | OP | 看板を登録（`delete` で解除・複数可） |
 | `/roulette reload` | OP | 設定を再読み込み |
 
 ## トラブルシューティング

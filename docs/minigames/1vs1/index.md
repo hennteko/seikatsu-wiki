@@ -5,7 +5,7 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">2人（観戦・賭けは何人でも）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">2人（観戦・賭けは何人でも）／ソロ：1人（CPU道場）</span></div>
   <div class="quick-card"><span class="label">勝敗</span><span class="value">相手を倒せば勝利（1本勝負）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
@@ -18,5 +18,8 @@
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … 遊び方、ルール、参加方法、賭けの仕組み、ランキング、コマンド。
+!!! tip "ソロモード「CPU道場」"
+    1人でも遊べます。`[PvPソロ]` 看板か `/pvp solo` で入り、初段から順に段位付きの CPU と戦って、何段まで勝ち抜けるかを競います。
+
+- **プレイヤー向け** … 遊び方、ルール、参加方法、賭けの仕組み、ランキング、CPU道場、コマンド。
 - **OP・運営向け** … 導入手順、地点・チェスト設定、config.yml、権限、管理コマンド。

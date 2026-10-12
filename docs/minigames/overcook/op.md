@@ -147,10 +147,10 @@ Overcook（オーバークック風・協力調理ミニゲーム）の導入・
 | `max-fire` | 2 | 同時に存在できる火の最大数 |
 | `gate-open-seconds` | 0 | 開閉ブロックが「開」でいる秒数（0で常時開＝ギミック無効） |
 | `gate-closed-seconds` | 5 | 開閉ブロックが「閉」でいる秒数 |
-| `serve-rotate-seconds` | 0 | 提供口が移動する間隔（0で固定） |
-| `rat-seconds` | 0 | ネズミが出る間隔（0で出ない。食材を狙う） |
-| `rush-chance` | 0 | 急ぎ注文が出る確率 |
-| `rush-time-seconds` | 0 | 急ぎ注文の制限時間（秒） |
+| `serve-rotate-seconds` | 0 | 有効な提供口が切り替わる間隔（0で固定。提供口が複数あるときのみ作動） |
+| `rat-seconds` | 0 | 作業台に放置した物をネズミが持ち去るまでの秒数（0で無効） |
+| `rush-chance` | 0 | 各注文が急ぎ注文（期限半分・得点倍）になる確率（%） |
+| `rush-time-seconds` | 0 | ラッシュタイム：残り時間がこの秒数以下になると注文間隔が半分に（0で無効） |
 
 !!! note "自動生成される領域（手動編集は座標以外のみ推奨）"
     `lobby-spawn` / `default-spawn` / `signs` / `stages.<id>.spawn` / `field` / `stations` はコマンド・ツールで自動保存されます。座標データの手動編集は非推奨です。`time-limit-seconds` や `menu` / `target-scores` などのステージ調整値は `config.yml` で編集できます。

@@ -70,6 +70,10 @@ WindPvP の導入・地点設定・看板・config・権限・管理コマンド
 /windpvp setsign start
 ```
 
+```text title="ソロ「的落とし」の看板を登録（看板を見て実行）"
+/windpvp setsign solo
+```
+
 ```text title="視線先の看板の登録を解除"
 /windpvp setsign delete
 ```
@@ -140,6 +144,32 @@ WindPvP の導入・地点設定・看板・config・権限・管理コマンド
 !!! note "ウインドチャージと落下ダメージ"
     ウインドチャージで吹き飛ばされた場合はバニラと同じく「吹き飛ばされた高さより下に落ちた分」だけダメージになります（その場のウインドチャージジャンプでは痛くなく、柱や足場から落とされると痛い）。リスポーン無敵中に即死ラインを割っても残機は減らさずスポーンへ戻します。
 
+### ソロ「的落とし」（`solo`）
+
+`/windpvp solo` またはソロ看板でソロに在籍し、ソロメニューから開始する1人用のタイムアタックです。制限時間内にウインドチャージで的（防具立て・Mob）をフィールドの外・下へ吹き飛ばした得点を競います。**会場（`setfield` のフィールド範囲）は通常戦と共用** で、どちらかが使用中はもう一方を始められません。記録は `plugins/WindPvp/solo-records.yml` に保存されます（データファイルのため自動更新の対象外）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | `false` でソロを受け付けない |
+| `solo.menu-delay` | 3 | 挑戦終了後、ロビーへ戻ってからソロメニューを開くまでの秒数 |
+| `solo.countdown` | 3 | 開始前のカウントダウン（秒） |
+| `solo.broadcast-result` | true | 結果をサーバー全体に1行流す |
+| `solo.ranking-size` | 10 | `/windpvp ranking` で表示する人数 |
+| `solo.target.display` | 的落とし | メニュー・看板・メッセージに出るモード名 |
+| `solo.target.seconds` | 60 | 制限時間（秒・最低5秒） |
+| `solo.target.targets` | 6 | 同時に出す的の数（落とすと補充。1〜30） |
+| `solo.target.mob-chance` | 0.35 | 的が Mob になる確率（0.0〜1.0。残りは防具立て） |
+| `solo.target.armor-stand-points` | 1 | 防具立て（動かない）の得点 |
+| `solo.target.mob-points` | 2 | Mob（たまに少し動く）の得点 |
+| `solo.target.mob-types` | PIG / SHEEP / ZOMBIE | 的に使う Mob の種類（Mob 以外や不明な名前はスキップ） |
+| `solo.target.mob-wander` | true | Mob の的をたまに少し動かす |
+| `solo.target.windcharge-cooldown-seconds` | 1 | ソロ中のウインドチャージのクールタイム（通常戦の `game.windcharge-cooldown-seconds` とは別） |
+| `solo.target.armor-stand-knockback` | 1.6 | 防具立てを風で飛ばす強さ（バニラでは防具立ては風で動かないため WindPvP 側で飛ばす） |
+| `solo.target.min-distance` | 3 | 的を出すとき挑戦者から最低何ブロック離すか |
+
+!!! note "ソロ看板とランキングの管理"
+    ソロ看板は `/windpvp setsign solo`（視線先の看板）で登録し、`/windpvp setsign delete` で解除します。記録は `/windpvp ranking reset <名前>`／`/windpvp ranking reset all`（OP限定）で消去できます。`/windpvp stop` は通常戦が無ければソロ挑戦の強制終了（記録なし）にも使えます。
+
 ### 配布装備（`loadout`）
 
 開始時・リスポーン時に付与する装備を定義します（コード直書きせず config で構築）。`items` の各キーはスロット番号（0〜8がホットバー）で、`material`・`amount`・`name`・`enchantments`・`potion-effects` を指定できます。`offhand` はオフハンド装備です。
@@ -196,14 +226,15 @@ WindPvP の導入・地点設定・看板・config・権限・管理コマンド
 | `/windpvp setspawn <番号>` | 個人スポーンを登録（複数可） |
 | `/windpvp removespawn <番号>` | 個人スポーンを削除 |
 | `/windpvp setfield <1\|2>` | フィールド範囲の角を設定 |
-| `/windpvp setsign <join\|leave\|start\|delete>` | 看板を設定／解除 |
+| `/windpvp setsign <join\|leave\|start\|solo\|delete>` | 看板を設定／解除 |
 | `/windpvp setlives <数>` / `setmax <数>` / `setmin <数>` | 残機・最大・最低人数を設定 |
 | `/windpvp setprotection <秒>` | リスポーン無敵時間を設定 |
 | `/windpvp setcooldown <秒>` | ウインドチャージのクールダウンを設定 |
 | `/windpvp setshrinkdelay <秒>` | 境界縮小開始までの秒数を設定 |
 | `/windpvp wand` | OP用の設定ツール（ブレイズロッド）を受け取る |
 | `/windpvp menu` | 設定メニュー（GUI）を開く |
-| `/windpvp stop` | ゲームを強制終了 |
+| `/windpvp stop` | ゲームを強制終了（通常戦が無ければソロ挑戦を強制終了・記録なし） |
+| `/windpvp ranking reset <名前\|all>` | ソロ「的落とし」の記録を消去（OP限定） |
 | `/windpvp reload` | 設定を再読み込み（最新 config.yml へ自動更新） |
 | `/windpvp lobbyfix <プレイヤー> [force]` | ロビー入室前の持ち物が戻らない時の復旧（`force` で退避データを破棄しロックのみ解除） |
 | `/windpvp status` | 設定状況・現在の状況を確認（全員可） |
@@ -216,7 +247,7 @@ WindPvP の導入・地点設定・看板・config・権限・管理コマンド
 | `windpvp.admin` | OP | 看板設置・各種設定・強制停止・他プレイヤーの join/leave など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/windpvp join`・`/windpvp leave`（自分）・`/windpvp start`・`/windpvp status`・`/windpvp stats` は権限チェックがなく、全プレイヤーが使えます。他プレイヤーを指定する `join <名前>`・`leave <名前>` は `windpvp.admin` が必要です。
+    `/windpvp join`・`/windpvp leave`（自分）・`/windpvp start`・`/windpvp status`・`/windpvp stats`・`/windpvp solo`・`/windpvp ranking` は権限チェックがなく、全プレイヤーが使えます。他プレイヤーを指定する `join <名前>`・`leave <名前>` と `ranking reset` は `windpvp.admin` が必要です。
 
 ## トラブルシューティング
 
@@ -228,6 +259,9 @@ WindPvP の導入・地点設定・看板・config・権限・管理コマンド
 
 ??? failure "config を編集したのに反映されない"
     `/windpvp reload` で再読み込みしてください。足りないキーは自動で補われます。
+
+??? failure "ソロ「的落とし」が始められない"
+    ソロは会場（`setfield` のフィールド範囲）を通常戦と共用します。`setfield 1`・`2` が未設定、通常戦が進行中、または他の人がソロ挑戦中だと始められません。`solo.enabled` が `true` であることも確認してください。空き状況は `/windpvp status` で確認できます。
 
 ??? failure "ロビーに入る前の持ち物が戻らない"
     `/windpvp lobbyfix <プレイヤー>` で個別に復旧できます。退避データ自体が壊れている場合は `/windpvp lobbyfix <プレイヤー> force` でロックだけ解除してください（退避データは破棄されます）。未復元の件数は `/windpvp status` で確認できます。

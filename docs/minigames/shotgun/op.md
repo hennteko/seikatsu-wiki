@@ -126,10 +126,10 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `items.per-reload` | `[1, 2, 3, 3, 4]` | n回目の装填での配布個数（以降は最後の値） |
-| `items.enabled.*` | 全14種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
+| `items.enabled.*` | 全15種 true | 設定GUIと連動。falseのアイテムは全プールから除外 |
 | `items.pool.2` / `.3` / `.4` | 生存者数ごとのリスト | 抽選プール（重複記載で重み付け可）。2人戦はエンダーパール・盾・ベルを外す等 |
 
-アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）/ `SUSPICIOUS`（怪しい薬）/ `DOUBLE_SHOT`（二連発）の14種です。`SUSPICIOUS` は **サドンデス以降のみ** 配布され、金リンゴの枠を置き換えます（50%で残機+1・50%で残機-1）。`DOUBLE_SHOT` は次に相手を撃つとき2発連続で撃ちます。
+アイテムの種類は `SPYGLASS`（望遠鏡）/ `HOPPER`（ホッパー）/ `GOLDEN_APPLE`（金リンゴ）/ `CHAIN`（鎖）/ `GUNPOWDER`（火薬）/ `INVERTER`（反転）/ `COMPASS`（コンパス）/ `STEAL`（盗賊の手）/ `ENDER_PEARL`（エンダーパール）/ `SHIELD`（盾）/ `TOTEM`（不死のトーテム）/ `BELL`（ベル）/ `SUSPICIOUS`（怪しい薬）/ `DOUBLE_SHOT`（二連発）/ `RANDOM_SHOT`（ランダムショット）の15種です。`SUSPICIOUS` は **サドンデス以降のみ** 配布され、金リンゴの枠を置き換えます（50%で残機+1・50%で残機-1）。`DOUBLE_SHOT` は次に相手を撃つとき2発連続で撃ちます。`RANDOM_SHOT` は使った瞬間、次の弾をランダムな生存者（自分を含む）へ発射します。
 
 ### モード・HUD・予想・環境
 
@@ -179,6 +179,7 @@
 | `/shotgun settimer <秒>` | 手番タイマーを設定（10〜120・次の試合から） |
 | `/shotgun settings` | OP用設定アイテム（設定GUI）を配布 |
 | `/shotgun setsign <join [エリア]\|leave\|start <エリア> <br\|dealer\|team>\|delete>` | 看板を設定／解除 |
+| `/shotgun leave <プレイヤー>` | 指定プレイヤーを強制離脱させる（OP限定。引数なしは全員可の自己離脱） |
 | `/shotgun lobbyfix <プレイヤー> [force]` | ロビー退避データを手動で復旧する |
 | `/shotgun stop [エリア]` | ゲームを強制終了（結果なしでロビーへ） |
 | `/shotgun reset` | 緊急リセット（全エリアのアーマースタンド・TextDisplay・BossBar・GUIを完全消去） |
@@ -192,7 +193,7 @@
 | `shotgun.admin` | OP | セットアップ・設定変更・看板設置・強制停止・lobbyfix など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/shotgun join`・`/shotgun leave`・`/shotgun start <モード>`・`/shotgun status`・`/shotgun bet <live\|blank>` は権限チェックがなく、全プレイヤーが使えます。`/shotgun start` は看板クリックと同じく誰でも開始できます。
+    `/shotgun join`・`/shotgun leave`・`/shotgun start <モード>`・`/shotgun status`・`/shotgun bet <live\|blank>`・`/shotgun use` は権限チェックがなく、全プレイヤーが使えます。`/shotgun start` は看板クリックと同じく誰でも開始できます。
 
 ## トラブルシューティング
 

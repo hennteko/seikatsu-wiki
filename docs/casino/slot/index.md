@@ -10,7 +10,7 @@
 </div>
 
 !!! info "CasinoPlugin の中の slot モジュール"
-    スロットは専用jarではなく、エメラルド銀行と8ゲームを1つに統合した **CasinoPlugin** の中の **slot モジュール** です。導入はCasinoPlugin本体を入れるだけで、有効化は `config.yml` の `modules.slot.enabled`、個別設定は `modules/slot.yml` で行います。CasinoPlugin 全体の構成については [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
+    スロットは専用jarではなく、エメラルド銀行と10ゲームを1つに統合した **CasinoPlugin** の中の **slot モジュール** です。導入はCasinoPlugin本体を入れるだけで、有効化は `config.yml` の `modules.slot.enabled`、個別設定は `modules/slot.yml` で行います。CasinoPlugin 全体の構成については [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
 
 ## ページを選ぶ
 

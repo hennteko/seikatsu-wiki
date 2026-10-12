@@ -82,6 +82,71 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
     参加看板を使うには `fpb.play` 権限（既定で全員に付与）が必要です。開始看板のクリックは権限不要で、誰でも開始できます。
 
+## ソロモード「今日の大物」
+
+1人で遊べるデイリーチャレンジです。遊び方は [プレイヤー向けページ](player.md#ソロモード今日の大物) を見てください。
+
+- 入口は **ソロ看板** と `/fpb solo`。ソロで入った人は **ソロ在籍** になり、大会には出場しません（大会の人数表示・定員にも数えません）。`/fpb join` で大会の待機に、待機中に `/fpb solo` でソロに切り替えられます。
+- **釣り場（エリア）は大会と共用** です。大会が待機中でないとソロは始められず、ソロ挑戦中の人がいると大会は始められません（開始看板・`/fpb start` に理由が出ます）。ソロどうしは干渉しないので、`solo.max-concurrent`（既定4人）まで同時に挑戦できます。
+- 必要な設定は大会と同じ4点（初期スポーン・ロビー・エリア角1/2）だけです。挑戦はエリアの中心から始まります。
+- 今日の大物は日付から抽選し、`solo-records.yml` に保存します（その日のうちは再起動しても変わりません）。
+- 記録は `solo-records.yml`（データ用。ConfigUpdater の対象外）。日ごとの記録は `solo.daily.keep-days` 日分だけ残し、魚ごとの最大サイズ・クリア日数・連続クリアは残し続けます。
+- 報酬は大会の入賞報酬と同じ受け取り待ちリスト（`pending-rewards.yml`）に積み、ロビーを出た後に渡します。
+
+```text title="ソロ看板を登録（看板を見て実行）"
+/fpb setsign solo
+```
+
+```text title="ソロ挑戦を止める（全員。釣った記録は残し、挑戦回数は戻す）"
+/fpb stop solo
+```
+
+```text title="ソロ挑戦を1人だけ止める"
+/fpb stop solo <プレイヤー>
+```
+
+```text title="今日の記録と挑戦回数を消す（1人）"
+/fpb solo reset <プレイヤー>
+```
+
+```text title="今日の記録と挑戦回数を消す（全員）"
+/fpb solo reset all
+```
+
+```text title="今日の大物を選び直す（今日の記録はリセット）"
+/fpb solo reroll
+```
+
+- `reset`・`reroll` は、挑戦中の人がいるとできません（先に `/fpb stop solo`）。報酬の受け取り済みは消えないので、同じ日に報酬を二重に受け取ることはありません。
+- config から今日の魚の行を消して `/fpb reload` すると、今日の大物を選び直し、今日の記録をリセットします（別の魚のサイズを同じ順位で比べないため）。
+
+### 魚の調整
+
+出題する魚は `solo.daily.fish`（リスト）で決めます。行を足す・消すと候補が変わります（消した行が次の起動で戻ることはありません）。
+
+| 項目 | 説明 |
+|---|---|
+| `id` | 記録のキー。半角英数字・ハイフン・アンダースコア。**変えると今までの記録とつながらない** |
+| `material` | 釣れるアイテム（例：`SALMON`） |
+| `display` | 表示名 |
+| `weight` | 出題されやすさ（大きいほど出やすい） |
+| `hit-chance` | 1回釣り上げたときに大物がかかる確率（0.01〜1.0） |
+| `min` / `max` | サイズの範囲（cm。`min` は 0 より大きく、`max` は `min` より大きく） |
+| `skew` | 大きいサイズの出にくさ。1.0 で一様、大きいほど出にくい（既定 2.0） |
+| `big-line` | 大物ライン（cm）。これ以上で「大物！」演出と大物ボーナス |
+
+!!! tip "既定値の目安（シミュレーション）"
+    - 既定の4種は、10年分の抽選で出題回数がほぼ 3:3:2:1 になり、前日と同じ魚は出ませんでした。
+    - 1匹あたり大物ラインを超える確率は、タラ約12%・サケ約10%・フグ約11%・熱帯魚約7%です。
+    - 3分の挑戦で10〜15回ほど釣り上げると考えると、1日3回挑戦すればタラ・サケ・フグは大物ボーナスを取れることが多く、熱帯魚の日は難しめです。
+    - 難しすぎると感じたら `hit-chance` を上げるか、`big-line` を下げてください。
+
+!!! warning "solo-records.yml が壊れたとき"
+    手で編集して書式が壊れるなどで `solo-records.yml` が読めないときは、記録を消さないよう **ソロの記録を保存しなくなります**（コンソールと `/fpb status` に表示）。壊れたファイルの控えを `solo-records.yml.broken-数字` に残すので、元のファイルを直して `/fpb reload` してください。
+
+!!! note "統合版（Geyser）"
+    ソロメニューはチェスト画面で表示・タップ操作できます。ネザースター（ソロメニュー）と時計（挑戦を終える）は使う動作の無いアイテムで、統合版の空中タップがサーバーに届かないため、**空中タップ（腕振り）** でも使えるようにしています（`bedrock.swing-to-use`）。ネザースターは **持ってスニーク** でも開きます。lore の改行や色の見え方は実機で確認してください。
+
 ## config.yml 設定項目
 
 ### ゲーム基本設定（`game`）
@@ -197,6 +262,25 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `second-place`（準優勝） | EMERALD | 2 |
 | `third-place`（3位） | EMERALD | 1 |
 
+### ソロモード（`solo`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | false でソロを無効にする（メニュー・ソロ看板から始められない） |
+| `solo.menu-delay` | 3 | 挑戦が終わってからソロメニューを開き直すまで（秒） |
+| `solo.duration-seconds` | 180 | 1回の挑戦の制限時間（秒。30〜3600） |
+| `solo.countdown-seconds` | 3 | 開始前のカウントダウン（秒） |
+| `solo.max-concurrent` | 4 | 同時に挑戦できる人数 |
+| `solo.broadcast` | TOP | 全体告知。`TOP`＝今日の1位が更新されたとき／`BIG`＝大物ライン以上を釣ったとき／`NONE`＝流さない |
+| `solo.ranking-size` | 10 | `/fpb solo top` に表示する人数 |
+| `solo.daily.timezone` | Asia/Tokyo | 日付の区切り（この時刻の0:00に出題が変わる） |
+| `solo.daily.max-tries` | 3 | 1日に挑戦できる回数（0＝無制限） |
+| `solo.daily.avoid-repeat` | true | 前日と同じ魚を出さない |
+| `solo.daily.keep-days` | 7 | 日ごとの記録を残す日数 |
+| `solo.daily.fish` | 4種 | 出題する魚のリスト（上の「魚の調整」） |
+| `solo.rewards.daily-clear` | EMERALD ×1 | その日初めて大物を釣ったときの報酬（`amount: 0` で無し） |
+| `solo.rewards.big-catch` | DIAMOND ×1 | その日初めて大物ライン以上を釣ったときの報酬（`amount: 0` で無し） |
+
 ### 専用釣り竿設定（`fishing-rod`）
 
 | キー | 説明 |
@@ -206,6 +290,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 ### その他のセクション
 
+- `signs` … 看板の位置（`join` / `leave` / `solo` / `start.<識別子>`）。`setsign` で自動更新されます。
 - `locations` … エリア座標の保存先。`/fpb setstartspawn` / `setlobby` / `setfield` / `setfishspot` で自動更新されるため **手動編集は非推奨** です。
 - `messages` … 各種ゲーム内メッセージとプレフィックス。文言を変更できます。
 
@@ -223,6 +308,9 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `/fpb join` / `leave` | ロビーに参加 / 退出する（看板と同等。join は `fpb.play`＝既定全員） |
 | `/fpb start [分]` | ゲームを開始（最小人数を満たせば誰でも可。分を省略すると `default-duration`、1〜60分で指定可） |
 | `/fpb help` / `status` | ヘルプ表示 / 現在の状態・参加人数・座標設定状況を表示 |
+| `/fpb solo` | ソロ「今日の大物」で参加してソロメニューを開く（`fpb.play`） |
+| `/fpb solo start` | メニューを通さずにソロの挑戦を始める |
+| `/fpb solo top` | 今日の大物ランキング |
 
 ### 管理用（`fpb.admin`）
 
@@ -232,17 +320,19 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `/fpb setlobby` | 待機ロビー地点を設定 |
 | `/fpb setfield <1\|2>` | ゲームエリアの角を設定 |
 | `/fpb setfishspot` | 高ポイントゾーンを設定（任意） |
-| `/fpb setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録（テキストは自動書き込み） |
+| `/fpb setsign <join\|leave\|solo\|start>` | 視線先の看板を参加／退出／ソロ／開始看板として登録（テキストは自動書き込み） |
 | `/fpb setsign delete` | 視線先の看板の登録を解除 |
-| `/fpb stop` | ゲームを強制終了 |
+| `/fpb stop [main\|solo] [プレイヤー]` | 強制停止。`main`＝大会、`solo`＝ソロ挑戦（プレイヤー指定で1人だけ）。省略時は進行中の方 |
+| `/fpb solo reset <プレイヤー\|all>` | 今日のソロの記録と挑戦回数を消す |
+| `/fpb solo reroll` | 今日の大物を選び直す（今日の記録はリセット） |
 | `/fpb reload` | config.yml を再読み込み |
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` の使用 |
-| `fpb.play` | 全員 | ゲームに参加できる（参加看板・`/fpb join`） |
+| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` / `solo reset` / `solo reroll` の使用 |
+| `fpb.play` | 全員 | ゲームに参加できる（参加看板・`/fpb join`・ソロ看板・`/fpb solo`） |
 
 !!! note "開始看板・`/fpb start` は権限不要"
     `start` 系の操作（開始看板のクリック・`/fpb start`）には `fpb.admin` も `fpb.play` も不要で、**誰でも**最小参加人数を満たせばゲームを開始できます。
@@ -261,6 +351,12 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 
 ??? failure "`/fpb start` でゲームが開始できない"
     必須座標（初期リスポーン・ロビー・エリア角1/2）が未設定の可能性があります。`/fpb status` で各座標の設定状況を確認し、未設定の項目を `/fpb setstartspawn` / `setlobby` / `setfield 1` / `setfield 2` で設定してください。また参加者が `min-players` 未満の場合も開始できません。
+
+??? failure "`/fpb start` で「ソロ挑戦中の人がいます」と出る"
+    釣り場は大会とソロで共用のため、ソロ挑戦中は大会を始められません。表示された時間（最長3分）待つか、`/fpb stop solo` でソロ挑戦を止めてください（止めた人の挑戦回数は戻ります）。
+
+??? failure "ソロの「大物に挑戦」が押せない"
+    ソロメニューのアイコンに理由が出ます。釣り場が未設定（初期スポーン・ロビー・エリア角1/2）、大会中、満員（`solo.max-concurrent`）、今日の挑戦回数を使い切った、のどれかです。`/fpb status` の「ソロモード」欄でも状況を確認できます。
 
 ??? failure "プレイヤーが看板でゲームに参加できない"
     看板が `/fpb setsign join` で登録されているか確認してください（`/fpb status` の「参加看板」欄で確認可能）。手書きで文字を書いただけの看板は機能しません。また、ロビー座標（`/fpb setlobby`）が設定されていないと参加できません。プレイヤーに `fpb.play` 権限があるかも確認してください。

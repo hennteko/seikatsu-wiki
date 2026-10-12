@@ -9,7 +9,7 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | Aooni |
-| バージョン | 1.0.0 |
+| バージョン | 1.5.0 |
 | api-version | 26.1.2 |
 | 作者 | henry |
 | メインコマンド | `/aooni` |
@@ -59,19 +59,57 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
     鍵は試合開始時に一斉配置され（`key-spawn.initial-fill: true`）、以降も **`key-spawn.interval` 秒（既定10秒）ごとの補充判定**で `key-spawn.chance`（既定1.0＝毎回）の確率で実行されます。チェストに同時に存在する鍵の総数は **「逃走中の各逃走者が あと何本必要か の合計 × `stock-multiplier`（既定2.0）」（切り上げ）** に保たれ、**1チェストにつき `max-per-chest` 本（既定2本）まで**、回収されて空になったチェストには再補充されます（目標数に達していれば何も追加しません）。補充時は全員に「どこかのチェストに鍵が出現した…！」と通知されます。逃走者はチェストを開けて鍵を回収します（チェストは通常どおり開きます）。鍵の供給ペースは `match-duration` と `key-spawn.*` のバランスで決まるため、**逃走者が必要本数を集められるか**を試遊で確認して調整してください。
 
 !!! note "残機と復帰アスレ"
-    逃走者は `game.runner-lives`（既定3）の残機を持ちます。青鬼に捕まると残機が1減り、**鍵を持ったまま**逃走者スポーンへ戻されます（`respawn-invincible` 秒の無敵・発光つき）。残機0になると鍵を没収して **復帰アスレ**（後述の `/aooni setparkour` で設定する難易度別3コース）へ送られ、クリアするとコースごとの残機で逃走者に復活します（鍵は0本から）。**復帰アスレを1つも設置していない場合は、残機0で捕まるとそのまま青鬼になります（旧ルール）。**
+    逃走者は `game.runner-lives`（既定3）の残機を持ちます。青鬼に捕まると残機が1減り、**鍵を持ったまま**逃走者スポーンへ戻されます（`respawn-invincible` 秒の無敵・発光つき）。残機0になると鍵を没収して **復帰アスレ**（後述の `/aooni setparkour` で設定。スタート1つ＋ゴール3つ）へ送られ、着いたゴールごとの残機で逃走者に復活します（鍵は0本から）。**復帰アスレを1つも設置していない場合は、残機0で捕まるとそのまま青鬼になります（旧ルール）。**
 
 ### parkour セクション（復帰アスレ）
 
-残機0の逃走者が送られる復帰アスレの設定です。スタート地点・ゴールは `/aooni setparkour <easy|normal|hard> <start|goal>`（または `/aooni tool` のGUI）で登録し、`locations.yml` に保存されます。未設置のコースは選択肢に出ません。設置済みが1つだけならGUIを出さずにそのコースへ直行します。
+残機0の逃走者が送られる復帰アスレの設定です。スタートは1つ、ゴールは3つ（初級／中級／上級）で、**どのゴールに着いたかで復活時の残機が変わります**。スタートは `/aooni setparkour start`、ゴールは `/aooni setparkour goal <easy|normal|hard>`（または `/aooni tool` のGUI）で登録し、`locations.yml` に保存されます。未設置のゴールは無視されます（ゴール1つでも動きます）。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `parkour.courses.easy.name` / `normal.name` / `hard.name` | `&a初級` / `&e中級` / `&c上級` | コースの表示名（`&` カラーコード可） |
-| `parkour.courses.easy.lives` / `normal.lives` / `hard.lives` | 1 / 2 / 3 | そのコースをクリアしたときに復活する残機 |
-| `parkour.select-timeout` | 20 | コース選択GUIの制限時間（秒）。過ぎたら一番易しいコースに自動決定（統合版でGUIが出ない場合の保険） |
+| `parkour.goals.easy.name` / `normal.name` / `hard.name` | `&a初級ゴール` / `&e中級ゴール` / `&c上級ゴール` | ゴールの表示名（`&` カラーコード可） |
+| `parkour.goals.easy.lives` / `normal.lives` / `hard.lives` | 1 / 2 / 3 | そのゴールに着いたときに復活する残機 |
 | `parkour.goal-radius` | 1.5 | ゴール判定の半径（ブロック） |
 | `parkour.fall-distance` | 8 | スタート地点よりこのブロック数以上下に落ちたらスタートへ戻す |
+
+### solo セクション（ソロ脱出）
+
+1人で CPU青鬼と遊ぶソロ脱出の設定です。会場は通常戦と共用で、**追加の地点設定は不要**（ソロ看板だけ任意）です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | `false` でソロを無効にする |
+| `solo.menu-delay` | 3 | 試合後ロビーへ戻ってからソロメニューを開き直すまで（秒） |
+| `solo.result-seconds` | 5 | 結果を表示してから片付けてロビーへ戻すまで（秒） |
+| `solo.countdown` | 3 | 開始前のカウントダウン（秒） |
+| `solo.default-difficulty` | normal | メニューのランキング欄・`/aooni ranking` で難易度を省略したときの難易度 |
+| `solo.ranking-size` | 10 | `/aooni ranking` に表示する人数 |
+| `solo.broadcast-best` | true | 自己ベスト更新時だけサーバー全体に告知する |
+| `solo.oni.entity` | ZOMBIE | CPU青鬼の種類（ZOMBIE / HUSK / DROWNED / ZOMBIE_VILLAGER） |
+| `solo.oni.name` / `armor-color` | `&9青鬼` / `#3355FF` | 頭上の名前・革防具の色（空で防具なし） |
+| `solo.oni.spawn-interval` | 10 | 開始時に複数体出すときの間隔（秒） |
+| `solo.oni.catch-radius` | 1.2 | この距離まで近づかれたら捕獲（統合版でも差が出ないようサーバー側で判定） |
+| `solo.oni.catch-freeze` | 2 | 捕まえた後、青鬼全員が止まる秒数（連続捕獲の防止） |
+| `solo.oni.stuck-seconds` | 5 | 動けない状態がこの秒数続いたら、挑戦者から見えない巡回先へワープ |
+| `solo.oni.spawn-guard-radius` | 8 | 挑戦者がアスレ中、逃走者スポーンのこの半径には近づかない |
+
+難易度は `solo.difficulty.<id>` に書きます（書いた順にメニューへ並ぶ・最大3つ）。
+
+| キー | かんたん | ふつう | むずかしい | 説明 |
+|---|---|---|---|---|
+| `oni-count` | 1 | 1 | 2 | 開始時の青鬼の数 |
+| `reinforce-every` / `oni-max` | 0 / 1 | 0 / 1 | 120 / 3 | 何秒ごとに+1体（0で増えない）／上限 |
+| `speed` | 0.20 | 0.25 | 0.30 | 移動速度（Mob の属性値。ゾンビの標準は 0.23） |
+| `sight` | 12 | 18 | 24 | 視界（ブロック） |
+| `hearing` | 0 | 16 | 32 | 鍵を取る音が聞こえる距離（0で聞かない） |
+| `search-seconds` | 5 | 10 | 15 | 見失ってから探す秒数 |
+| `think-ticks` | 20 | 10 | 10 | 判断の間隔（tick） |
+| `lives` | 5 | 3 | 2 | 残機 |
+| `keys` | 2 | 3 | 4 | 脱出に必要な鍵の本数 |
+| `parkour-limit` | 3 | 2 | 1 | アスレ送りの上限回数（超えたら失敗。0で無制限） |
+| `time` | 420 | 300 | 240 | 制限時間（秒） |
+
+記録は `plugins/Aooni/solo-records.yml`（難易度ごとの最速タイム・クリア回数・挑戦回数・前回の結果）に保存されます。leave・切断・`/aooni stop` で終わった挑戦は記録されません。
 
 ### loadout セクション
 
@@ -91,7 +129,7 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 
 ### messages / sign セクション
 
-`messages` には各種通知文（`&` カラーコード対応）、`sign` には参加 / 離脱 / 開始 / 立候補看板に書き込まれるテキストが定義されています。プレフィックスは `messages.prefix`（既定 `&b[青鬼] `）です。看板テキストの `%current%` / `%max%` はロビー人数・最大人数に、立候補看板の `%count%` は立候補者数に置換されます。残機・復帰アスレ・個人脱出の導入にともない、`caught`（捕獲＝残機減）・`sent-parkour`（アスレ送り）・`parkour-choose` / `parkour-chosen` / `parkour-clear`（コース選択・クリア）・`escaped` / `escaped-list`（個人脱出）・`escape-need-keys`（鍵不足）・`key-no-share` / `key-enough`（受け渡し不可・必要本数達成）などの通知文も追加されています（`%player%` / `%lives%` / `%course%` / `%have%` / `%required%` 等を置換）。
+`messages` には各種通知文（`&` カラーコード対応）、`sign` には参加 / 離脱 / 開始 / 立候補看板に書き込まれるテキストが定義されています。プレフィックスは `messages.prefix`（既定 `&b[青鬼] `）です。看板テキストの `%current%` / `%max%` はロビー人数・最大人数に、立候補看板の `%count%` は立候補者数に置換されます。残機・復帰アスレ・個人脱出の導入にともない、`caught`（捕獲＝残機減）・`sent-parkour`（アスレ送り）・`parkour-guide` / `parkour-clear`（アスレの案内・ゴール到達）・`solo-*`（ソロ脱出）・`escaped` / `escaped-list`（個人脱出）・`escape-need-keys`（鍵不足）・`key-no-share` / `key-enough`（受け渡し不可・必要本数達成）などの通知文も追加されています（`%player%` / `%lives%` / `%course%` / `%have%` / `%required%` 等を置換）。
 
 ## セットアップ手順
 
@@ -125,17 +163,17 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 /aooni addlocker
 ```
 
-復帰アスレ（残機0の逃走者の送り先）を設定する場合は、各コースについて **スタート地点（現在地）** と **ゴール（視線先のブロック）** を登録します。コースは `easy` / `normal` / `hard` の3種です（任意・設置したコースだけが選択肢に出ます）。
+復帰アスレ（残機0の逃走者の送り先）を設定する場合は、**スタート地点（現在地）** を1つと、**ゴール（視線先のブロックの上）** を `easy` / `normal` / `hard` の最大3つ登録します（任意）。
 
-```text title="⑧ 復帰アスレ・初級のスタート地点を現在地に設定"
-/aooni setparkour easy start
+```text title="⑧ 復帰アスレのスタート地点を現在地に設定"
+/aooni setparkour start
 ```
 
-```text title="⑨ 復帰アスレ・初級のゴールを視線先のブロックに設定"
-/aooni setparkour easy goal
+```text title="⑨ 復帰アスレの初級ゴールを視線先のブロックに設定"
+/aooni setparkour goal easy
 ```
 
-同様に `/aooni setparkour normal start|goal`、`/aooni setparkour hard start|goal` で中級・上級も登録できます。
+同様に `/aooni setparkour goal normal`、`/aooni setparkour goal hard` で中級・上級ゴールも登録できます。
 
 登録の解除も視線先のブロックを見ながら実行できます。
 
@@ -161,7 +199,7 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 4. 脱出ドアにするブロックを見ながら `/aooni setgoal` を実行する。
 5. 鍵チェスト（チェスト／トラップチェスト）を見ながら `/aooni addchest` を実行する。別のチェストで繰り返すと複数登録できます（解除は `/aooni removechest`）。
 6. （任意）隠れ場所にするブロックを見ながら `/aooni addlocker` を実行する。こちらも複数登録できます（解除は `/aooni removelocker`）。
-7. （任意・推奨）復帰アスレを各コースで `/aooni setparkour <easy|normal|hard> <start|goal>` で設定する。設置しない場合、残機0の逃走者はその場で青鬼になります（旧ルール）。
+7. （任意・推奨）復帰アスレを `/aooni setparkour start` と `/aooni setparkour goal <easy|normal|hard>` で設定する。設置しない場合、残機0の逃走者はその場で青鬼になります（旧ルール）。
 8. `/aooni status` で各設定状況を確認する。
 
 !!! warning "ゲーム開始に必須の設定"
@@ -228,9 +266,28 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 3. ゲームは「カウントダウン（既定15秒）→ 役割抽選 → 鍵集め＆逃走（捕獲で残機減・残機0で復帰アスレ・個人脱出で観戦化）→ 逃走中の逃走者が全滅して決着」と進行します。
 4. 終了から既定10秒後（`result-seconds`）に参加者は自動でロビーへ戻され、参加状態が維持されます。
 
+## ソロ脱出の運営
+
+- **入口** … `/aooni solo`（ソロメニュー）／`/aooni solo <easy|normal|hard>`（即開始）／ソロ看板（`/aooni setsign solo`。4行目に「空き／挑戦中 名前／通常戦 中／会場未設定」を自動表示）。
+- **会場の共用** … 通常戦とソロは同時に動きません。ソロ挑戦中は `/aooni start`・開始看板が拒否され、通常戦中はソロを始められません。ソロも同時に1人までです。ソロ挑戦中でも通常戦のロビー参加（`/aooni join`）は受け付けます。
+- **開始条件** … 通常戦と同じ（初期スポーン・ロビー・青鬼スポーン・逃走者スポーン・脱出ドア・鍵チェスト1個以上）。復帰アスレは任意（無い場合、残機0で失敗）。
+- **CPU青鬼** … 鍵チェストと隠れ場所の横を巡回先にします（別途の巡回ルート設定は不要）。チェスト・隠れ場所が少ないと巡回が単調になるので、通常戦と同じくマップ全体に散らして設置してください。ゾンビはドアを開けられないため、通路にドアがある場合は開けたままにしてください。
+- **stop** … `/aooni stop` は通常戦が無ければソロ挑戦を止めます（記録なし・挑戦者はロビーへ戻りメニューが開く）。
+- **後片付け** … CPU青鬼はワールドに保存されず、試合終了・停止・プラグイン停止で消えます。クラッシュで残った場合もチャンク読み込み時に自動で消えます。
+- **数値調整** … `/aooni tool` の GUI で「ふつう」の速さ・視界・制限時間を変更できます。他の難易度は `config.yml` を編集して `/aooni reload`。
+
+```text title="ソロ看板を登録（看板を見ながら）"
+/aooni setsign solo
+```
+
+```text title="ソロのランキング・記録の削除"
+/aooni ranking [easy|normal|hard]
+/aooni ranking reset <名前|all>
+```
+
 ## コマンド一覧
 
-`join` / `leave` / `start` / `stats` / `status` は **全プレイヤー** が利用でき、それ以外のセットアップ・管理コマンドは `aooni.admin`（既定OP）が必要です。`join` / `leave` にプレイヤー名を付けて他プレイヤーを操作する場合は `aooni.admin` が必要です。
+`join` / `leave` / `start` / `stats` / `status` / `solo` / `ranking` は **全プレイヤー** が利用でき、それ以外のセットアップ・管理コマンドは `aooni.admin`（既定OP）が必要です。`join` / `leave` にプレイヤー名を付けて他プレイヤーを操作する場合は `aooni.admin` が必要です。
 
 | コマンド | 必要権限 | 説明 |
 |---|---|---|
@@ -240,23 +297,26 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
 | `/aooni start` | 全員 | ゲームを開始する（開始看板と同じ） |
 | `/aooni stats [名前]` | 全員 | 成績を表示する（名前省略で自分） |
 | `/aooni status` | 全員 | 設定状況を確認する |
+| `/aooni solo [easy\|normal\|hard]` | 全員 | ソロ脱出（難易度なし＝ソロメニュー、指定＝即開始） |
+| `/aooni ranking [easy\|normal\|hard]` | 全員 | ソロ脱出のランキング |
+| `/aooni ranking reset <名前\|all>` | aooni.admin | ソロの記録を消す（コンソール可） |
 | `/aooni setstartspawn` | aooni.admin | 初期スポーン（戻り先）を現在地に設定する |
 | `/aooni setlobby` | aooni.admin | ロビー地点を現在地に設定する |
 | `/aooni setspawn <oni\|runner>` | aooni.admin | 青鬼／逃走者スポーンを現在地に設定する |
 | `/aooni setgoal` | aooni.admin | 視線先のブロックを脱出ドアに設定する |
-| `/aooni setparkour <easy\|normal\|hard> <start\|goal>` | aooni.admin | 復帰アスレのコース別スタート（現在地）／ゴール（視線先）を設定する |
+| `/aooni setparkour start` ／ `goal <easy\|normal\|hard>` | aooni.admin | 復帰アスレのスタート（現在地）／ゴール（視線先のブロック）を設定する |
 | `/aooni addchest` | aooni.admin | 視線先のチェストを鍵チェストに登録する（複数可） |
 | `/aooni removechest` | aooni.admin | 視線先の鍵チェストの登録を解除する |
 | `/aooni addlocker` | aooni.admin | 視線先のブロックを隠れ場所に登録する（複数可） |
 | `/aooni removelocker` | aooni.admin | 視線先の隠れ場所の登録を解除する |
-| `/aooni setsign <join\|leave\|start\|oni>` | aooni.admin | 視線先の看板を各種看板に登録する |
+| `/aooni setsign <join\|leave\|start\|oni\|solo>` | aooni.admin | 視線先の看板を各種看板に登録する（solo＝ソロ看板） |
 | `/aooni setsign delete` | aooni.admin | 視線先の看板の登録を解除する（種別は自動判別） |
 | `/aooni setmax <人数>` | aooni.admin | 最大人数を設定する（config に即保存） |
 | `/aooni setmin <人数>` | aooni.admin | 最小人数を設定する（config に即保存） |
 | `/aooni settime <秒>` | aooni.admin | 制限時間を設定する（config に即保存） |
 | `/aooni setkeys <本数>` | aooni.admin | 必要鍵本数を設定する（config に即保存） |
 | `/aooni tool` | aooni.admin | OP用設定アイテムを受け取る（GUIで数値・地点を設定・即保存） |
-| `/aooni stop` | aooni.admin | ゲームを強制終了する |
+| `/aooni stop` | aooni.admin | ゲームを強制終了する（通常戦が無ければソロ挑戦を止める） |
 | `/aooni reload` | aooni.admin | config.yml を再読み込みする |
 | `/aooni forceunlock <プレイヤー>` | aooni.admin | 他ゲーム参加中フラグを強制解除する（コンソール可） |
 
@@ -282,7 +342,8 @@ Aooni（青鬼）の導入・会場の設定・config・権限・管理コマン
     - 鍵の回収（個人制・受け渡し不可・必要本数超過は不可。`chest-reveal: true` の場合のみ取り出し時に発光＋青鬼へ通知。既定は発光しない）
     - 隠れ場所（右クリックで一時透明化・クールダウン）
     - 個人脱出判定（必要本数の鍵を所持して脱出ドアへ接近 → 観戦化・試合は続行）
-    - 残機制（捕獲で残機-1・鍵維持・無敵つきで逃走者スポーンへ）と復帰アスレ（残機0で鍵没収・難易度別3コースをGUIで選択・クリアで復活）
+    - 残機制（捕獲で残機-1・鍵維持・無敵つきで逃走者スポーンへ）と復帰アスレ（残機0で鍵没収・着いたゴールに応じた残機で復活）
+    - ソロ脱出（CPU青鬼＝AI化したゾンビ・難易度3種・ソロメニュー/ソロ看板・難易度別ランキング）
     - フォールバック感染（復帰アスレ未設定時のみ、残機0で青鬼化）
     - 残り時間・人数・脱出者数・逃走者の鍵所持数のアクションバー表示、残り時間のチャット通知
     - 勝敗判定（逃走中の逃走者が全滅 → 脱出者ありで逃走者勝利／なしで青鬼勝利、時間切れは脱出者ありで逃走者勝利・なしで引き分け）

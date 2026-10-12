@@ -90,7 +90,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 ```
 
 !!! note "エリア名は任意・回収物は候補から抽選"
-    `area1` は例です。`/scrap setfield <好きな名前> 1` で任意名のエリアが自動作成されます。回収物は登録した候補地点から、ラウンド開始時に `loot.count-per-round`（既定12）個だけ抽選配置されます（候補が少なければ全部）。サイズを `random` で登録すると小・中・大からランダムになります。
+    `area1` は例です。`/scrap setfield <好きな名前> 1` で任意名のエリアが自動作成されます。回収物は登録した候補地点から、ラウンド開始時に `loot.count-per-round`（既定 30→35→40）個だけ抽選配置されます（候補が少なければ全部。不足分は `loot.auto-fill` で周囲に自動配置）。サイズを `random` で登録すると小・中・大からランダムになります。
 
 ## ルート（ラウンドごとのエリア切替）
 
@@ -124,12 +124,16 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 /scrap setsign shop
 ```
 
+```text title="ソロ看板を登録（クリックでソロのロビーへ・4行目に会場の空き状況を自動表示）"
+/scrap setsign solo
+```
+
 ```text title="視線先の看板の登録を解除（種別を自動判別・テキストもクリア）"
 /scrap setsign delete
 ```
 
 !!! success "看板は複数設置できます"
-    参加・離脱・開始・ショップの各看板を **複数拠点に設置** できます（開始看板はエリア／ルート識別子ごと）。登録は上書きではなく **追記** され、`/scrap setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join` / `signs.leave` / `signs.shop`（`"ワールド名,x,y,z"` のリスト）・`signs.start.<エリア|ルート>`（リスト）です。
+    参加・離脱・開始・ショップの各看板を **複数拠点に設置** できます（開始看板はエリア／ルート識別子ごと）。登録は上書きではなく **追記** され、`/scrap setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join` / `signs.leave` / `signs.shop` / `signs.solo`（`"ワールド名,x,y,z"` のリスト）・`signs.start.<エリア|ルート>`（リスト）です。
 
 ## config.yml 設定項目
 
@@ -142,7 +146,9 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `min-players` | 1 | 最低人数（テスト用に1人開始を許可。0は常に拒否） |
 | `max-players` | 8 | 最大参加人数 |
 | `countdown-seconds` | 10 | 開始カウントダウン |
-| `round-seconds` | 240 | 1ラウンドの制限時間（秒） |
+| `round-seconds` | 240 | 1ラウンド目の制限時間（秒） |
+| `round-seconds-growth` | 20 | 2ラウンド目以降、毎ラウンドこの秒数だけ延長（0で全ラウンド同じ） |
+| `round-seconds-max` | 420 | 延長の上限（秒） |
 | `shop-seconds` | 60 | ラウンド間のショップ時間（秒） |
 | `result-seconds` | 15 | 結果発表の表示秒数 |
 | `depart-countdown` | 5 | 全員乗車後に出発するまでの秒数 |
@@ -164,6 +170,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `loot.auto-fill` | true | 候補地点が足りないとき、登録地点の周囲に自動で散らして補う |
 | `loot.scatter-radius` | 5 | 自動配置の散らばり半径（ブロック） |
 | `loot.value-variance` | 0.3 | 価値のバラツキ（±30%） |
+| `loot.value-ratio` | 1.6 | 配置する回収物（擬態を除く）の合計価値を「ノルマ × この倍率」以上に保証する。足りないラウンドは全回収物の価値を同じ割合で底上げ（数は増やさない）。0で無効 |
 | `loot.base-value` | small:150 / medium:500 / large:1500 | サイズ別の基準価値 |
 | `loot.speed-penalty` | small:0.15 / medium:0.40 / large:0.40 | サイズ別の移動速度低下 |
 | `loot.large-max-distance` | 4.0 | 大型品の2人運搬で許される距離 |
@@ -264,6 +271,54 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `items.decoy-seconds` | 10 | おとりの持続秒数 |
 | `items.flare-seconds` | 20 | フレアの持続秒数 |
 
+### ソロ（`solo`）
+
+1人用のソロモードです。会場（エリア／ルート）は通常戦と共用で、**通常戦とソロを合わせて同時に1試合だけ** 動きます。ソロ在籍は通常ロビーとは別で、どちらか一方にしか入れません。ソロ挑戦中でも通常ロビーへの参加（待機）はできますが、開始はソロが終わってからです。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | `false` でソロを無効にする |
+| `solo.route` | `""` | ソロで使うエリア／ルート。空なら最初に登録されたもの（2つ以上あるなら指定推奨。`/scrap status` で警告） |
+| `solo.countdown` | 3 | 開始前のカウントダウン（秒） |
+| `solo.result-seconds` | 5 | 結果表示から片付けまで（秒） |
+| `solo.menu-delay` | 3 | ロビーへ戻ってからソロメニューを開き直すまで（秒） |
+| `solo.respawn-seconds` | 5 | 残機が残っているとき、カートで復活するまで（秒） |
+| `solo.default-difficulty` | normal | メニューのランキング欄・`/scrap ranking` で難易度を省略したとき |
+| `solo.ranking-size` | 10 | `/scrap ranking` に表示する人数 |
+| `solo.broadcast-best` | true | 自己ベスト更新時だけサーバー全体に告知する |
+| `solo.scanner.ping-count` | 3 | 探知機で光らせる回収物の数（近い順） |
+| `solo.scanner.ping-seconds` | 6 | 光の柱を出す秒数 |
+| `solo.scanner.particle` | END_ROD | 柱のパーティクル（統合版で見えにくい場合は `DUST`） |
+
+難易度は `solo.difficulty.<id>`（easy / normal / hard。書いた順にメニューへ並ぶ・最大3つ）に書きます。キーが無い項目は id ごとの既定値で補います。
+
+| キー | easy | normal | hard | 説明 |
+|---|---|---|---|---|
+| `name` | かんたん | ふつう | むずかしい | 表示名（&カラーコード可） |
+| `rounds` | 3 | 5 | 7 | ラウンド数 |
+| `quota-mul` | 0.35 | 0.5 | 0.7 | ノルマの倍率（通常戦のノルマ × この値。100単位・最低100） |
+| `time-bonus` | 60 | 30 | 0 | 制限時間の上乗せ（秒） |
+| `lives` | 3 | 2 | 1 | 残機（死亡でカート復活。0で失敗） |
+| `start-funds` | 1000 | 500 | 0 | 開始時の資金 |
+| `lanterns` | 2 | 1 | 1 | 開始時のランタン数 |
+| `mimic` | 0 | 1 | 2 | 擬態の数 |
+| `collector-seconds` | 0 | 30 | 45 | 督促者が出る残り秒数（0で出ない） |
+| `outage-chance` | 0.0 | 0.3 | 0.7 | 停電の確率 |
+| `cart-malfunction` | false | false | true | カート故障 |
+| `monster.speed-mul` / `hearing-mul` / `sight-mul` | 0.75 / 0.5 / 0.6 | 0.9 / 0.75 / 0.8 | 1.0 / 1.0 / 1.0 | 怪異の速度・聴覚・視界の倍率 |
+| `monster.damage-mul` | 0.6 | 0.8 | 1.0 | 怪異のダメージの倍率 |
+| `monster.excite` | false | true | true | 大きな音で怪異が加速するか |
+| `monster.wave-delay-mul` | 1.5 | 1.25 | 1.0 | ウェーブの出現時刻の倍率（大きいほど遅く出る） |
+| `monster.max-alive` | 2 | 3 | 4 | 同時に出る怪異の上限（督促者は除く。0で無制限） |
+| `monster.exclude-types` | TALL, WRAITH, DOPPEL | TALL | なし | 出さない怪異 |
+| `hint.scanner-cooldown` | 15 | 30 | 60 | 探知機の間隔（秒） |
+| `hint.scanner-noise` | 0 | 8 | 16 | 探知機を使ったときの音の半径（0で無音） |
+| `hint.auto-ping-seconds` | 30 | 0 | 0 | 自動ソナーの間隔（0で無効） |
+| `hint.show-mimic` | true | false | false | 探知機で擬態を赤い柱で見分けられる |
+| `route` | — | — | — | この難易度だけ別の会場を使う（省略時は `solo.route`） |
+
+記録は `plugins/Scrap/solo-records.yml`（難易度ごとの最高記録・クリア回数・挑戦回数・前回の結果）に保存されます。並びは「クリア済み（タイムが速い順）→ 未クリア（到達ラウンド → 総納品額）」です。`/scrap leave`・切断・`/scrap stop` で終わった挑戦は記録されません。`/scrap stop` はソロ中にも使え、挑戦者をロビーへ戻してソロメニューを開き直します（在籍は維持）。
+
 ### ショップ（`shop`・価格。0で非表示）
 
 | キー | 既定価格 | 効果 |
@@ -294,6 +349,28 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 !!! note "自動生成される領域（手動編集不要）"
     `default-spawn` / `lobby-spawn` / `areas`（フィールド・カート・スポーン・回収物地点・怪異出現地点・ランタン地点・ウェーブ）/ `routes`（ルート）/ `signs`（看板）はコマンドで自動生成・自動保存されます。手動編集は不要です。値を変えたら `/scrap reload`（試合中は不可）で反映します。
 
+### 参加表示・参加通知（`name-tag`）
+
+参加すると頭上ネームタグ・Tabリスト・チャットの名前が「【ゲーム名】名前」になり、離脱・ログアウト・プラグイン停止で元に戻ります。参加時にはサーバー全体へ参加通知を出します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `name-tag.enabled` | true | `false` で名前表示を付けない |
+| `name-tag.display-name` | SCRAP | 【】に入れる正式名 |
+| `name-tag.color` | GOLD | 【ゲーム名】の色（GOLD / AQUA / GREEN / RED / YELLOW など） |
+| `name-tag.announce-join` | true | `false` でサーバー全体への参加通知を出さない |
+
+### 統合版対応（`bedrock`）
+
+Geyser / Floodgate 経由の統合版プレイヤー向けの互換設定です（`softdepend: floodgate, Geyser-Spigot`）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `bedrock.wax-signs` | true | 登録看板を蝋引きする（統合版のタップで編集画面が開かないように） |
+| `bedrock.swing-to-use` | true | 空中タップ（腕振り）でも特殊アイテムを使えるようにする（ランタン・医療キット・フレア・取引端末、担いだ物を置く、視線先の回収物を拾う、スタンバットの空振り補助） |
+| `bedrock.spectator-style` | AUTO | 観戦方式（`AUTO`＝統合版だけゴースト観戦／`GHOST`＝全員ゴースト／`VANILLA`＝全員観戦モード） |
+| `bedrock.name-prefix` | `"."` | Floodgate が入っていないときに統合版と見なす名前の接頭辞 |
+
 ## 管理コマンド
 
 | コマンド | 説明 |
@@ -310,11 +387,13 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `/scrap delpoint` | 視線先3ブロック以内の登録地点を削除 |
 | `/scrap setroute <ルート名> <エリア...>` | ルートを作成 |
 | `/scrap delroute <ルート名>` | ルートを削除 |
-| `/scrap setsign <join\|leave\|start <エリア\|ルート>\|shop\|delete>` | 看板を設定／解除 |
+| `/scrap setsign <join\|leave\|start <エリア\|ルート>\|shop\|solo\|delete>` | 看板を設定／解除 |
 | `/scrap arealist` | エリア一覧・ルート一覧を表示 |
 | `/scrap delarea <エリア>` | エリアを削除（開始看板の登録も解除） |
 | `/scrap leave <プレイヤー>` | 指定プレイヤーを強制離脱させる |
-| `/scrap wand` | OP用の設定ツール（SETUP_WAND）を入手する |
+| `/scrap wand [エリア]` | OP用の設定ツール（SETUP_WAND）を入手する（右クリック/タップで地点登録・左クリックで削除） |
+| `/scrap wand menu` | 設定ツールのモード選択GUIを開く（統合版向け） |
+| `/scrap wand next` | 設定ツールのモードを順送りする（統合版向け） |
 | `/scrap lobbyfix <プレイヤー> [force]` | ロビー退避データを手動で復旧する |
 | `/scrap stop` | ゲームを強制終了（全員復元してロビーへ） |
 | `/scrap reset` | 緊急リセット（回収物・怪異・頭・光源・BossBarを完全消去） |
@@ -328,7 +407,7 @@ SCRAP の導入・エリア設定・看板・config・権限・管理コマン�
 | `scrap.admin` | OP | セットアップ・看板設置・強制停止・強制離脱・lobbyfix など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/scrap join`・`/scrap leave`（自分）・`/scrap start <エリア>`・`/scrap status`・`/scrap drop`・`/scrap shop`（ショップ時間のみ）は権限チェックがなく、全プレイヤーが使えます。`/scrap start` は看板クリックと同じく誰でも開始できます。`/scrap leave <プレイヤー>` の他人指定だけは `scrap.admin` が必要です。
+    `/scrap join`・`/scrap leave`（自分）・`/scrap start <エリア>`・`/scrap status`・`/scrap drop`・`/scrap shop`（ショップ時間のみ）・`/scrap solo [難易度]`・`/scrap ranking [難易度]` は権限チェックがなく、全プレイヤーが使えます。`/scrap start` は看板クリックと同じく誰でも開始できます。`/scrap leave <プレイヤー>` の他人指定だけは `scrap.admin` が必要です。
 
 ## トラブルシューティング
 

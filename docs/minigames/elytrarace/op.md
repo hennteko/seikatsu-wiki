@@ -11,13 +11,13 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 | プラグイン名 | ElytraRace |
 | バージョン | 1.0.0 |
 | 対応サーバー | Paper 1.26.x（api-version 26.1.2） |
-| メインコマンド | `/elytrarace`（エイリアス `/er`）/ join・leave・start・practice・ranking・stats・status は全員可、設定系は `elytrarace.admin` |
+| メインコマンド | `/elytrarace`（エイリアス `/er`）/ join・leave・start・solo・practice・retry・ghost・ranking・stats・status は全員可、設定系は `elytrarace.admin` |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/ElytraRace/config.yml`（設定・地点・コース・看板をすべて保存） |
 | 記録ファイル | `plugins/ElytraRace/records.db`（SQLite。ベストタイム・統計。自動生成） |
 
 !!! success "実装状況：新規追加ゲーム"
-    エリトラ飛行によるチェックポイント・レース、**対戦レース／練習モードの2モード**、ロケット花火の自動補充、疑似死亡（クラッシュ時のチェックポイント送還）、パーティクルによるリング可視化、順位サイドバー、SQLiteによるベストタイム記録・ランキング、看板5種（参加／離脱／開始／練習／ランキング）に対応しています。
+    エリトラ飛行によるチェックポイント・レース、**対戦レース／ソロ（ゴースト・区間タイム付き。旧・練習モード）の2モード**、ロケット花火の自動補充、疑似死亡（クラッシュ時のチェックポイント送還）、パーティクルによるリング可視化、順位サイドバー、SQLiteによるベストタイム記録・ランキング、看板6種（参加／離脱／開始／ソロ（メニュー）／ソロ（コース指定・旧練習）／ランキング）に対応しています。
 
 ## 導入手順
 
@@ -28,8 +28,8 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 5. 参加・開始などの看板を設置する。
 6. 設定を変更したら `/elytrarace reload` で再読み込みする。
 
-!!! warning "既存サーバーを更新する場合の注意（config の自動追記なし）"
-    本プラグインは起動時に **`saveDefaultConfig()` のみ** を実行します。**既存の `config.yml` があっても新しいキーは自動追記されません**。ただしコード側がすべてのキーに既定値を持つため、キーが不足していても既定値で動作します。新しい設定項目を反映したい場合は、既存 `config.yml` に手動で追記するか、退避して再生成してください。**地点・コース・看板は各設定コマンドの実行時に即 `config.yml` へ自動保存** されます（手書き編集は不要）。
+!!! note "既存サーバーを更新する場合（config は自動追記されます）"
+    本プラグインは起動時に、サーバー上の `config.yml` を jar 内の最新版と突き合わせ、**不足しているキーを既定値＋コメント付きで自動追記** します（既存の値は変更しません／追記があったときだけ更新前を `config.yml.bak-日時` に退避）。バージョンアップ後に新しい設定項目が追加された場合も、起動するだけで反映されます。地点・コース・看板などのデータ領域（`signs` / `courses` / `default-spawn` / `lobby-spawn`）は補完対象外で、**各設定コマンドの実行時に即 `config.yml` へ自動保存** されます（手書き編集は不要）。
 
 !!! tip "サーバー実装について"
     Paper 1.26.x（api-version 26.1.2）を対象にビルドされています。エリトラ飛行・パーティクル・スコアボードを多用するため、Paper の採用を推奨します。
@@ -105,7 +105,7 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 /elytrarace setsign start <コース名>
 ```
 
-```text title="練習看板を登録（クリックした本人がソロ練習開始・コース名必須）"
+```text title="コース指定のソロ看板を登録（旧・練習看板。setsign solo <コース名> と同じ）"
 /elytrarace setsign practice <コース名>
 ```
 
@@ -122,7 +122,7 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 
 ## config.yml 主要項目
 
-すべてのキーはコード側に既定値があり、`config.yml` に無くても既定値で動作します（`saveDefaultConfig()` のみのため既存ファイルへの自動追記はありません）。
+すべてのキーはコード側に既定値があり、`config.yml` に無くても既定値で動作します（起動時に不足キーは最新版から自動追記されます）。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
@@ -132,7 +132,7 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 | `rocket.regen-amount` | 1 | 1回の補充で増える本数 |
 | `rocket.regen-interval` | 1 | 補充の間隔（秒） |
 | `rocket.power` | 2 | ロケット花火の飛行力（FireworkMeta power） |
-| `time-limit` | 300 | 対戦レースの制限時間（秒／0=無制限）。練習モードは常に無制限（`/elytrarace settime` で変更可） |
+| `time-limit` | 300 | 対戦レースの制限時間（秒／0=無制限）。ソロは常に無制限（`/elytrarace settime` で変更可） |
 | `min-players` | 1 | 対戦レース開始に必要な最低人数 |
 | `actionbar-interval` | 5 | アクションバー（距離・進捗・タイム表示）の更新間隔（tick） |
 | `ranking-display-count` | 10 | `/elytrarace ranking` で表示する件数 |
@@ -145,6 +145,60 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 
 !!! note "コース定義の中身（courses.<コース名>）"
     各コースは `spawn`（開始地点・向き含む）、`goal`（ゴールリング中心）、`checkpoints`（順序付きリング中心のリスト）、`void-y`（下回ると送還するY・既定 `-10000`＝無効）を持ちます。これらは `setspawn`／`setgoal`／`setcheckpoint` コマンドで自動生成・自動保存されるため、**手書き編集は基本的に不要** です（`void-y` のみコマンドが無いため手動記入）。
+
+## ソロモード・ゴースト・区間タイム
+
+練習モードは **ソロ**（共通ルール14章のGUIロビー方式）にまとめました。ソロロビーは対戦と同じ **ロビー地点（`/elytrarace setlobby`）** を使います。
+
+```text title="ソロ看板（メニュー）を登録"
+/elytrarace setsign solo
+```
+
+```text title="コース指定のソロ看板を登録（クリックでそのコースをソロで即開始＝旧練習看板と同じ）"
+/elytrarace setsign solo <コース名>
+```
+
+```text title="走っている全員を止める（対戦レース＋ソロ。ソロはロビーへ戻してメニュー）"
+/elytrarace stop
+```
+
+```text title="コースのゴースト・区間・前回の記録を消す（全員分。ランキングは消えない）"
+/elytrarace ghost reset <コース名>
+```
+
+```text title="特定の人のゴースト・区間・前回の記録だけ消す"
+/elytrarace ghost reset <コース名> <プレイヤー>
+```
+
+- 既存の **練習看板**（`kind: practice`）はそのまま使えます（表示が「>> ソロ >>」に変わり、クリックでそのコースをソロで即開始）。`/elytrarace practice` / `setsign practice` も別名として残っています。
+- 同じコースを何人でも同時に走れます（アリーナの取り合いはしません）。対戦中にソロを止めたい場合は `solo.block-during-race: true`。
+- ゴーストは `plugins/ElytraRace/ghosts/<コース>/<uuid>.best|last.ghost`、区間・好み・前回の結果は `plugins/ElytraRace/solo-data.yml` に保存されます。ランキングは今まで通り `records.db`。
+- コースの開始地点・リング・ゴール・リング半径を変えると、古いゴースト・区間は自動で比較に使われなくなります（ランキングは残ります）。
+- ソロロビーにいる人は無敵・満腹度が減りません。ホットバー中央にソロメニューのネザースターを置きます（捨てる・移動は不可）。
+
+| config キー | 既定 | 内容 |
+|---|---|---|
+| `solo.enabled` | true | ソロ（と練習看板）を使えるか |
+| `solo.menu-delay` | 3 | ロビーへ戻ってからメニューを開くまでの秒数 |
+| `solo.broadcast-top` | true | ソロで1位を更新したら全体告知 |
+| `solo.block-during-race` | false | 対戦レース中はソロを始められないようにする |
+| `splits.enabled` | true | 区間表示・区間表・BossBar |
+| `splits.show-in-race` | true | 対戦レース中も本人に自己ベスト比を出す |
+| `splits.bossbar` | true | 走行中の BossBar |
+| `ghost.enabled` | true | ゴーストの記録・再生 |
+| `ghost.default` | best | 初めての人のゴーストの種類（best/top/last/off） |
+| `ghost.sample-ticks` | 2 | 位置を記録する間隔（tick） |
+| `ghost.max-seconds` | 900 | これより長い走りはゴーストを保存しない |
+| `ghost.entity` | ARMOR_STAND | Java版の走者に見せる姿（ARMOR_STAND / MANNEQUIN）。統合版の走者には常に ARMOR_STAND |
+| `ghost.trail` | true | ゴーストの位置にパーティクル |
+
+これらの項目は、プラグイン更新後の起動時に既存の config.yml へ自動で追加されます（既存の値は変わりません）。
+
+!!! warning "統合版での見え方（実機確認）"
+    - ゴーストは **見ている本人だけに表示**（`setVisibleByDefault(false)` + `showEntity`）。他の人（統合版含む）から見えないことを実機で確認してください。
+    - `ghost.entity: MANNEQUIN` は Java 版の走者だけに使われます（統合版で表示できない可能性があるため）。マネキンには当たり判定があるので、気になる場合は ARMOR_STAND のままにしてください。
+    - ゴーストの発光（Glowing）は使っていません（統合版に出ないため）。名前表示とパーティクルで目印にしています。
+
 
 ## 権限ノード
 
@@ -162,7 +216,11 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 | `/elytrarace join` | 全員 | レースに参加してロビーへ（看板クリックと同等） |
 | `/elytrarace leave` | 全員 | レースから離脱し初期地点へ（看板クリックと同等） |
 | `/elytrarace start <コース>` | 全員 | 対戦レースを開始（参加者がいれば誰でも可・コンソール／コマブロも可） |
-| `/elytrarace practice <コース>` | 全員 | 指定コースを1人で練習（時間無制限） |
+| `/elytrarace solo [コース] [best\|top\|last\|off]` | 全員 | ソロメニュー／コース指定ですぐ走る |
+| `/elytrarace practice <コース>` | 全員 | `solo <コース>` の別名（旧・練習モード） |
+| `/elytrarace retry` | 全員 | ソロ中にスタートからやり直す |
+| `/elytrarace ghost <best\|top\|last\|off>` | 全員 | ゴーストの種類 |
+| `/elytrarace ghost reset <コース> [プレイヤー]` | `elytrarace.admin` | ゴースト・区間・前回の記録を消す |
 | `/elytrarace ranking <コース>` | 全員 | コースのタイムランキングを表示 |
 | `/elytrarace stats` | 全員 | 自分のコース別統計（挑戦・クリア・ベスト）を表示 |
 | `/elytrarace status` | 全員 | 設定状況・進行状態を表示（読み取り専用） |
@@ -173,7 +231,7 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
 | `/elytrarace setgoal <コース>` | `elytrarace.admin` | ゴールリングを視線位置に設定 |
 | `/elytrarace setrocket <最小> <最大>` | `elytrarace.admin` | ロケット花火の維持本数を設定 |
 | `/elytrarace settime <秒>` | `elytrarace.admin` | 対戦レースの制限時間を設定（0=無制限） |
-| `/elytrarace setsign <join\|leave\|start\|practice\|ranking\|delete>` | `elytrarace.admin` | 看板を各用途で登録／解除 |
+| `/elytrarace setsign <join\|leave\|start\|solo\|practice\|ranking\|delete>` | `elytrarace.admin` | 看板を各用途で登録／解除 |
 | `/elytrarace stop` | `elytrarace.admin` | 進行中の対戦レースを強制終了 |
 | `/elytrarace reload` | `elytrarace.admin` | config を再読み込み（コース・看板も再描画） |
 
@@ -201,7 +259,7 @@ ElytraRace の導入・コース作成・看板設置・config.yml・権限・�
     致死ダメージ（クラッシュ）ではチェックポイントへ送還されますが、単なる落下で奈落へ吸い込まれるコースでは **`void-y` の設定** が有効です。`config.yml` の `courses.<コース名>.void-y` に「このYを下回ると送還する」数値を記入し、`/elytrarace reload` で反映してください（専用コマンドはありません。既定 `-10000`＝無効）。
 
 ??? failure "config を編集したのに反映されない"
-    `config.yml` を手動編集した後は `/elytrarace reload` を実行してください。なお本プラグインは **既存 config への新キー自動追記を行いません**。新しいキーを追記して使う場合は正しいパス・スペルで記入してください（既定値はコード側にあるため、キーが無くても既定で動作します）。
+    `config.yml` を手動編集した後は `/elytrarace reload` を実行してください。新しいキーは起動時に最新版から自動追記されるため、バージョンアップ時の手書き追記は基本的に不要です（キーが無くても既定値で動作します）。
 
 ??? failure "記録・ランキングが保存されない"
     記録は `plugins/ElytraRace/records.db`（SQLite）に保存されます。起動ログに「Database connected successfully!」が出ているか確認してください。ファイルの書き込み権限が無い、またはフォルダが作成できない環境では記録が保存されません。

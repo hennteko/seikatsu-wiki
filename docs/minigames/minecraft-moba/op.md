@@ -110,10 +110,10 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 ### 参加・退出看板の作成
 
-ロビーの導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。看板は **参加 / 退出 / ショップ / チャンピオン選択 / 開始** の5種類です。
+ロビーの導線として、看板をコマンドで登録します（`moba.admin` 権限が必要）。看板は **参加 / 退出 / ショップ / チャンピオン選択 / ソロ / 開始** の6種類です。
 
-```text title="看板を登録（5種類いずれか・看板を見て実行）"
-/moba setsign <join|leave|shop|champion|start>
+```text title="看板を登録（6種類いずれか・看板を見て実行）"
+/moba setsign <join|leave|shop|champion|solo|start>
 ```
 
 ```text title="開始看板をステージ指定で登録（省略時は編集ステージ）"
@@ -124,7 +124,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 /moba setsign delete
 ```
 
-看板の種類は **join（参加）/ leave（退出）/ shop（ショップ）/ champion（チャンピオン選択）/ start（開始）** の5種類で、いずれも `setsign` で登録します。
+看板の種類は **join（参加）/ leave（退出）/ shop（ショップ）/ champion（チャンピオン選択）/ solo（ソロ練習）/ start（開始）** の6種類で、いずれも `setsign` で登録します。
 
 !!! success "看板は複数設置できます（v更新）"
     各種別の看板を **複数拠点に設置** できるようになりました。開始看板は **ステージ識別子ごと**（`/moba setsign start <識別子>`）に、それぞれ複数設置できます。`setsign` は上書きではなく **追記** され、`setsign delete` は視線先の1枚だけ解除します。人数・状態表示は全枚数が同時に更新されます。既存の看板データは自動で引き継がれるため、**設定のやり直しは不要**です。
@@ -157,7 +157,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | 数値設定 | 最大人数・最小人数（左クリック +1／右クリック −1、Shiftで ±10）、制限時間（±10、Shiftで ±60） |
 
 !!! tip "GUIからの看板登録は「ボタン→対象看板を右クリック」"
-    地点・看板設定ページで看板ボタン（参加／離脱／ショップ／チャンピオン／開始／登録解除）をクリックすると、メニューが閉じて **保留状態** になります。続けて対象の看板を **右クリック** すると登録（または解除）が確定します。開始看板は、その時点の **編集ステージ** に紐づけて登録されます。
+    地点・看板設定ページで看板ボタン（参加／離脱／ショップ／チャンピオン／開始／登録解除）をクリックすると、メニューが閉じて **保留状態** になります。続けて対象の看板を **右クリック** すると登録（または解除）が確定します。開始看板は、その時点の **編集ステージ** に紐づけて登録されます。なお **ソロ看板** はGUIにボタンがなく、**`/moba setsign solo`** コマンドでのみ登録します（解除は視線先を見て `/moba setsign delete`）。
 
 !!! note "GUIとコマンドは等価"
     `/moba book` の各操作は、対応するコマンド（`setcore` / `setturret` / `setsign` / `setmax` など）と同じ処理を呼び出し、実行時に config へ即保存・自動リロードされます。どちらで設定しても結果は同じです。新しいステージ（マップ）の作成だけは、先に `/moba setstage <名前>` で識別子を用意してください。
@@ -224,9 +224,31 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `VISION.WARD` | `DURATION`(180) / `VISION_RANGE`(20) / `MAX_WARDS_PER_PLAYER`(3) / `COST`(75) | ワードの持続・範囲・上限・価格 |
 | `RESPAWN` | `BASE_TIME`(5) / `TIME_PER_LEVEL`(0.5) / `KEEP_INVENTORY` / `INVINCIBLE_SECONDS`(3) | リスポーン時間・装備保持・復活直後の無敵秒数（スポーンキル防止・0で無効） |
 | `KILLSTREAK` | `REQUIRED_KILLS`(3) / `BONUS_EMERALD`(2) | キルストリーク |
-| `SIGNS` | `JOIN` / `LEAVE` / `SHOP` / `CHAMPION` / `START.<識別子>` | 看板位置（コマンドで自動保存）。開始看板のみ `START` 配下に識別子ごとのキーで複数保存される |
+| `SIGNS` | `JOIN` / `LEAVE` / `SHOP` / `CHAMPION` / `SOLO` / `START.<識別子>` | 看板位置（コマンドで自動保存）。開始看板のみ `START` 配下に識別子ごとのキーで複数保存される |
 | `STAGES` | `<識別子>.TEAM_RED` / `TEAM_BLUE` / `AREA` / `MINION_WAYPOINTS` / `CREEP_SPAWNS` ほか | ステージ固有のジオメトリ（コア/防衛塔/スポーン/エリア/レーン/クリープ湧き）。`setstage` で選んだ編集ステージ配下に保存 |
 | `EDIT_STAGE` | （文字列・既定 `default`） | 現在の編集ステージ識別子（`setstage` で永続化） |
+
+### ソロ練習（`solo`）
+
+ソロ（ラストヒット練習）の設定です。通常戦と同じステージ（スポーン・防衛塔・レーン経路）を使い、通常戦とソロは同時には動きません。ソロを始めるには、そのステージに **ロビー・初期スポーン・挑戦側スポーン・敵防衛塔・両チームの対象レーン（2点以上）** が設定されている必要があります（不足は `/moba status` の「ソロ」欄で確認できます）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `enabled` | true | ソロを使えるようにするか |
+| `menu-delay` | 3 | 挑戦終了後にソロメニューを開くまでの秒数 |
+| `team` | BLUE | 挑戦者の側（BLUE/RED）。敵はもう一方 |
+| `lane` | LANE_MID | ミニオンを湧かせるレーン（両チームの経路が2点以上必要） |
+| `countdown` | 3 | 開始前カウントダウン（秒・この間は動けない） |
+| `spawn-creeps` | false | 中立クリープを湧かせるか（CSに数えるのはミニオンのみ） |
+| `miss-notify-range` | 10 | 取り逃し時にアクションバーで知らせる距離（ブロック・0で無効） |
+| `cs.courses.<名前>` | `3min: 180` / `5min: 300` | CSチャレンジのコース（名前: 制限時間秒）。名前に `.` は不可。`3min`→画面では「3分」表示 |
+| `cs.default-course` | 3min | コース省略時に使うコース |
+| `tower.time-limit` | 600 | タワーアタックの上限（秒・超過で記録なし） |
+| `ranking-size` | 10 | `/moba ranking solo` で表示する人数 |
+| `broadcast-top` | true | ステージ1位を更新したときサーバー全体へ告知するか |
+
+!!! note "ソロの記録データ"
+    自己ベスト・ランキング（ステージ×モード×コース別）はプラグインのデータファイルに保存され、`/moba ranking reset` で消去できます。config のキーではありません。
 
 !!! warning "既存サーバーを更新する場合（config自動マージなし）"
     本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新セクションを自動追記しません**。旧バージョンから更新したサーバーでは `AFK` / `RECALL` / `VISION` / `NEUTRAL_CREEPS` / `SKILL_UNLOCK_LEVELS` / `SIGNS.CHAMPION`・`START` 等が無いままになります。コード側に既定値があるので落ちはしませんが、「クリープが湧かない」「2つ目以降のスキルがLv1で即解放」などの想定外動作になります。さらに本バージョンからは **ステージ固有ジオメトリが `STAGES.<識別子>.*`（既定 `EDIT_STAGE: default`）配下に保存される** 仕様になったため、旧 `MAP_SETTINGS.TEAM_RED` 等に直接書いていた座標は読まれません（既定値の参考用としては残ります）。コア・防衛塔・スポーン・エリア・レーン・クリープ湧きは `setstage` で編集ステージを選んだうえで `setcore` / `setturret` / `setspawn` / `setfield` / `setlane` / `setcamp` で再設定してください。**新規インストール、または config を退避して再生成（手動マージ）を推奨** します。
@@ -243,7 +265,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `moba.admin` | OP | `book` / `stop` / `reload` / `setstage` / `setsign` / `setstartspawn` / `setlobby` / `setfield` / `setspawn` / `setcore` / `setturret` / `setlane` / `setcamp` / `setmax` / `setmin` / `settime` などの設定・管理コマンド、および `/shop` の実行に必要 |
 
 !!! note "プレイヤー向け権限について"
-    `/moba join`・`leave`・`start`・`stats`・`status` は **権限不要で全員が使えます**（`status` は読み取り専用）。`join`・`leave`・`stats` でプレイヤー名を指定して他者を対象にする操作のみOP限定です。一方 **`/shop` は `plugin.yml` で `moba.admin` 限定** のため、一般プレイヤーは `/shop` コマンドを直接使えません（ショップ看板から開きます）。
+    `/moba join`・`leave`・`start`・`stats`・`status`・`solo`・`ranking solo` は **権限不要で全員が使えます**（`status` は読み取り専用）。`join`・`leave`・`stats` でプレイヤー名を指定して他者を対象にする操作、`solo <プレイヤー>`・`ranking reset` のみOP限定です。一方 **`/shop` は `plugin.yml` で `moba.admin` 限定** のため、一般プレイヤーは `/shop` コマンドを直接使えません（ショップ看板から開きます）。
 
 ## コマンド
 
@@ -254,6 +276,8 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `/moba join [名前]` / `leave [名前]` | ロビーに参加 / 退出する（看板と同等）。名前を指定して他者を対象にするのはOP限定 |
 | `/moba start [識別子]` | ゲームを開始する（開始看板と同等・全員可）。識別子でステージ指定（省略時は編集ステージ） |
 | `/moba stats [名前]` | 統計を表示する（自分の試合中はライブ成績／非試合中・名前指定は通算成績） |
+| `/moba solo [cs [コース] [ステージ] \| tower [ステージ]]` | ソロ練習（ラストヒット）に参加・開始。引数なしでソロメニューを開く |
+| `/moba ranking solo [cs\|tower] [コース] [ステージ]` | ソロのランキングを表示する |
 | `/moba status` | 地点・看板・ステージ・ゲーム状況を確認する（読み取り専用・権限不要） |
 
 ### 管理用（`moba.admin`）
@@ -261,7 +285,10 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | コマンド | 説明 |
 |---|---|
 | `/moba book` | 管理GUIメニュー（管理メニュー）を開く。地点設定・看板登録・ゲーム制御・数値設定をGUIで行える |
-| `/moba stop` | ゲームを停止する |
+| `/moba stop` | ゲームを停止する（ソロ挑戦中はその挑戦だけを停止し、挑戦者をロビーへ戻す） |
+| `/moba forceunlock <プレイヤー> [confirm]` | 他ゲーム参加中フラグ（参加ロック）を強制解除する（コンソール可） |
+| `/moba solo <プレイヤー> [cs\|tower]` | 指定プレイヤーをソロへ参加させる／即開始（コンソール可） |
+| `/moba ranking reset <プレイヤー\|all> [cs\|tower\|all] [ステージ\|all]` | ソロの記録を消去する |
 | `/moba reload` | config.yml を再読み込み（看板・構造物も再構築） |
 | `/moba setstage <識別子>` | 以降の地点設定の編集ステージを切り替える |
 | `/moba setstartspawn` / `setlobby` | 初期リスポーン地点 / 待機ロビーを現在地に設定（ステージ非依存） |
@@ -272,7 +299,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `/moba setlane <RED\|BLUE> <LANE_TOP\|LANE_MID\|LANE_BOT> <番号>` | ミニオン経路のウェイポイントを現在地に設定（編集ステージ） |
 | `/moba setcamp <NORMAL\|BUFF\|BOSS>` | 中立クリープの湧き地点を現在地に追加（編集ステージ） |
 | `/moba setmax <人数>` / `setmin <人数>` / `settime <秒>` | 最大人数 / 開始最低人数 / 最大試合時間を設定（即保存・自動リロード） |
-| `/moba setsign <join\|leave\|shop\|champion\|start [識別子]\|delete>` | 視線先の看板を各種看板として登録、または `delete` で登録解除 |
+| `/moba setsign <join\|leave\|shop\|champion\|solo\|start [識別子]\|delete>` | 視線先の看板を各種看板として登録、または `delete` で登録解除 |
 
 ## ゲームの運営
 
@@ -304,7 +331,8 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
     - 中立クリープ（通常/バフ/ボス・報酬・バフ・リスポーン）
     - ワード（敵の発光・上限3個）、リコール（拠点帰還）、AFK自動離脱
     - HUDサイドバー（KDA/CS/Lv/マナ/エメラルド/コアHP/チームキル）、ルーン（スタッツ装備）
-    - 経済・経験値・ショップ、チーム管理・状態管理、看板（参加/退出/ショップ/チャンピオン/開始）
+    - 経済・経験値・ショップ、チーム管理・状態管理、看板（参加/退出/ショップ/チャンピオン/ソロ/開始）
+    - ソロ練習（ラストヒット）：CSチャレンジ／タワーアタック、自己ベスト・ステージ別ランキング（`/moba solo`・`/moba ranking`・ソロ看板・ソロメニュー）
     - 管理GUIメニュー（`/moba book`・設定状況/ゲーム制御/地点・看板設定/数値設定をクリック操作）
 
 !!! warning "既知の制約・注意点"
@@ -333,6 +361,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `messages.join-broadcast` | 参加の全体告知文 |
 | `messages.leave-broadcast` | 離脱の全体告知文 |
 | `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+| `messages.vault-save-failed` | 持ち物の退避（ファイル保存）に失敗して参加を中止したときの文言 |
 
 !!! note "config は自動で追記されるようになりました"
     起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。**このため、当ページ内の「既存サーバーは config が自動追記されません」という旧記載は本改修で解消されています。** 座標・看板・会場・ステージなどのデータ領域は補完対象外です。

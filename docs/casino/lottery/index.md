@@ -10,7 +10,7 @@
 </div>
 
 !!! info "CasinoPlugin のモジュールです"
-    宝くじは単独のプラグインではなく、エメラルド銀行と8ゲームを1つのjarに統合した **CasinoPlugin** の中の **lottery モジュール** です。通貨はサーバー共通の「エメラルド」（銀行口座の残高）で、有効化や全体の仕組みは CasinoPlugin 側の設定で管理されます。CasinoPlugin 全体については [CasinoPlugin 概要ページ](../casino-plugin/index.md) を参照してください。
+    宝くじは単独のプラグインではなく、エメラルド銀行と10ゲームを1つのjarに統合した **CasinoPlugin** の中の **lottery モジュール** です。通貨はサーバー共通の「エメラルド」（銀行口座の残高）で、有効化や全体の仕組みは CasinoPlugin 側の設定で管理されます。CasinoPlugin 全体については [CasinoPlugin 概要ページ](../casino-plugin/index.md) を参照してください。
 
 ## ページを選ぶ
 

@@ -26,17 +26,11 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 4. 後述の手順でサーキットを作成する（アイテムボックスの配置を含む）。
 5. 設定を変更したら `/race reload` で再読み込みする。
 
-!!! warning "既存サーバーを更新する場合の注意（messages.yml）"
-    `messages.yml` は **既存ファイルがあると新しいメッセージキーが自動追記されません**。アップデートで `sign:`（看板。`join-created` / `leave-created` / `start-created` / `look-at-sign` / `deleted` / `not-registered`）・`admin.startspawn-set` / `finish-a-set` / `checkpoint-a-set`・`lobby.rejoin` / `lobby.waiting-next`（連続プレイ）・`show:`（チェックポイント表示）・`admin.checkpoint-deleted` / `finish-deleted` / `checkpoints-cleared` / `spawn-deleted` / `spawn-cleared`（削除系）が追加されています。これらが空欄表示になる場合は、既存の `messages.yml` を一度退避してサーバー再起動で再生成するか、不足キーを追記してください。`items.yml`・`surfaces.yml` の項目は今回変更ありません。
+!!! note "既存サーバーを更新する場合（4ファイルとも自動追記されます）"
+    `config.yml` / `messages.yml` / `items.yml` / `surfaces.yml` は、起動時にサーバー上のファイルを jar 内の最新版と突き合わせ、**不足しているキーを既定値＋コメント付きで自動追記** します（既存の値は変更しません／追記があったときだけ更新前を `<ファイル名>.bak-日時` に退避）。バージョンアップで新しいメッセージキーや設定キーが追加された場合も、起動するだけで反映されるため、手書き追記は基本的に不要です。地点・サーキット・看板などのデータ（`circuits/<名前>.yml`・`signs.yml`）は各設定コマンドの実行時に即保存されます。
 
-!!! info "config.yml に新キーが追加されました（入力ベース操舵）"
-    今回 `config.yml` の `kart` セクションに **`input-steering`（既定 `true`）** と **`turn-rate`（既定 `4.5`）** が追加されました。`config.yml` は **既存ファイルがあると新キーが自動追記されません**。ただしプラグイン内部の既定値も `input-steering=true` / `turn-rate=4.5` のため、**キーが無くても入力ベース操舵で動作します**。挙動を調整したい場合や従来のネイティブ操舵に戻したい場合は、既存の `config.yml` に手動で追記してください（記述例は下記）。
-
-    ```text title="config.yml の kart セクションへ追記する例"
-    kart:
-      input-steering: true
-      turn-rate: 4.5
-    ```
+!!! info "操舵の既定は「視点操舵」になりました"
+    `config.yml` の `kart` セクションでは **サーバー操舵**（`input-steering: true`、既定）が有効で、さらに **`look-steering: true`（既定）** により **プレイヤーが向いている方向へボートが旋回して進む「視点操舵」** が標準の操作になりました。`look-steering: false` にすると、従来の **左右移動キー（A/D）での旋回** に切り替わります。`input-steering: false` にすると、プラグイン制御をやめてバニラのネイティブ操舵（プレイヤーがボートを直接運転）に戻ります。コーナー減速の判定方式は `corner-detect`（既定 `turn`＝実際の旋回量で判定）で切り替えます。これらの新キーは起動時に `config.yml` へ自動追記されるため、手書き追記は不要です（内部既定値でも同じ挙動で動作します）。
 
 !!! tip "サーバー実装について"
     エンティティ（ボート）を多用するミニゲームのため、設計上は **Paper の採用が推奨** されています。Spigot でも動作しますが、イベント処理・最適化の面で Paper が有利です。
@@ -65,9 +59,14 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `kart.stuck-ticks` | 60 | スタックと判定するまでの継続tick数 |
 | `kart.off-track-reset` | true | コース外・危険路面・落下・スタック時にチェックポイントへ復帰させるか |
 | `kart.void-y` | 0 | このY座標を下回ったら落下とみなし復帰 |
-| `kart.corner-speed` | 0.72 | 操舵中（左右入力中）の速度倍率。小さいほどコーナーで減速して曲がりが詰まる（推奨 0.6〜0.85） |
-| `kart.input-steering` | true | **入力ベース操舵**を有効にするか。`true` でプレイヤーの左右移動キー（A/D）で旋回し、Java版・統合版（Geyser）で操作が統一される。`false` で従来のネイティブ操舵（プレイヤーがボートを直接運転）に戻る |
-| `kart.turn-rate` | 4.5 | 入力操舵時の旋回速度（度/tick）。大きいほどキビキビ曲がる（推奨 3.0〜6.0）。`input-steering: false` のときは無効 |
+| `kart.corner-speed` | 0.72 | 旋回中の速度倍率。小さいほどコーナーで減速して曲がりが詰まる（推奨 0.6〜0.85） |
+| `kart.input-steering` | true | **サーバー操舵**を有効にするか。`true` でボートの向き・移動をプラグインが制御し、Java版・統合版（Geyser）で操作が統一される。`false` で従来のネイティブ操舵（プレイヤーがボートを直接運転）に戻る |
+| `kart.look-steering` | true | `input-steering: true` のときの操舵方式。`true`＝**視点操舵**（向いている方向へボートが旋回して進む・既定）／`false`＝左右移動キー（A/D）で旋回 |
+| `kart.turn-rate` | 4.5 | サーバー操舵時の旋回速度（度/tick）。大きいほどキビキビ曲がる（推奨 3.0〜6.0）。`input-steering: false` のときは無効 |
+| `kart.corner-detect` | turn | コーナー減速の判定方式。`turn`＝実際の旋回量で判定（既定・Java/統合版で同条件）／`look`＝視点とボートの向きの差で判定（旧方式） |
+| `kart.corner-turn-threshold` | 2.0 | `corner-detect: turn` のとき、旋回量（度/tick）がこの値以上の間は `corner-speed` で減速（`turn-rate` より小さくする・推奨 1.5〜3.0） |
+| `kart.look-corner-angle` | 20.0 | `corner-detect: look` のとき、視点とボートの向きの差がこの角度（度）を超えている間は `corner-speed` で減速 |
+| `kart.debug-log` | false | `true` で各レーサーの速度を1秒ごとにコンソールへ出力（速度比較・デバッグ用） |
 
 ### ワールド・HUD・報酬
 
@@ -125,8 +124,8 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `effects.hit-radius` | 2.2 | 弾・トラップ・体当たりの命中半径 |
 
 !!! note "操舵・アイテムの操作仕様"
-    ステアリングは **入力ベース操舵**（`Player#getCurrentInput()` の左右入力を毎tick読み取り、サーバー側でボートを `setRotation` で旋回）で実装されています。これにより Java版・統合版（Geyser）で同一の挙動になります。`config.yml` の `kart.input-steering` を `false` にすると、従来のネイティブ操舵（プレイヤーがボートを直接運転し、ボートの向きで進む）に戻せます。
-    アイテムの発動は **降車操作（`VehicleExitEvent`）の再利用** で実装されています。レース中の降車ボタン押下＝所持アイテムの発動、カウントダウン中の降車ボタン押下＝ロケットスタート判定になります。Java版・統合版の双方で同じ操作になるよう設計されています。
+    ステアリングは **サーバー操舵** で実装されています。既定の **視点操舵**（`kart.look-steering: true`）では、プレイヤーの視線方向（yaw）へ1tickあたり最大 `turn-rate` 度まで車体の向きを寄せ、サーバー側でボートを `setRotation` で旋回させます。`kart.look-steering: false` にすると `Player#getCurrentInput()` の左右入力（A/D）で旋回する方式になります。いずれも Java版・統合版（Geyser）で同一の挙動です。`kart.input-steering: false` で従来のネイティブ操舵（プレイヤーがボートを直接運転し、ボートの向きで進む）に戻せます。
+    アイテムの発動は **降車操作（`VehicleExitEvent`）の再利用** で実装されています。レース中の降車ボタン押下＝所持アイテムの発動、カウントダウン中の降車ボタン押下＝ロケットスタート判定になります。統合版は端末によって降車ボタンが届きにくいため、空中タップ（腕振り）やホットバー切り替えでも同じ入力を受け付けます（`bedrock.swing-to-use` / `hotbar-to-use`）。`/race use` コマンドでも代替できます。
 
 ### 路面定義（`surfaces.yml`）
 
@@ -304,6 +303,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `/race start [サーキット名]` | 全員 | レースを開始する（参加者がいれば誰でも可。コンソール/コマブロはサーキット名必須） |
 | `/race status [サーキット名]` | 全員 | サーキットの設定状況を確認する（`info` も可） |
 | `/race list` | 全員 | サーキット一覧を表示する |
+| `/race use` | 全員 | アイテム使用／ロケットスタート（降車ボタンの代替。統合版向け） |
 | `/race stop` | `boatgp.admin` または OP | 自分が参加中のレースを強制中止する（OP は権限ノードなしでも実行可） |
 | `/race reload` | `boatgp.admin` | config.yml・items.yml・surfaces.yml・サーキットを再読み込み |
 | `/race create <名前>` | `boatgp.admin` | 新規サーキットを作成して選択する |
@@ -322,7 +322,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 
 ## 実装状況（Phase 2）
 
-実装済みは **Phase 2（アイテムバトル）** までです。具体的には「カート物理（オート加速・路面システム）／**入力ベース操舵（左右移動キー A/D・Java/統合版で統一、`kart.input-steering`/`turn-rate` で調整）**／**ライン（A→B 2点）方式のチェックポイント・ラップ判定**／**チェックポイントのパーティクル可視化（レース中は自動・OPは `/race show` でプレビュー）**／順位計算・サイドバーHUD／スタート演出（3-2-1-GO）／コース外・スタック復帰／順位連動の簡易報酬／サーキット作成・**削除**コマンド（フラット化・**自動保存**）／**看板での参加・離脱・開始**／**初期スポーン（離脱時の戻り先）**／**レース終了後の自動ロビー帰還・連続プレイ**／アイテムシステム6種・アイテムボックス・ラバーバンド抽選・ボスバー表示・ロケットスタート」が動作します。
+実装済みは **Phase 2（アイテムバトル）** までです。具体的には「カート物理（オート加速・路面システム）／**サーバー操舵（既定は視点操舵、`kart.look-steering: false` で左右移動キー A/D・Java/統合版で統一、`kart.input-steering`/`turn-rate`/`corner-detect` で調整）**／**ライン（A→B 2点）方式のチェックポイント・ラップ判定**／**チェックポイントのパーティクル可視化（レース中は自動・OPは `/race show` でプレビュー）**／順位計算・サイドバーHUD／スタート演出（3-2-1-GO）／コース外・スタック復帰／順位連動の簡易報酬／サーキット作成・**削除**コマンド（フラット化・**自動保存**）／**看板での参加・離脱・開始**／**初期スポーン（離脱時の戻り先）**／**レース終了後の自動ロビー帰還・連続プレイ**／アイテムシステム6種・アイテムボックス・ラバーバンド抽選・ボスバー表示・ロケットスタート」が動作します。
 
 !!! danger "未実装の主要機能（Phase 3 以降予定）"
     以下は **未実装** です。本番イベントでの利用前に必ず把握してください。
@@ -352,7 +352,7 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
     そのサーキットに `additembox` でアイテムボックスが追加されているか `/race status` で確認してください。また、プレイヤーが **すでにアイテムを所持している** とアイテムボックスは反応しません。取得直後のボックスは `items.yml` の `item-box.cooldown-ticks`（既定80tick）の間は再出現しません。
 
 ??? failure "看板や設定のメッセージが空欄 / 表示されない"
-    既存サーバーで `messages.yml` をそのまま使っている場合、新しい `sign:` や `admin.startspawn-set` などのキーが無いと空欄表示になります。`messages.yml` を退避して再生成するか、不足キーを追記してください（導入手順の注意書きを参照）。
+    `messages.yml` は起動時に不足キーが最新版から自動追記されるため、通常は空欄になりません。もし空欄になる場合は、ファイルがYAML構文エラーで読めていない（自動更新がスキップされる）可能性があります。起動ログの警告を確認し、構文を直してサーバーを再起動してください。
 
 ??? failure "アイテムの出現バランスを変えたい"
     `items.yml` の `items.<アイテム>.weight-front` / `weight-mid` / `weight-back` を編集し、`/race reload` で反映してください。`0` にするとその順位帯では出現しなくなります。効果の強さは `effects.*` で調整できます。

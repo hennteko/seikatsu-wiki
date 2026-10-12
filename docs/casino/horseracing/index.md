@@ -10,7 +10,7 @@
 </div>
 
 !!! info "CasinoPlugin のモジュールです"
-    競馬は単独のプラグインではなく、エメラルド銀行と8つのゲームを1つに統合した **CasinoPlugin** の中の **horse モジュール** です。専用 jar の導入は不要で、有効化は `config.yml` の `modules.horse.enabled` で行います。馬券に使うエメラルドは銀行（bank モジュール）の口座残高で、すべてのゲーム共通です。CasinoPlugin 全体の構成は [CasinoPlugin 概要ページ](../casino-plugin/index.md) を参照してください。
+    競馬は単独のプラグインではなく、エメラルド銀行と10のゲームを1つに統合した **CasinoPlugin** の中の **horse モジュール** です。専用 jar の導入は不要で、有効化は `config.yml` の `modules.horse.enabled` で行います。馬券に使うエメラルドは銀行（bank モジュール）の口座残高で、すべてのゲーム共通です。CasinoPlugin 全体の構成は [CasinoPlugin 概要ページ](../casino-plugin/index.md) を参照してください。
 
 ## ページを選ぶ
 

@@ -39,7 +39,7 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
     リスポーン・参加時に配られる装備は `loadout` セクションで定義します。`loadout.items.<スロット番号>`（0〜8 がホットバー）に `material`／`amount`／`name`／`enchantments`／`potion-effects` を、`loadout.offhand` にオフハンド装備を指定します。既定では木の剣（ノックバックI）・弓・特殊ポーション（スプラッシュ）・パン×64・矢×64・盾（オフハンド）が配られます。loadout が未定義／不正な場合はコード内蔵の既定キットにフォールバックします。
 
 !!! note "locations / signs セクションについて"
-    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign <join|leave|start>` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
+    `config.yml` の `locations`（地点）と `signs`（看板）はコメントアウトされた雛形です。実際の地点はゲーム内の `/zankipvp setstartspawn`・`/zankipvp setlobby`・`/zankipvp setfield`・`/zankipvp setspawn` コマンド、看板は `/zankipvp setsign <join|leave|start|solo>` コマンドで登録します（テキストはプラグインが自動書き込み）。手書きで編集する必要はありません。
 
 !!! note "残機・無敵・人数の設定は config に保存されます"
     `/zankipvp setzanki <数字>`・`/zankipvp setprotection <秒>`・`/zankipvp setmax <数字>`・`/zankipvp setmin <数字>` で設定した値は **`config.yml` に即保存され、サーバー再起動後も維持** されます。`config.yml` の `settings.*` / `game.*` を直接編集して `/zankipvp reload` で反映することもできます。
@@ -49,6 +49,42 @@ Zankipvp の導入・地点セットアップ・config・権限・管理コマ�
 
 !!! success "旧 respawn-protection は自動移行されます"
     旧バージョンの `settings.respawn-protection` キーは、プラグイン起動時に自動で `game.respawn-invincible-seconds` へ移行され、旧キーは削除されます（移行はログに出力されます）。
+
+### ソロ（CPU対戦）設定 — `solo` セクション
+
+ソロモード（1人でボットと戦う）の挙動は `config.yml` の `solo` セクションで設定します。アリーナ（チームスポーン4色）は通常戦と共用で、通常戦とソロを合わせて同時に1試合だけ進行します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | `true` | ソロモードを使えるようにする |
+| `solo.default-difficulty` | `normal` | 難易度を省略したときに使う難易度 |
+| `solo.countdown-seconds` | 3 | 開始前カウントダウン（秒。この間は挑戦者もボットも動けない） |
+| `solo.result-seconds` | 3 | 結果表示からロビーへ戻すまでの秒数 |
+| `solo.menu-delay` | 3 | ロビーへ戻ってからソロメニューを開くまでの秒数 |
+| `solo.ranking-size` | 10 | `/zankipvp ranking solo` で表示する人数 |
+| `solo.broadcast-top` | `true` | ランキング1位を更新したらサーバー全体に告知する |
+| `solo.max-bots` | 8 | 同時に出すボットの上限（3未満だと残機バトルが始められないため自動で3へ） |
+| `solo.bot-speed-scale` | 1.0 | ボットの移動速度の微調整（1.0＝人間基準） |
+| `solo.modes.versus.enabled` / `.name` | `true` / `残機バトル` | 残機バトルの有効化・表示名 |
+| `solo.modes.gauntlet.enabled` / `.name` | `true` / `勝ち抜き` | 勝ち抜きの有効化・表示名 |
+| `solo.modes.gauntlet.step` | 5 | この数を倒すごとに同時に出るボットが1体増える |
+| `solo.modes.gauntlet.max-at-once` | 3 | 勝ち抜きで同時に出るボットの上限（1〜8。`max-bots` を超える値は丸められる） |
+
+!!! info "難易度は `solo.difficulty.<id>` で定義（追加・変更可）"
+    難易度は `solo.difficulty` 配下に id ごとに定義します（既定は `easy`＝よわい／`normal`＝ふつう／`hard`＝つよい）。並び順＝メニューの並び順です。各難易度のキーは `name`（表示名）／`reaction-ticks`（判断の間隔tick・小さいほど速い）／`speed`（移動倍率・0.3〜2.0）／`aim-error`（弓のねらいのブレ度）／`crit-chance`・`strafe-chance`・`shield-chance`（跳び斬り・横移動・盾の割合 0〜1）／`heal-below`（この体力以下で回復）。難易度は **初回だけ書き込まれ、その後は自動補完されません**（自由に増減できます）。
+
+### アリーナの保護 — `protect` セクション
+
+在籍者（ロビー待機・試合中・ソロの人）とボットだけがアリーナを壊したり操作したりできないようにする保護です。在籍していない人には作用しません（**OPも在籍中は同じ制限を受ける** ため、アリーナを直すときは一度 leave してください）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `protect.enabled` | `true` | アリーナ保護の有効／無効 |
+| `protect.allow-interact` | `[]` | 操作を許すブロック（例: `[OAK_DOOR, STONE_BUTTON]`） |
+| `protect.allow-break` | `[]` | 壊してよいブロック |
+| `protect.allow-place` | `[]` | 置いてよいブロック |
+
+保護対象：ブロックの破壊・設置、バケツ、着火、爆発によるブロック破壊、ドア・ボタン・チェスト等の操作、感圧板・耕地、矢によるボタン・的ブロック、額縁・絵画・防具立て。
 
 ## セットアップ手順
 
@@ -93,7 +129,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 ### 看板の設置
 
-ロビーには参加・退出・開始用の看板を設置します。看板を見ながら（5ブロック以内）以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。`zankipvp.admin` 権限が必要です。**開始看板は `setstart` ではなく `setsign start` で登録します。**
+ロビーには参加・退出・開始・ソロ用の看板を設置します。看板を見ながら（5ブロック以内）以下のコマンドで登録します（テキストはプラグインが自動書き込みします）。`zankipvp.admin` 権限が必要です。**開始看板は `setstart` ではなく `setsign start` で登録します。**
 
 ```text title="参加看板として登録"
 /zankipvp setsign join
@@ -107,17 +143,22 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 /zankipvp setsign start
 ```
 
+```text title="ソロ看板として登録"
+/zankipvp setsign solo
+```
+
 ```text title="視線先の看板の登録を解除"
 /zankipvp setsign delete
 ```
 
-登録するとプラグインが `[ZankiPvP]` / `lobby` / `クリックで参加` 等のテキストを自動で書き込みます。手書き登録は廃止されています。
+登録するとプラグインが `[ZankiPvP]` / `lobby` / `クリックで参加` 等のテキストを自動で書き込みます。手書き登録は廃止されています。登録看板は統合版で編集画面が開かないよう waxed（固定）になります。
 
 | 看板の種類 | 役割 |
 |---|---|
 | 参加看板 | クリックでゲームに参加。現在人数が表示される |
 | 退出看板 | クリックでゲームから退出 |
 | 開始看板 | クリックでゲーム開始（`/zankipvp setsign start` で登録） |
+| ソロ看板 | クリックでソロ（CPU対戦）に入りメニューを開く（`/zankipvp setsign solo` で登録） |
 
 登録済みの看板を破壊するには `zankipvp.admin` 権限が必要で、破壊すると登録も解除されます。
 
@@ -130,11 +171,13 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `/zankipvp join [名前]` | ゲーム（受付ロビー）に参加する（参加看板と同等）。名前指定はOP限定 |
 | `/zankipvp leave [名前]` | ゲームから退出する（退出看板と同等）。名前指定はOP限定 |
 | `/zankipvp start` | ゲームを開始する（開始看板と同等・コマンドブロック対応） |
+| `/zankipvp solo [モード] [難易度]` | ソロ（CPU対戦）に入る／すぐ開始する（ソロ看板と同等。他プレイヤー名指定はOP限定） |
+| `/zankipvp ranking solo <モード> [難易度]` | ソロの記録ランキングを表示する（読み取り専用） |
 | `/zankipvp status` | 現在の地点・ゲーム設定の状況を表示する（読み取り専用） |
 | `/zankipvp stats [名前]` | キル／デス／勝利／試合数の成績を表示する（読み取り専用） |
 
-!!! note "join / leave / start / status / stats は全員が使えます"
-    これらは権限不要で全プレイヤーが実行できます（`join`・`leave`・`start` は看板の右クリックと同じ動作、`status`・`stats` は読み取り専用）。`/zankipvp start` も誰でも実行できる点に注意してください（運営のみで開始したい場合は開始看板を設置せず、運営が管理する形で運用してください）。`join`・`leave` に **他プレイヤー名** を指定して操作するのは OP 限定です。
+!!! note "join / leave / start / solo / ranking solo / status / stats は全員が使えます"
+    これらは権限不要で全プレイヤーが実行できます（`join`・`leave`・`start`・`solo` は看板の右クリックと同じ動作、`status`・`stats`・`ranking solo` は読み取り専用）。`/zankipvp start` も誰でも実行できる点に注意してください（運営のみで開始したい場合は開始看板を設置せず、運営が管理する形で運用してください）。`join`・`leave`・`solo` に **他プレイヤー名** を指定して操作するのは OP 限定です。
 
 ### 管理用（`zankipvp.admin`）
 
@@ -144,15 +187,19 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `/zankipvp setlobby` | 受付ロビー地点を設定 |
 | `/zankipvp setfield <1\|2>` | ゲームエリアの角を設定 |
 | `/zankipvp setstartspawn` | 初期リスポーン地点（退出先）を設定 |
-| `/zankipvp setsign <join\|leave\|start>` | 視線先の看板を参加／退出／開始看板として登録 |
+| `/zankipvp setsign <join\|leave\|start\|solo>` | 視線先の看板を参加／退出／開始／ソロ看板として登録 |
 | `/zankipvp setsign delete` | 視線先の看板の登録を解除 |
-| `/zankipvp stop` | ゲームを強制終了する（コマンドブロック対応） |
-| `/zankipvp forceunlock <名前> [confirm]` | 参加中フラグ（他ゲーム参加ロック）を強制解除する（`confirm` で確定） |
+| `/zankipvp join <名前>` / `leave <名前>` | 指定プレイヤーを参加／退出させる |
+| `/zankipvp solo <名前> [モード] [難易度]` | 指定プレイヤーをソロに参加させる（コンソール・コマンドブロック可） |
+| `/zankipvp stop` | 進行中の試合を強制停止する。在籍者はロビーへ戻すが **在籍は維持**（ソロの挑戦者にはメニューを開く・コマンドブロック対応） |
+| `/zankipvp lobbyfix <名前> [force]` | 退避した持ち物を手動で復元する。`force` を付けると退避データを破棄し、参加中フラグ・名前表示も解除する |
+| `/zankipvp forceunlock <名前> [confirm]` | 参加中フラグ（他ゲーム参加ロック）を強制解除する（`lobbyfix` の旧名。他ゲームに参加中のときは `confirm` で確定） |
+| `/zankipvp ranking reset <名前\|all> [モード\|all] [難易度\|all]` | ソロの記録を消す（コンソール可・コマンドブロック不可） |
 | `/zankipvp setzanki <数字>` | 初期残機数を設定（1以上・config保存） |
 | `/zankipvp setprotection <秒>` | リスポーン無敵時間を設定（0以上・config保存） |
 | `/zankipvp setmax <数字>` | 最大参加人数を設定（2以上・config保存） |
 | `/zankipvp setmin <数字>` | 最低開始人数を設定（1以上・config保存） |
-| `/zankipvp reload` | config.yml を再読み込み（成績データも再読み込み） |
+| `/zankipvp reload` | config.yml を再読み込み（成績・ソロ・保護設定も再読み込み） |
 
 !!! note "ゲーム開始の条件"
     `/zankipvp start`（または開始看板）は、ロビーに **最低開始人数（既定2人・`settings.min-players`／`/zankipvp setmin` で変更可）以上** が参加し、かつ4チームのスポーン地点がすべて設定されている場合に開始できます。条件を満たさない場合はエラーメッセージが表示されます。
@@ -163,17 +210,17 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `zankipvp.admin` | OP | 設定・管理コマンドの使用権限、看板の登録・破壊、他プレイヤーの join/leave 操作 |
+| `zankipvp.admin` | OP | 設定・管理コマンドの使用権限、看板の登録・破壊、他プレイヤーの join/leave/solo 操作、ソロ記録のリセット |
 
 !!! note "実装と権限の対応について"
-    `join`・`leave`（自分自身）・`start`・`status`・`stats` は **権限不要で全プレイヤーが実行可能** です（`join`・`leave`・`start` は看板の右クリックと同等、`status`・`stats` は読み取り専用）。それ以外の設定・管理コマンド（`setspawn`・`setlobby`・`setfield`・`setstartspawn`・`setsign`（`delete` 含む）・`stop`・`setzanki`・`setprotection`・`setmax`・`setmin`・`reload`）と、`join`・`leave` への **他プレイヤー名指定** は `zankipvp.admin` が必要です。`stop` 等はコマンドブロック／コンソールからも実行できます。
+    `join`・`leave`（自分自身）・`start`・`solo`（自分自身）・`ranking solo`・`status`・`stats` は **権限不要で全プレイヤーが実行可能** です（`join`・`leave`・`start`・`solo` は看板の右クリックと同等、`status`・`stats`・`ranking solo` は読み取り専用）。それ以外の設定・管理コマンド（`setspawn`・`setlobby`・`setfield`・`setstartspawn`・`setsign`（`delete` 含む）・`stop`・`lobbyfix`・`forceunlock`・`ranking reset`・`setzanki`・`setprotection`・`setmax`・`setmin`・`reload`）と、`join`・`leave`・`solo` への **他プレイヤー名指定** は `zankipvp.admin` が必要です。`stop` 等はコマンドブロック／コンソールからも実行できます（`ranking reset` はコマンドブロック不可）。
 
 ## ゲームの運営
 
 1. ロビーの参加看板からプレイヤーが集まるのを待つ（`/zankipvp status` で人数を確認）。
 2. 最低開始人数（既定2人）以上集まったら `/zankipvp start` でゲームを開始する。
 3. 生き残りチームが1つになると自動で勝敗判定・終了処理が行われる。
-4. 異常時は `/zankipvp stop` で強制終了する（全員がロビーへ戻る）。
+4. 異常時は `/zankipvp stop` で試合を強制停止する（在籍者はロビーへ戻るが在籍は維持。ソロの挑戦者にはメニューが開く）。
 
 ## トラブルシューティング
 
@@ -200,8 +247,9 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 
 - **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ゲーム名】名前」になり、離脱で元に戻ります（表示名は config の `display-name`）。
 - **参加/離脱の全体告知** … 参加・離脱時にサーバー全体へ「【ゲーム名】名前 が参加しました (N人)」等を通知します。
-- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `/<コマンド> forceunlock <プレイヤー>` で解除できます。
-- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/<プラグイン>/vault/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（退避・復元は各1回、試合終了時は復元しません）。
+- **同時参加は1ゲームまで** … 他ゲームに参加中は参加が拒否されます（「【○○】に参加中です」）。異常で参加ロックが残った場合はOPが `/zankipvp lobbyfix <プレイヤー>`（または旧名 `/zankipvp forceunlock <プレイヤー>`）で解除・持ち物復元できます。
+- **退避データのファイル保存** … ロビー入場時に退避した所持品を `plugins/<プラグイン>/vault/<UUID>.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（退避・復元は各1回、試合終了時は復元しません）。退避の書き込みに失敗した場合は参加を中止します（文言は `messages.vault-save-failed`）。
+- **統合版対応** … Geyser/Floodgate 環境の統合版プレイヤーを判定し、登録看板を waxed（編集画面が開かない）にする・発光の代わりに ActionBar や粒で方角を示す・ネザースターを持ってスニークでメニューを開くなど、統合版でも操作できるようにしています。
 
 ### 追加された config キー
 
@@ -211,6 +259,7 @@ OP権限で、設定したい場所に **その場に立って** 以下のコマ
 | `messages.join-broadcast` | 参加の全体告知文 |
 | `messages.leave-broadcast` | 離脱の全体告知文 |
 | `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
+| `messages.vault-save-failed` | 持ち物の退避に失敗して参加を中止したときの文言 |
 
 !!! note "config は自動で追記されるようになりました"
     起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。座標・看板・会場・ステージなどのデータ領域は補完対象外です。

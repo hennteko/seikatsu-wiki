@@ -31,10 +31,10 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 /emhorse setsign entry
 ```
 ```text title="看板の設定を解除"
-/emhorse setsign remove
+/emhorse setsign delete
 ```
 
-看板1行目に `[馬ショップ]` / `[厩舎]` / `[出走受付]` と手書きしても、権限者のみ設置できます。`/emhorse setsign remove` で視線先の看板設定を解除できます。
+看板1行目に `[馬ショップ]` / `[厩舎]` / `[出走受付]` と手書きしても、権限者のみ設置できます。`/emhorse setsign delete`（`remove` も可）で視線先の看板設定を解除できます。
 
 ## 管理コマンド
 
@@ -43,7 +43,7 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 | コマンド | 説明 |
 |---|---|
 | `/emhorse join` | **全員可**。`[厩舎]` 看板と同等に厩舎を開く（2頭以上なら所有馬一覧、1頭なら厩舎GUI、未所有ならメッセージ） |
-| `/emhorse setsign <shop\|stable\|entry\|remove>` | 視線先の看板を各種看板に設定/解除する |
+| `/emhorse setsign <shop\|stable\|entry\|delete>` | 視線先の看板を各種看板に設定/解除する（`delete` は `remove` も可） |
 | `/emhorse givefoal <player> [bronze\|silver\|gold] [個数]` | 子馬券を付与（既定 bronze・1個） |
 | `/emhorse givewhistle <player>` | 呼び笛を付与 |
 | `/emhorse givefeed <player> <feedId> [個数]` | エサを付与（feedId: hay / carrot / goldcarrot / sugar / apple / goldapple） |

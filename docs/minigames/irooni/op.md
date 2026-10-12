@@ -10,7 +10,7 @@
 |---|---|
 | プラグイン名 | ColorTag |
 | バージョン | 1.0.0 |
-| api-version | 26.1.2 |
+| api-version | 1.21 |
 | 作者 | henry |
 | メインコマンド | `/colortag`（エイリアス `/ct`／`join`・`leave`・`start`・`status`・`stats` は全員、設定系・`stop` は管理者） |
 | 依存プラグイン | なし |

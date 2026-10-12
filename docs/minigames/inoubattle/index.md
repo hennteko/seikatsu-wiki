@@ -6,6 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム（個人戦）</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">1〜24人（config で変更可・v1はソロ）</span></div>
   <div class="quick-card"><span class="label">勝利条件</span><span class="value">最後の1人になる</span></div>
+  <div class="quick-card"><span class="label">ソロ</span><span class="value">異能トライアル（異能を選んで Mob のウェーブと戦う）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
@@ -15,10 +16,13 @@
 !!! info "v1（ソロモード）です"
     現在は **v1・ソロモード** で、実装済みの異能は **疾走・隠密・速射・探知・鑑定・追跡・強靭** です。他の多くの異能やデュオ・トリオは今後のアップデートで追加予定です（config でこれから増える異能の有効/無効を切り替えられます）。
 
+!!! tip "1人でも遊べる：異能トライアル"
+    `/inou solo` またはソロ看板から、**好きな異能を選んで Mob のウェーブと戦う** ソロモードを遊べます。倒れるまでに到達したウェーブが記録になり、異能ごと・総合のランキングに載ります。異能の練習にも使えます。
+
 ## ページを選ぶ
 
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … 遊び方、弓と異能、強化、ケアパケ、フェーズ、勝利条件、参加方法、コマンド。
-- **OP・運営向け** … 導入、設定ツール、地点・フェーズ・看板設定、config（体力・弓・フェーズ・異能ON/OFF・ケアパケ・イベント）、権限、管理コマンド。
+- **プレイヤー向け** … 遊び方、弓と異能、強化、ケアパケ、フェーズ、勝利条件、参加方法、異能トライアル（ソロ）、コマンド。
+- **OP・運営向け** … 導入、設定ツール、地点・フェーズ・看板設定、異能トライアル（ソロ）の設定、config（体力・弓・フェーズ・異能ON/OFF・ケアパケ・イベント・ソロ）、権限、管理コマンド。

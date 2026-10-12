@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
   <div class="quick-card"><span class="label">人数</span><span class="value">2人以上（鬼1人＋逃走者）</span></div>
   <div class="quick-card"><span class="label">1試合の長さ</span><span class="value">既定3分（180秒）</span></div>
-  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
+  <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 1.21）</span></div>
 </div>
 
 !!! success "ゲームの特徴（色当て × 床消滅 × 残機制）"

@@ -74,6 +74,7 @@ modules:
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `quick.result-seconds` | 3 | 結果表示の秒数 |
+| `quick.close-grace-seconds` | 60 | 未確定のまま画面を閉じたときの猶予秒数（猶予内なら `/yacht`・看板で続きから再開。超過で現在の出目で自動確定。0以下で閉じた瞬間に確定） |
 | `quick.extra-roll.enabled` | false | 4投目購入オプション（ONにする前にシミュレーションで倍率調整） |
 | `quick.extra-roll.cost-multiplier` | 1.0 | 4投目購入のコスト倍率 |
 
@@ -94,9 +95,10 @@ modules:
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/yacht` / `/yacht quick [金額]` | 全員 | クイックヨットのGUIを開く |
+| `/yacht status` | 全員 | 看板の登録状況・現在のジャックポット額を確認 |
 | `/yacht jackpot` | 全員 | ジャックポット額を確認 |
 | `/yacht jackpot set <額>` | `yacht.admin` | ジャックポット額を設定 |
-| `/yacht setsign [delete]` | `yacht.admin` | ヨット看板を登録／解除 |
+| `/yacht setsign <quick\|delete>` | `yacht.admin` | ヨット看板を登録／解除（引数省略時は `quick`） |
 | `/yacht reload` | `yacht.admin` | 設定を再読み込み |
 
 ## トラブルシューティング

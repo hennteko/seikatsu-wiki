@@ -10,7 +10,7 @@
 |---|---|
 | 所属プラグイン | CasinoPlugin（統合プラグイン） |
 | モジュール ID | `slot` |
-| メインコマンド | `/slot [join\|remote\|setsign]` |
+| メインコマンド | `/slot [join\|status\|remote\|setsign <join\|delete>]` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/slot.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.slot.enabled` |
 | 通貨 | エメラルド（bank モジュールの口座残高。EmeraldAPI 経由） |
@@ -43,11 +43,15 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `reel.spin_speed` | 2 | リール回転の更新間隔（tick単位）。小さいほど速く回る |
+| `reel.bedrock_spin_speed` | 3 | 統合版（Bedrock）プレイヤーの回転速度下限（tick単位）。GUIの高頻度更新でカクつくのを防ぐため、統合版では `spin_speed` がこの値より小さくてもこの値まで引き上げられる |
 | `reel.slip_frames` | 1 | 目押しの滑りコマ数。停止ボタンを押してから何コマ先まで滑って止まるか（0〜3推奨） |
 
 ### シンボル設定（`symbols`）
 
-各シンボルに **通常時の出現重み**・**確変時の出現重み**・**配当倍率** を設定します。重みが大きいほど抽選で出やすくなります。倍率は3つそろったときの「賭け金 × 倍率」に使われます。
+各シンボルに **通常時の出現重み**・**確変時の出現重み**・**配当倍率** を設定します。倍率は3つそろったときの「賭け金 × 倍率」に使われます。
+
+!!! warning "このスロットは目押し式（skill-stop）です"
+    `normal_weight` / `kakuhen_weight` は **各リールの初期絵柄の抽選** にしか使われません。実際にリールが止まる絵柄は目押し（停止ボタン）で決まるため、**重みを上げても当選率は直接は上がりません**。当たりやすさは重みではなく、下記の **「引き込み」（`kakuhen.assist-percent` / `fever.assist-percent`）** で表現します。重みは「どの絵柄が盤面に現れやすいか」の見た目バランス調整と考えてください。
 
 | シンボル | `normal_weight`（通常重み） | `kakuhen_weight`（確変重み） | `multiplier`（倍率） |
 |---|---|---|---|
@@ -57,14 +61,24 @@
 | `COAL`（石炭） | 35 | 19 | 0.5 |
 | `BARRIER`（ハズレ） | 3 | 1 | 0.0 |
 
-!!! note "重みと出現率の関係"
-    出現率は「そのシンボルの重み ÷ 全シンボルの重み合計」で決まります。確変モードに突入すると `normal_weight` の代わりに `kakuhen_weight` が使われ、ダイヤ・金の重みが上がり石炭・ハズレが下がるため、当選しやすくなります。`multiplier` が `0.0` の `BARRIER` は3つそろっても配当がありません。
+!!! note "重みと盤面の関係"
+    各リールの初期絵柄の出現率は「そのシンボルの重み ÷ 全シンボルの重み合計」で決まります。確変モードに突入すると `normal_weight` の代わりに `kakuhen_weight` が使われ、盤面にダイヤ・金が現れやすく石炭・ハズレが現れにくくなります。ただし前述のとおり **最終的な当たりやすさを決めるのは重みではなく引き込み**（`kakuhen.assist-percent`）です。`multiplier` が `0.0` の `BARRIER` は3つそろっても配当がありません。
 
 ### 確変設定（`kakuhen`）
 
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `kakuhen.diamond_turns` | 100 | ダイヤ3つが揃ったときに付与される確変回転数。確変中は1回転ごとに1消費される |
+| `kakuhen.assist-percent` | 30 | 確変中の **引き込み確率（%）**。2本目以降のリールが停止したとき、先に止まった絵柄へ補正される確率。これが確変中の当たりやすさの本体 |
+
+### フィーバー設定（`fever`）
+
+フィーバータイム（後述のサーバー全体イベント）が開催中のときだけ適用される値です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `fever.assist-percent` | 50 | フィーバー中の **引き込み確率（%）**。確変中の `kakuhen.assist-percent` より高めに設定し、全体で当たりやすくする |
+| `fever.payout-multiplier` | 1.0 | フィーバー中の配当倍率。`1.0` は変化なし。`1.0` 未満を指定してもコード側で `1.0` に切り上げられる（配当は減らせない） |
 
 ### デバッグ
 
@@ -73,7 +87,40 @@
 | `debug` | false | true にするとリールの停止・滑り・現在表示シンボルなどの詳細ログを出力する（本番では false 推奨） |
 
 !!! tip "配当バランスの調整"
-    配当を渋くしたい場合は各シンボルの `multiplier` を下げるか、`DIAMOND` / `GOLD` の `normal_weight` を下げます。逆に当たりやすくしたい場合は重みを上げてください。賭け金は `1・5・10・20・50 E` の5段階で固定（コード内定義）のため、slot.yml では変更できません。
+    配当額を渋くしたい場合は各シンボルの `multiplier` を下げます。**当たりやすさ（当選頻度）を調整したい場合は重みではなく引き込み**（`kakuhen.assist-percent`・`fever.assist-percent`）を増減してください。目押し式のため重みは当選率を直接は動かしません。賭け金は `1・5・10・20・50 E` の5段階で固定（コード内定義）のため、slot.yml では変更できません。
+
+## フィーバータイム（サーバー全体イベント）
+
+フィーバータイムは slot.yml ではなく **CasinoPlugin 共通の `config.yml` の `events.slot-fever`** で管理される、サーバー全体イベントです。開催中は引き込み確率が `fever.assist-percent`（既定50%）に引き上げられ、全体で当たりやすくなります。発生・終了・残り時間は全体チャットで告知されます。
+
+```text title="config.yml（抜粋）events.slot-fever"
+events:
+  slot-fever:
+    enabled: true                 # フィーバータイム抽選の有効化
+    check-interval-minutes: 30    # 抽選間隔（分）
+    chance-percent: 25            # 抽選ごとの発生確率（%）
+    duration-minutes: 10          # 効果時間（分）
+    cooldown-minutes: 60          # 終了後の再抽選禁止時間（分）
+    min-online-players: 1         # オンライン人数がこれ未満なら抽選しない
+    announce-remaining-minutes: [5, 1]  # 残り告知を出す分
+```
+
+OPは抽選を待たずに手動で開始・終了できます（`casino.admin` または OP）。
+
+```text title="フィーバータイムを手動開始（分を省略すると duration-minutes）"
+/casino event start slot-fever [分]
+```
+
+```text title="フィーバータイムを手動終了"
+/casino event stop slot-fever
+```
+
+```text title="開催中イベントの確認（全員可）"
+/casino event status
+```
+
+!!! note "進行中イベントは再起動をまたいで継続"
+    開催中のフィーバータイムは `casino_events.yml` に保存され、サーバーを再起動しても残り時間を引き継いで継続します。`fever.payout-multiplier` を `1.0` より大きくすると、フィーバー中だけ配当も上乗せできます。
 
 ## 起動看板の設置
 
@@ -97,25 +144,30 @@
 /slot join
 ```
 
+```text title="スロットの設定状況（登録看板数）を表示（全員可・読み取り専用）"
+/slot status
+```
+
 ```text title="スロット起動ロッド（ブレイズロッド）を入手（slot.remote 権限）"
 /slot remote
 ```
 
-```text title="視線先の看板を [Slot] 起動看板として登録（OP専用）"
+```text title="視線先の看板を [Slot] 起動看板として登録（OP専用・引数省略時は join）"
 /slot setsign
 ```
 
 ```text title="視線先の [Slot] 看板設定を解除（OP専用）"
-/slot setsign remove
+/slot setsign delete
 ```
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/slot` | 全員 | 賭け金選択GUIを開く |
 | `/slot join` | 全員 | 賭け金選択GUIを開く（`/slot` と同じ） |
+| `/slot status` | 全員 | スロットの設定状況（起動看板の登録数）を表示する読み取り専用コマンド |
 | `/slot remote` | `slot.remote`（OP） | スロット起動ロッド（ブレイズロッド）を入手する。右クリックでGUIを開けるアイテム |
-| `/slot setsign` | OP / `slot.admin` | 視線先の看板を `[Slot]` 起動看板として登録する |
-| `/slot setsign remove` | OP / `slot.admin` | 視線先の看板の `[Slot]` 設定を解除する |
+| `/slot setsign` / `/slot setsign join` | OP / `slot.admin` | 視線先の看板を `[Slot]` 起動看板として登録する（引数省略時は `join`） |
+| `/slot setsign delete` | OP / `slot.admin` | 視線先の看板の `[Slot]` 設定を解除する（旧 `remove` も互換で動作） |
 
 !!! note "設定変更の反映"
     `slot.yml` を変更したあとは **サーバーの再起動** で反映してください。slot モジュール単体のリロードコマンドはありません。
@@ -147,8 +199,8 @@
 ??? failure "`/slot remote` が「権限がありません」になる"
     `/slot remote` は `slot.remote`（または旧 `slot2.remote`）を要求します。`slot.remote` は plugin.yml 上 `default: op` のため、一般プレイヤーに使わせる場合は権限プラグインで `slot.remote` を付与してください。
 
-??? failure "配当や出現率を調整したい"
-    `modules/slot.yml` の `symbols.<シンボル>` の `normal_weight`・`kakuhen_weight`・`multiplier` を編集し、サーバーを再起動してください。リール速度は `reel.spin_speed`、目押しの滑り具合は `reel.slip_frames`、確変回転数は `kakuhen.diamond_turns` で調整します。
+??? failure "配当や当たりやすさを調整したい"
+    配当倍率は `modules/slot.yml` の `symbols.<シンボル>.multiplier` で調整します。**当たりやすさ（当選頻度）は目押し式のため重みではなく引き込みで決まる** ので、確変中は `kakuhen.assist-percent`、フィーバー中は `fever.assist-percent` を増減してください。`normal_weight`・`kakuhen_weight` は盤面に出る絵柄の見た目バランスを変えます。リール速度は `reel.spin_speed`（統合版の下限は `reel.bedrock_spin_speed`）、目押しの滑り具合は `reel.slip_frames`、確変回転数は `kakuhen.diamond_turns` で調整します。編集後はサーバーを再起動してください。
 
 ??? failure "リールの挙動を詳しく確認したい"
     `slot.yml` の `debug` を `true` にすると、各リールの停止要求・滑り・現在表示シンボルなどの詳細ログがサーバーコンソールに出力されます。原因切り分けが終わったら本番では `false` に戻してください。

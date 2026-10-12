@@ -4,13 +4,13 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">⚔️ 対戦・アクションミニゲーム</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">最大16人（既定）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">最大16人（既定）／ソロ：1人</span></div>
   <div class="quick-card"><span class="label">勝利条件</span><span class="value">最後の1人になる（バトルロイヤル）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.1.2）</span></div>
 </div>
 
 !!! note "ゲームの特徴"
-    雪が複数の層に重なったフィールドで、足元の雪を掘って落とし合うバトルロイヤルです。掘れるのは雪ブロックだけで、落下ダメージは無効。Y座標0未満まで落ちると脱落します。さらに定期的にクリーパーが出現し、雪フィールドを崩していきます。参加・退出はコマンドのほか、専用看板のクリックでも行えます。
+    雪が複数の層に重なったフィールドで、足元の雪を掘って落とし合うバトルロイヤルです。掘れるのは雪ブロックだけで、落下ダメージは無効。Y座標0未満まで落ちると脱落します。さらに定期的にクリーパーが出現し、雪フィールドを崩していきます。参加・退出はコマンドのほか、専用看板のクリックでも行えます。1人で遊べる **ソロモード（ソロ掘削スコア）** では、制限時間内に掘った雪の数で自己ベストとランキングを競えます。
 
 ## ページを選ぶ
 
