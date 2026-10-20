@@ -74,7 +74,7 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 !!! tip "看板での参加導線を設置"
     プレイヤーの参加・退出・開始は看板で行えます。看板を設置し、**看板を見ながら（5ブロック以内）** `/fpb setsign join`（参加看板）・`/fpb setsign leave`（退出看板）・`/fpb setsign start`（開始看板）を実行して登録してください。
 
-    - 看板テキストはプラグインが自動で書き込みます（1行目 `[釣り大会]`、2行目 `▶クリックで参加`／`▶クリックで退出`／`▶クリックで開始`）。
+    - 看板テキストはプラグインが自動で書き込みます（1行目 `[釣り大会]`、2行目 `クリック/タップで参加`／`クリック/タップで退出`／`クリック/タップで開始`。ソロ看板は `ソロ：今日の大物`。開始看板は3行目に識別子を表示）。
     - 位置は config.yml の `signs.join` / `signs.leave` / `signs.start` に保存され、再起動後も有効です。
     - クリック判定は **登録された位置との一致** で行われるため、手書きで同じ文字を書いた看板は機能しません（手書き登録は廃止）。
     - 登録を解除するには、対象の看板を見ながら `/fpb setsign delete` を実行します。
@@ -154,7 +154,8 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `default-duration` | 5 | デフォルト制限時間（分） |
-| `min-players` | 1 | 開始に必要な最小参加人数（既定 `1` で一人開催が可能） |
+| `min-players` | 1 | 開始に必要な最小参加人数（既定 `1` で一人開催が可能。0人開始は常に不可） |
+| `max-players` | 20 | ロビー定員（`0` 以下で無制限） |
 | `countdown-seconds` | 5 | 開始前カウントダウン（秒） |
 
 ### コンボ設定（`combo`）
@@ -326,12 +327,13 @@ FishingPointBattle の導入・エリア設定・config・権限・管理コマ�
 | `/fpb solo reset <プレイヤー\|all>` | 今日のソロの記録と挑戦回数を消す |
 | `/fpb solo reroll` | 今日の大物を選び直す（今日の記録はリセット） |
 | `/fpb reload` | config.yml を再読み込み |
+| `/fpb lobbyfix <プレイヤー> [force]` | ロビー退避データの復旧。入室前の持ち物が戻らないときに使う（`force` で退避データを破棄してロックのみ解除） |
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` / `solo reset` / `solo reroll` の使用 |
+| `fpb.admin` | OP | `setstartspawn` / `setlobby` / `setfield` / `setfishspot` / `setsign` / `stop` / `reload` / `solo reset` / `solo reroll` / `lobbyfix`・他プレイヤー指定の `join`・`leave` の使用 |
 | `fpb.play` | 全員 | ゲームに参加できる（参加看板・`/fpb join`・ソロ看板・`/fpb solo`） |
 
 !!! note "開始看板・`/fpb start` は権限不要"
