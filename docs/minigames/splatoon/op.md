@@ -167,6 +167,8 @@ v2.0.0 から **複数の対戦会場（アリーナ）を登録し、切り替�
 | `/splatoon leave` | 試合（ロビー）から離脱する |
 | `/splatoon status` | 自分のゲーム状態を確認する |
 | `/splatoon start <turf\|area\|hoko\|tower>` | 指定モードでモードを設定して試合開始（全員可・コマンドブロック/コンソール対応） |
+| `/splatoon solo [practice\|paint [コース] [会場]]` | ソロモード（ソロメニューを開く／試し撃ち場・塗りチャレンジを開始） |
+| `/splatoon ranking solo [paint] [コース] [会場]` | ソロ塗りチャレンジのランキングを見る |
 
 !!! note "join / leave / status / start は権限不要"
     これらは全プレイヤーが使えます（看板と同等）。`start <モード>` は **そのモードに設定してから開始** します。運営のみで開始したい場合は開始看板を置かず運用してください。
@@ -197,6 +199,13 @@ v2.0.0 から **複数の対戦会場（アリーナ）を登録し、切り替�
 | `/splatoon setmin <人数>` | 最小参加人数（カウントダウン開始に必要な人数）を設定し `config.yml` に保存 |
 | `/splatoon setmax <人数>` | 最大参加人数を設定し `config.yml` に保存 |
 | `/splatoon settime <秒>` | 試合の制限時間（秒）を設定し `config.yml` に保存（次の試合から反映） |
+| `/splatoon setsign solo` | 視線先の看板をソロ看板に設定（複数可） |
+| `/splatoon setpracticespawn` | 試し撃ち場の入場地点を現在地に設定 |
+| `/splatoon setpracticefield <1\|2>` | 試し撃ち場の範囲の角を現在地に設定（会場フィールドから32ブロック以上離す） |
+| `/splatoon addtarget [move <幅>]` | 視線先ブロックの上に的を登録（`move`＝左右に往復する動く的） |
+| `/splatoon deltarget` | 視線先の近くの的の登録を解除 |
+| `/splatoon solo <プレイヤー> [practice\|paint] [コース] [会場]` | 指定プレイヤーをソロへ入れる／開始させる |
+| `/splatoon ranking reset <プレイヤー\|all> [paint\|all] [コース\|all] [会場\|all]` | ソロの記録を消す |
 
 ## 権限ノード
 
@@ -357,6 +366,71 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 
 ??? failure "サーモンランが開始できない / シャケが湧かない"
     `/salmon status <ステージ>` で **基地スポーン・金イクラコンテナ・湧き地点（1つ以上）・満潮フィールド** が「設定済み」か確認してください。いずれかが未設定だと開始できません。また **PvP対戦が進行中（`WAITING` 以外）だとサーモンランは開始できません**。ロビーに最低1人いる必要もあります。湧き地点は `/salmon setspawner <ステージ>` で複数登録できます。
+
+---
+
+## ソロモード（試し撃ち場・塗りチャレンジ）の設定
+
+対戦とは別に、1人で遊べる **ソロモード** です。入口は **ソロ看板** か **`/splatoon solo`** で、ソロメニュー（GUIロビー）が開きます。在籍・持ち物の退避・ロビー地点・初期スポーンは **通常対戦（スプラ）と共通** のものを使うため、ソロのために追加で用意するのは **試し撃ち場** と **ソロ看板**（任意）だけです。塗りチャレンジは **既存の会場（アリーナ）をそのまま流用** します。
+
+!!! note "塗りチャレンジは既存の会場をそのまま使います"
+    ソロ塗りチャレンジは **通常対戦のフィールドとスポーン**（`setfield`／`setspawn`）をそのまま使って塗り率を測ります。塗る色（既定オレンジ）のスポーンが **フィールドの中** にある会場だけが対象になります。別途の地点設定は不要で、コースだけ `config.yml` で調整します。`/splatoon status` の「ソロ」節に、使える会場・試し撃ち場の設定状況・的の数が表示されます。
+
+### セットアップ手順（試し撃ち場）
+
+OP権限（`splatoon.admin`）で **その場に立って／対象を見て** 実行します。試し撃ち場は会場のフィールドから **32ブロック以上離して** 作ります（塗りが混ざらないため）。
+
+```text title="試し撃ち場の入場地点（立ち位置）"
+/splatoon setpracticespawn
+```
+```text title="試し撃ち場の範囲 角1（会場フィールドから32ブロック以上離す）"
+/splatoon setpracticefield 1
+```
+```text title="試し撃ち場の範囲 角2"
+/splatoon setpracticefield 2
+```
+```text title="視線先ブロックの上に的を登録（動かない的）"
+/splatoon addtarget
+```
+```text title="左右に往復する動く的を登録（幅をブロック数で指定）"
+/splatoon addtarget move <ブロック数>
+```
+```text title="視線先の近くの的の登録を解除"
+/splatoon deltarget
+```
+```text title="ソロ看板を設定（クリックでソロメニューを開く・複数可）"
+/splatoon setsign solo
+```
+
+!!! tip "試し撃ち場で遊べる条件"
+    試し撃ち場は **入場地点** と **範囲（2角）** が設定され、**入場地点が範囲の中** にあるときに遊べます。的は任意です（なくても塗りの練習はできます）。塗りチャレンジは、通常対戦の会場が1つでも設定済みであればそのまま遊べます。
+
+### 塗りチャレンジのコース・記録リセット
+
+コース（制限時間）は `config.yml` の `solo.paint.courses` で調整します（`名前: 秒数`。既定 30s/60s/90s）。記録を消すときは次を使います。
+
+```text title="ソロの記録を消す（プレイヤー・コース・会場を絞って指定可／all で全体）"
+/splatoon ranking reset <プレイヤー|all> [paint|all] [コース|all] [会場|all]
+```
+
+### config.yml（`solo.*` / `practice.*` 主要項目）
+
+地点・的・ソロ看板はコマンドで自動保存されます（`practice.*` / `solo-signs`）。以下は数値調整用で、未記載でも既定値で動作します（起動時に自動追記）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロモード全体の有効/無効 |
+| `solo.color` | `orange` | 塗りチャレンジで塗る色（`orange`/`blue`） |
+| `solo.menu-delay` | 3 | 試合後にソロメニューを開くまでの秒数 |
+| `solo.practice.max-players` | 4 | 試し撃ち場の同時利用人数 |
+| `solo.practice.target-health` | 100 | 的の体力（対人と同じ物差し） |
+| `solo.practice.target-respawn-seconds` | 2 | 的が復活するまでの秒数 |
+| `solo.practice.moving-target-speed` / `moving-target-pause` | 2.0 / 0.5 | 動く的の速さ・端での停止秒 |
+| `solo.paint.courses` | 30s/60s/90s | コース（`名前: 制限秒数`） |
+| `solo.paint.default-course` | `60s` | コース省略時のコース |
+| `solo.paint.countdown` / `result-seconds` | 3 / 5 | 開始カウント・結果表示の秒数 |
+| `solo.paint.ranking-size` | 10 | ランキング表示人数 |
+| `solo.paint.broadcast-record` | true | 会場1位の更新を全体へ告知 |
 
 ---
 

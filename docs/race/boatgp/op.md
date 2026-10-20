@@ -285,11 +285,54 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 !!! note "看板の仕組み（座標で判定・テキストは表示専用）"
     登録した看板は **座標** を `plugins/BoatGP/signs.yml` に保存し、クリック判定は **保存した座標との一致** で行います（看板のテキストには依存しません）。看板には1行目に `[BoatGP]` タグ、2行目に種別（JOIN / LEAVE / START）、3行目にコース名、4行目に **状態＋参加人数**（約5秒ごとに自動更新）が表示されます。看板を壊すと登録は自動解除されます。`setsign delete` は見ている看板の登録を解除し、テキストも消去します。開始看板（START）クリックは `/race start` 相当で、参加者がいれば誰でも開始できます。クリック看板には連打防止のため1秒のクールダウンがあります。
 
+## ソロモード（CPUレース・タイムトライアル）の設定
+
+1人でも遊べる **ソロモード** です。**CPUレース**（AIカートとの競走）と **タイムトライアル**（タイム計測＋ゴースト）の2種類があり、入口は **ソロ看板** か **`/race solo`** です。**サーキットは通常レースと共用** で、どちらかが使用中のあいだは、もう一方を開始できません。在籍・持ち物の預かりは通常レースと同じロビー層を使い、ソロ用に **専用のロビー地点** を1つ用意します。
+
+!!! note "ソロの記録は専用ファイルに保存されます"
+    ソロの記録は `plugins/BoatGP/solo-records.yml`、ゴーストは `plugins/BoatGP/ghosts/` に自動保存されます。これは **通常レースの共通成績・リーダーボード（Phase 3予定）とは別系統の、ソロ専用の記録** です。`/race ranking <cpu|tt> ...` でランキングを表示できます。
+
+### セットアップ手順（ソロ）
+
+OP権限（`boatgp.admin`）で実行します。走るサーキット自体の設定は通常レースと共通です（`create`〜`laps`）。ソロ用に追加するのは **ソロロビー**（必須）と、任意で **ソロ看板** です。
+
+```text title="ソロロビーを現在地に設定（ソロ参加時のTP先・必須）"
+/race setsololobby
+```
+```text title="ソロ看板を設定（クリックでソロメニューを開く・看板を見て実行）"
+/race setsign solo
+```
+```text title="ソロの記録とゴーストを消す（サーキット省略で全サーキット）"
+/race soloreset <プレイヤー> [サーキット]
+```
+
+!!! tip "CPUレースに必要な条件"
+    CPUレースは **スタートグリッドが2つ以上** あるサーキットでのみ遊べます（CPUと挑戦者を並べるため）。タイムトライアルはグリッド1つでも可能です。難易度（台数・速さ等）・クリア順位・ゴースト・制限時間（既定600秒）などは `config.yml` の `solo.*` で調整します（未設定でも既定値で動作・起動時に自動追記）。ソロロビーが未設定の場合は、暫定でサーキットのロビーへ送られます（OPには警告が出ます）。
+
+### config.yml（`solo.*` 主要項目）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロモードの有効/無効 |
+| `solo.time-limit` | 600 | 1回の制限時間（秒・0で無制限） |
+| `solo.menu-delay` | 3 | 挑戦後にメニューを開き直すまでの秒数 |
+| `solo.ranking-size` | 10 | `/race ranking` の表示人数 |
+| `solo.broadcast-best` | true | 自己ベスト更新を全体へ告知 |
+| `solo.cpu.clear-position` | 3 | CPUレースでクリアとなる順位（以内） |
+| `solo.cpu.default-level` | `normal` | 難易度省略時の難易度 |
+| `solo.cpu.levels.*` | easy/normal/hard | 難易度ごとのCPU台数・速さ・運転精度など（最大3種） |
+| `solo.cpu.riders` | CPUレッド他 | CPUの名前と防具色 |
+| `solo.time-trial.start-items` | 3 | タイムトライアル開始時のダッシュキノコ数 |
+| `solo.time-trial.ghost.enabled` / `default` | true / `last` | ゴーストの有効・既定種別（none/last/best） |
+
+!!! note "ソロロビーのデータ保存先"
+    ソロロビー地点（`/race setsololobby`）は `plugins/BoatGP/solo-data.yml` に即保存されます。`config.yml` の `solo.*` は数値・挙動の調整用で、起動時に不足キーが自動追記されるため手書き追記は不要です。
+
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `boatgp.admin` | OP | サーキットの作成・管理（create/setlobby/setsign 等）、`/race stop` / `reload`、看板設置・削除。設定系コマンドのみコード側でこの権限を確認する |
+| `boatgp.admin` | OP | サーキットの作成・管理（create/setlobby/setsign 等）、`/race stop` / `reload`、看板設置・削除、`/race setsololobby` / `soloreset`。設定系コマンドのみコード側でこの権限を確認する |
 
 !!! warning "`/race` のコマンドレベル権限は無し（設定系のみ admin）"
     `plugin.yml` の `race` コマンドには **コマンドレベルの `permission` が設定されていません**。そのため **`/race join` / `leave` / `start` / `status` / `list` は全員が実行できます**。サーキット設定（create / setlobby / setspawn / setfinish / addcheckpoint / setsign / setstart / show / laps 等）と `/race reload` は **コード内で `boatgp.admin` を確認** し、`/race stop` は **OP または `boatgp.admin`** で実行できます。プレイヤーは看板クリック・コマンドのどちらでも参加・離脱・開始できます。`boatgp.play` 権限は廃止されました。
@@ -304,7 +347,12 @@ BoatGP の導入・config・items.yml・サーキット作成・権限・管理�
 | `/race status [サーキット名]` | 全員 | サーキットの設定状況を確認する（`info` も可） |
 | `/race list` | 全員 | サーキット一覧を表示する |
 | `/race use` | 全員 | アイテム使用／ロケットスタート（降車ボタンの代替。統合版向け） |
-| `/race stop` | `boatgp.admin` または OP | 自分が参加中のレースを強制中止する（OP は権限ノードなしでも実行可） |
+| `/race solo [cpu\|tt [サーキット] [難易度\|none\|last\|best]]` | 全員 | ソロモード（メニューを開く／CPUレース・タイムトライアルを開始） |
+| `/race ranking <cpu\|tt> [サーキット] [難易度]` | 全員 | ソロのランキングを表示 |
+| `/race setsololobby` | `boatgp.admin` | ソロロビーを現在地に設定 |
+| `/race setsign solo` | `boatgp.admin` | 見ている看板をソロ看板に設定 |
+| `/race soloreset <プレイヤー> [サーキット]` | `boatgp.admin` | ソロの記録とゴーストを消す（コンソール可） |
+| `/race stop` | `boatgp.admin` または OP | 自分が参加中のレース／ソロ挑戦を強制中止する（OP は権限ノードなしでも実行可） |
 | `/race reload` | `boatgp.admin` | config.yml・items.yml・surfaces.yml・サーキットを再読み込み |
 | `/race create <名前>` | `boatgp.admin` | 新規サーキットを作成して選択する |
 | `/race select <名前>` | `boatgp.admin` | 既存サーキットを編集対象に選択する（`edit` も可） |
