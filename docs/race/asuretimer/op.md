@@ -78,8 +78,61 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 | `return-item.menu-title` | `&8チェックポイント選択` | 選択GUIのタイトル |
 | `return-item.lore` | （2行） | アイテムの説明文（lore） |
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみのため、**旧バージョンから更新した場合 `return-item` ブロックは既存 `config.yml` に自動追記されません**。コード側に既定値（リカバリーコンパス・既定名/lore）があるため動作はしますが、素材やGUIタイトルをカスタマイズしたい場合は `return-item` ブロックを手動追記して `/asure reload` してください。
+!!! note "config.yml は起動時に自動で最新化されます"
+    本プラグインは起動時に共通の **ConfigUpdater** で `config.yml` を最新版へ自動更新します。旧バージョンから更新した場合も、`return-item` などの不足ブロックや新しい説明コメントが自動追記され、サーバー側で設定済みの値・看板（`signs`）・地点データ（`courses` / `default-spawn` / `lobby-spawn`）はそのまま保持されます。更新時は旧ファイルが `config.yml.bak-<日時>` に退避されます（最新5件まで）。手で編集したあとは `/asure reload` で再読み込みしてください。
+
+### ソロモード設定（`solo`）
+
+`/asure solo` またはソロ看板でソロロビーへ入り、メニューからコースを選んで1人で走れる機能です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | `true` | `false` でソロを無効化（開始看板からの走りは従来どおり） |
+| `solo.menu-delay` | 3 | ゴール・ギブアップでソロロビーへ戻ってからソロメニューを開くまでの秒数 |
+| `solo.countdown-seconds` | 3 | ソロ開始前のカウントダウン（秒。この間は動けない。0でなし） |
+| `solo.broadcast-top` | `true` | 自己ベストでコース1位を更新したらサーバー全体に告知する |
+
+### 区間タイム設定（`splits`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `splits.enabled` | `true` | `false` で区間表示・区間表・BossBar を出さない |
+| `splits.asure-every` | 100 | アスレで区間を区切る間隔（m）。0で区切らない。変えると過去の区間・ゴーストは比較に使えなくなる |
+| `splits.bossbar` | `true` | 走行中に BossBar（経過／比べる相手のタイム）を表示する |
+
+### ゴースト設定（`ghost`）
+
+自己ベスト・1位・前回の走りを、本人にだけ見える姿で再生します。保存先は `plugins/AsureTimer/ghosts/<コース>/`。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `ghost.enabled` | `true` | `false` でゴーストを記録・再生しない |
+| `ghost.default` | `best` | 初めて遊ぶ人の既定の種類（`best` / `top` / `last` / `off`） |
+| `ghost.sample-ticks` | 2 | 位置を記録する間隔（tick。小さいほど滑らかだがファイルが大きい） |
+| `ghost.max-seconds` | 900 | これより長い走りはゴーストを保存しない（秒） |
+| `ghost.entity` | `ARMOR_STAND` | Java版の走者に見せる姿（`ARMOR_STAND` / `MANNEQUIN`）。統合版には常に `ARMOR_STAND` |
+| `ghost.trail` | `true` | ゴーストの位置に小さなパーティクルを出す |
+
+### ロビー退避・名前表示・統合版（ミニゲーム共通）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `lobby-inventory.enabled` | `true` | 走行中（結果発表待ち含む）の持ち物退避・復元機能。`false` で従来挙動 |
+| `lobby-inventory.gamemode` | `ADVENTURE` | 走行中のゲームモード（`ADVENTURE` / `SURVIVAL` / `CREATIVE` / `KEEP`） |
+| `lobby-inventory.clear-effects` | `true` | 開始時にポーション効果を消す |
+| `lobby-inventory.reset-health` | `true` | 開始時に最大体力を既定へ戻し、体力・満腹度を全回復する |
+| `lobby-inventory.reset-exp` | `true` | 開始時に経験値とレベルを0にする |
+| `lobby-inventory.expire-days` | 30 | 復元されないまま残った退避データの保持日数 |
+| `name-tag.enabled` | `true` | 参加中の頭上・Tab・チャット名を「【ゲーム名】名前」にする |
+| `name-tag.display-name` | `アスレタイマー` | 【】に入れる正式名 |
+| `name-tag.color` | `GOLD` | 【ゲーム名】の色（`GOLD` / `AQUA` / `GREEN` など） |
+| `name-tag.announce-join` | `true` | `false` でサーバー全体への参加通知を出さない |
+| `bedrock.wax-signs` | `true` | 登録看板を蝋引きし、統合版のタップで編集画面が開かないようにする |
+| `bedrock.swing-to-use` | `true` | 統合版の空中タップ（腕振り）でギブアップ／戻るアイテムを使えるようにする（ギブアップは3秒以内に2回で確定） |
+| `bedrock.name-prefix` | `.` | Floodgate 未導入時に統合版と見なす名前の接頭辞 |
+
+!!! note "`signs` はデータ置き場です"
+    `signs` は `/asure setsign` で登録した看板の保存先で、ConfigUpdater の対象外（手動編集は基本不要）です。各エントリは `world/x/y/z`・`kind`（`start`/`goal`/`solo`/`ranking`）・`course`（solo は省略可＝メニュー）・`rank-type`（`ranking` のみ `time`/`distance`）を持ちます。
 
 ## コース・看板のセットアップ手順
 
@@ -132,6 +185,10 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 /asure setsign ranking <コースID> <time|distance>
 ```
 
+```text title="ソロ看板を視線先の看板に登録（コース省略＝ソロメニュー、コース指定＝そのコースをソロで即開始）"
+/asure setsign solo [コースID]
+```
+
 ```text title="視線先の登録看板を解除する"
 /asure setsign delete
 ```
@@ -139,10 +196,30 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 !!! note "看板の仕様"
     - 看板の種別（アスレ／ドロッパー）は **コースの種別** で自動判定されます。看板側で `[asure]`/`[dropper]` を書き分ける必要はありません。
     - `start` / `goal` はコースIDを省略すると `default-course` が対象になります。`ranking` はコースIDと種別（`time`/`distance`）の両方が必須です。
+    - `solo` はコースIDを省略するとソロメニューを開く看板に、コースIDを指定するとそのコースをソロで即開始する看板になります。
     - 看板の登録・解除には `asuretimer.admin` 権限が必要です。
     - 登録に成功するとプラグインが看板の文面を自動描画します（アスレは `[AsureTimer]` `>> START >>` `* GOAL *`、ドロッパーは `[Dropper]` `v START v` `* CLEAR *`、ランキングは `[Ranking]`）。
     - 登録看板を **破壊すると登録も自動解除** されます。
     - ランキング看板は `sign-update-interval`（既定30秒）ごとに自動更新され、表面に1位プレイヤー名、裏面にベスト記録が表示されます。
+
+## 管理ツール（OP専用）
+`/asure wand` で管理ツール（ブレイズロッド）を受け取り、右クリック（統合版はタップ/長押し）で管理メニューを開きます。`/asure menu` でも開けます。
+
+- コース：メニュー左上のボタンで設定するコースを切り替え（コースごとの地点・距離・種類はこのコースに設定されます）
+- 数値：＋/−ボタンで 結果発表の時間・ソロのカウントダウン・ソロメニューを開くまでの秒数・区間の間隔（アスレ）・ランキング表示件数・コースの距離（アスレのみ）を変更（即保存）
+- 地点：ボタンを押すと立ち位置に設定（初期スポーン／ソロロビー／コースのロビー／コースのスタート）
+- コース管理：種類（アスレ⇔ドロッパー）の切り替え、コースの削除（5秒以内に2回押し）
+- 看板：看板を見ながら（5ブロック以内）押すと開始／ゴール／ソロ（メニュー・コース指定）／ランキング（タイム・到達距離）看板を登録。コースが2つ以上あるときはコースを選ぶ画面が出ます。ハサミで登録解除
+- 運用：開始（選択中のコースを自分で走るテスト）・設定状況（`/asure status` と同じ表示）・リロード・強制停止（強制停止は5秒以内に2回押し）
+- アスレタイマーに参加中（走行中・結果発表中・ソロロビー）は受け取れません（`/asure leave` で離脱してから実行）。捨てると消えるので再度 `/asure wand` で取得してください
+- 統合版：チェストGUIで操作できます。数値は左右クリックに頼らず＋/−の別ボタンで操作します
+
+!!! note "管理ツールの仕様"
+    - 管理ツールは PDC（`asuretimer:admin_wand`）で判定します。同じ名前のブレイズロッドを作っても使えません。
+    - 受け取るとき・使うときの両方で `asuretimer.admin` を確認します。OP 以外が使おうとするとアイテムが消えます。
+    - 額縁・防具立て・チェストなどには入れられません。ホッパーや OP 以外が拾おうとすると消えます。
+    - 管理ツールを持って登録看板を右クリックしても、看板の動作（開始・ゴールなど）はせず管理メニューが開きます。
+    - メニューの「開始」で走った場合、管理ツールは他の持ち物と一緒に退避され、走り終わると戻ります。
 
 ## 管理コマンド
 
@@ -152,11 +229,21 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 |---|---|
 | `/asure start [コースID] [プレイヤー]` | スタート看板クリックと同じ処理でコースに参加・計測開始。自分の開始は `asuretimer.play`、他プレイヤー指定は `asuretimer.admin` が必要（`/asure join` も同じ） |
 | `/asure leave [プレイヤー]` | 計測を中止して離脱（記録なし・初期スポーンへ）。他プレイヤー指定は `asuretimer.admin` 必要 |
+| `/asure giveup` | ギブアップ（ギブアップアイテムと同じ。走行中のみ・誰でも実行可） |
+| `/asure back` | 通過済みチェックポイントの選択GUIを開く（戻るアイテムと同じ。アスレ走行中のみ・誰でも実行可） |
+| `/asure solo [コースID] [best\|top\|last\|off]` | ソロ（ソロロビーへ入ってメニュー／コース指定で即開始）。誰でも実行可（`asuretimer.play`） |
+| `/asure retry` | 今の走りを記録なしで止め、同じコースを最初からやり直す（誰でも実行可） |
+| `/asure ghost <best\|top\|last\|off>` | 自分のゴーストの種類を変更（誰でも実行可） |
+| `/asure ghost reset <コースID> [プレイヤー]` | ゴースト・区間・前回の記録を消す（ランキングは消さない。`asuretimer.admin` 必要） |
+| `/asure stop` | 走っている全員を強制終了（記録なし）。ソロ在籍者はソロロビーへ戻す（`asuretimer.admin` 必要） |
 | `/asure status [コースID]` | 地点設定・看板登録数・現在のプレイ人数など設定状況を表示（誰でも実行可） |
+| `/asure lobbyfix <プレイヤー> [force]` | 参加前の持ち物が戻らないときの復旧。`force` で退避データを破棄しロック解除（`asuretimer.admin` 必要） |
+| `/asure wand` | 管理ツール（ブレイズロッド）を受け取る。右クリック/タップで管理メニュー（参加中は不可） |
+| `/asure menu` | 管理メニューを開く（参加中でも可） |
 | `/asure setstartspawn` | 現在地を初期スポーン（離脱・切断時の戻り先）に設定 |
 | `/asure setlobby [コースID]` | 現在地をロビー（クリア・ギブアップ後の戻り先）に設定 |
 | `/asure setspawn [コースID]` | 現在地をスタート地点（開始時のTP先・距離計測基準）に設定 |
-| `/asure setsign <start\|goal\|ranking\|delete> ...` | 視線先の看板を機能看板として登録／解除 |
+| `/asure setsign <start\|goal\|solo\|ranking\|delete> ...` | 視線先の看板を機能看板として登録／解除 |
 | `/asure course list` | 登録済みコースの一覧（種別・距離・設定状況）を表示 |
 | `/asure course create <ID> <asure\|dropper> [距離]` | コースを新規作成 |
 | `/asure course settype <ID> <asure\|dropper>` | コースの種別を変更 |
@@ -188,11 +275,11 @@ OP権限を持った状態で、コース付近に立ってコマンドを実行
 !!! note "サブコマンドごとの権限ガード"
     `/asure` コマンド自体には plugin.yml で `permission` が指定されていないため、コマンド自体は誰でも叩けます。サブコマンドごとに以下のチェックが入ります。
 
-    - `setstartspawn` / `setlobby` / `setspawn` / `setsign` / `reload` / `course` … `asuretimer.admin` を実装側でチェック
+    - `wand` / `menu` / `setstartspawn` / `setlobby` / `setspawn` / `setsign` / `reload` / `course` / `stop` / `lobbyfix` / `ghost reset` … `asuretimer.admin` を実装側でチェック（管理ツールは使うときにも、管理メニューはボタンを押すときにも確認）
     - `start`／`leave` で **他プレイヤーを指定** した場合 … `asuretimer.admin` を実装側でチェック
     - `stats <他プレイヤー>` … `asuretimer.admin` を実装側でチェック
-    - `start`（自分） … `asuretimer.play` を実装側でチェック（既定全員可。`join` も同じ）
-    - `leave`（自分） / `status` / `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
+    - `start`（自分） / `solo` … `asuretimer.play` を実装側でチェック（既定全員可。`join` も同じ）
+    - `leave`（自分） / `giveup` / `back` / `retry` / `ghost`（種類変更） / `status` / `stats`（自分） / `stats <コースID>`（自分） … 権限チェックなし（誰でも実行可）
     - `ranking` … 権限チェックなし（誰でも実行可）
 
     そのため一般プレイヤーは `/asure ranking` や `/asure stats`、`/asure status` を実行できます。アクションバー / 看板 / GUI と併用する運用で問題ありません。

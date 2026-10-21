@@ -9,12 +9,13 @@
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | ColorTag |
-| バージョン | 1.0.0 |
+| バージョン | 1.1.0 |
 | api-version | 1.21 |
 | 作者 | henry |
-| メインコマンド | `/colortag`（エイリアス `/ct`／`join`・`leave`・`start`・`status`・`stats` は全員、設定系・`stop` は管理者） |
+| メインコマンド | `/colortag`（エイリアス `/ct`／`join`・`leave`・`start`・`status`・`stats`・`solo`・`solotop` は全員、設定系・`stop`・`reload` は管理者） |
 | 依存プラグイン | なし |
-| 設定ファイル | `plugins/ColorTag/config.yml`（設定・座標・看板をすべて格納） |
+| 設定ファイル | `plugins/ColorTag/config.yml`（設定・座標・看板・ソロ設定をすべて格納） |
+| 成績ファイル | `plugins/ColorTag/stats.yml`（通常戦）／`plugins/ColorTag/solo-stats.yml`（ソロ）（自動生成） |
 
 !!! info "ゲームの仕組み（色当て × 床消滅 × 残機制）"
     鬼はホットバーの染料を右クリックして「安全色」を選びます。猶予（`floor-delay`・既定2秒）のあと、安全色以外のコンクリート床が一斉に空気へ置き換わり、乗れていない逃走者が落下します。落下するごとに残機が1減り、初期スポーンへ復帰。残機0で観戦モードになります。床は猶予＋復活間隔（`recover`）後に元のブロックへ戻ります。**安全色は常に鬼が選んだ1色のみ**。経過時間で床の復活間隔（`recover`）が短くなり消滅サイクルが速くなります。終盤フェーズではフェイント（予告色から別色へ切替）が確率発動します。
@@ -30,7 +31,7 @@
 4. `/colortag status` で各設定状況を確認する。
 
 !!! note "座標・看板は config.yml に直接保存されます"
-    本プラグインは別ファイル（locations.yml 等）を持ちません。ロビー・スポーン・ステージ・フィールド・看板の座標は、各設定コマンドの実行時に **`config.yml` の `locations` / `field` / `signs` セクションへ即保存** されます。`config.yml` の設定（時間・残機・パレット・難易度）を手で編集した場合、`reload` コマンドは無いため **反映にはサーバー再起動**（または再読み込み）が必要です。
+    本プラグインは別ファイル（locations.yml 等）を持ちません。ロビー・スポーン・ステージ・フィールド・看板の座標は、各設定コマンドの実行時に **`config.yml` の `locations` / `field` / `signs` セクションへ即保存** されます。`config.yml` の設定（時間・残機・パレット・難易度・ソロ）を手で編集した場合は、**`/colortag reload`**（または管理メニューのリロード）で反映できます。
 
 ## セットアップ手順
 
@@ -171,16 +172,49 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
     安全な色は **常に「鬼が選んだ1色」のみ** です（フェーズで安全色数は変わりません）。予告から床消滅までの猶予はフェーズではなく `settings.floor-delay`（既定2秒）で決まり、全フェーズ共通です。難易度カーブで変化するのは床の復活間隔（`recover`）とフェイント許可（`feint`）です。
 
 !!! note "難易度・パレットの編集は config.yml を直接編集"
-    `palette` と `difficulty` を変更するコマンドはありません。`config.yml` を直接編集してください。`reload` コマンドが無いため、**変更の反映にはサーバー再起動** が必要です（`setzanki` / `settime` / `setdelay` はコマンドで即反映されます）。
+    `palette` と `difficulty` を変更するコマンドはありません。`config.yml` を直接編集し、**`/colortag reload`** で反映してください（`setzanki` / `settime` / `setdelay` はコマンドで即反映されます）。
 
 ### locations / field / signs セクション
 
 - `locations.{lobby,startspawn,gamespawn,stage}` … 各座標（向きあり）。設定コマンドで自動保存。
 - `field.{pos1,pos2}` … フィールド範囲の対角2点。`setfield 1` / `2` で自動保存。
-- `signs.{join,leave,oni,start}` … 各看板の位置。`setsign` で自動保存。
+- `signs.{join,leave,oni,start,solo}` … 各看板の位置。`setsign` で自動保存。
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみで、既存の `config.yml` に新キーを自動追記しません（コード側に既定値があるため、欠けていても既定値で動作します）。`palette` や `difficulty` を調整する場合は手動で追記するか、`config.yml` を退避して再生成してください。座標・看板はコマンドで `config.yml` に保存されます。
+### solo セクション（ソロモード）
+
+ソロモード（後述）の設定は `config.yml` の `solo` セクションにまとまっています。主なキーは次のとおりです（詳細はファイル内コメント参照）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロモードの有効/無効 |
+| `solo.menu-delay` | 3 | 試合後ロビーへ戻ってからソロメニューを開くまでの秒数 |
+| `solo.result-seconds` | 5 | ソロの結果表示秒数 |
+| `solo.countdown` | 3 | 開始前カウントダウン秒数 |
+| `solo.broadcast-result` | best-only | 結果の全体通知（none／best-only／all） |
+| `solo.ranking.size` | 10 | `/colortag solotop` で表示する人数 |
+| `solo.menu-item` | COMPASS / slot 4 | ロビー中に持つソロメニューアイテム |
+| `solo.respawn-safe` | 2.0 | 復帰直後に足元マスを残す秒数 |
+| `solo.reach-margin` | 0.8 | CPUが「たどり着ける色」を選ぶ判定の余裕（小さいほど易しい） |
+| `solo.difficulties` | easy / normal / hard | 難易度定義（残機・上限時間・CPUの意地悪さ・フェーズ・ランク基準） |
+
+!!! note "不足キーは起動時に自動追記されます"
+    起動時・`/colortag reload` 時に、jar 内の最新 `config.yml` と突き合わせて**不足している項目を既定値＋コメント付きで自動追記**します（既存の値は変更しません／変更があったときのみ `config.yml.bak` を保存）。座標・看板・フィールド・`solo.difficulties` などのデータ領域は補完対象外です。
+
+## ソロモード（CPU鬼）
+
+1人でも遊べる **ソロモード** が用意されています。CPU（コンピューター）が鬼となって色を選び、プレイヤーは生き残った時間を競います。
+
+- **会場は通常戦と共用** … フィールド・ゲームスポーン・鬼ステージ・ロビーはそのまま使われるため、**追加の地点設定は不要** です（通常戦をセットアップしてあればすぐ遊べます）。
+- **入り方** … `/colortag solo [難易度]`、ロビー中に配られる **ソロメニューアイテム**（既定 COMPASS・ホットバー5番）を右クリック、または **ソロ看板**（`/colortag setsign solo`）のクリックで入れます。難易度を省略するとメニューが開きます。
+- **難易度** … 既定で `easy`（かんたん・★1・残機3）／`normal`（ふつう・★2・残機2）／`hard`（むずかしい・★3・残機1）の3段階。`config.yml` の `solo.difficulties` で残機・上限時間・CPUの意地悪さ（`malice`）・フェーズ・ランク基準を調整できます。
+- **ランキングと記録** … 結果は `plugins/ColorTag/solo-stats.yml` に保存され、`/colortag solotop <難易度>` で上位（既定10人）を表示します。自己ベスト更新時などの全体通知は `solo.broadcast-result`（既定 best-only）で制御します。
+
+```text title="ソロメニューを開く看板を登録（任意）"
+/colortag setsign solo
+```
+
+!!! note "ソロモードの有効/無効"
+    `solo.enabled: false` にするとソロモードを無効化できます。無効時は `/colortag solo` やソロ看板は使えません。
 
 ## 権限ノード
 
@@ -188,10 +222,10 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `colortag.admin` | OP | `/colortag` の **設定系**（setsign・setlobby・setspawn系・setstage・setfield・setzanki・settime・setdelay・setmax・setmin）と **`stop`**、および `join` / `leave` での **他プレイヤー指定** |
+| `colortag.admin` | OP | `/colortag` の **設定系**（setsign・setlobby・setspawn系・setstage・setfield・setzanki・settime・setdelay・setmax・setmin）、**`wand`・`menu`・`stop`・`reload`・`forceunlock`**、および `join` / `leave` での **他プレイヤー指定** |
 
-!!! note "join / leave / start / status / stats は全員・設定系と stop は権限必要"
-    `/colortag join` / `leave` / `start` / `status` / `stats` は **権限不要で全員が使用可能** です（看板クリックでも join/leave/oni/start の操作ができます）。鬼立候補は看板（鬼立候補看板）専用です。一方、設定系サブコマンド（setsign・setlobby・setstartspawn・setspawn・setstage・setfield・setzanki・settime・setdelay・setmax・setmin）と **`stop`**、`join` / `leave` で **他プレイヤー名を指定** する操作は `colortag.admin`（既定OP）が必要です。`status`（設定状況）と `stats`（成績）は閲覧のみで全員可です。
+!!! note "join / leave / start / status / stats / solo / solotop は全員・設定系と stop/reload は権限必要"
+    `/colortag join` / `leave` / `start` / `status` / `stats` / `solo` / `solotop` は **権限不要で全員が使用可能** です（看板クリックでも join/leave/oni/start/solo の操作ができます）。鬼立候補は看板（鬼立候補看板）専用です。一方、設定系サブコマンド（setsign・setlobby・setstartspawn・setspawn・setstage・setfield・setzanki・settime・setdelay・setmax・setmin）と **`wand`・`menu`・`stop`・`reload`・`forceunlock`**、`join` / `leave` で **他プレイヤー名を指定** する操作は `colortag.admin`（既定OP）が必要です。`status`（設定状況）と `stats`（成績）は閲覧のみで全員可です。
 
 ## コマンド一覧
 
@@ -202,10 +236,12 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 | `/colortag join` | ゲームに参加（ロビーへTP） |
 | `/colortag leave` | ゲームから離脱 |
 | `/colortag start` | ゲーム開始（最低人数以上必要・コンソール／コマンドブロックからも実行可） |
+| `/colortag solo [難易度]` | ソロモードに入る（引数省略でメニュー表示）。CPU鬼から逃げ切る1人用モード |
+| `/colortag solotop <難易度>` | ソロのランキングを表示（コンソールからも可） |
 | `/colortag status` | 設定状況を表示（読み取り専用） |
 | `/colortag stats [名前]` | 自分または指定プレイヤーの成績を表示（読み取り専用） |
 
-`reload` コマンドはありません（設定の再読み込みは再起動）。鬼立候補はコマンドが無く、鬼立候補看板のクリックで行います。試合の強制停止は **`/colortag stop`**（`colortag.admin` 必要）で行えます（プラグイン無効化時にも自動で停止します）。
+設定の再読み込みは **`/colortag reload`**（`colortag.admin` 必要）で行えます。鬼立候補はコマンドが無く、鬼立候補看板のクリックで行います。試合の強制停止は **`/colortag stop`**（`colortag.admin` 必要）で行えます（プラグイン無効化時にも自動で停止します）。
 
 ### 管理コマンド
 
@@ -217,8 +253,8 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 | `/colortag setstartspawn` | 初期スポーン（落下時の戻り先）を現在地に設定 |
 | `/colortag setspawn` | ゲームスポーン（逃走者の開始位置）を現在地に設定 |
 | `/colortag setstage` | 鬼ステージ（鬼の立ち位置）を現在地に設定 |
-| `/colortag setfield <1\|2>` | 視線先のブロックをフィールド範囲の頂点に設定 |
-| `/colortag setsign <join\|leave\|oni\|start>` | 視線先の看板を各用途で登録 |
+| `/colortag setfield <1\|2>` | 足元のブロックをフィールド範囲の頂点に設定 |
+| `/colortag setsign <join\|leave\|oni\|start\|solo>` | 視線先の看板を各用途で登録（`solo` はソロメニューを開く看板） |
 | `/colortag setsign delete` | 視線先の看板の登録を解除（種類は自動判定） |
 | `/colortag setzanki <数>` | 残機を設定（1以上・既定2） |
 | `/colortag settime <秒>` | 制限時間を設定（10以上・既定180） |
@@ -226,10 +262,14 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 | `/colortag setmax <人数>` | 最大参加人数を設定（1〜200・既定16） |
 | `/colortag setmin <人数>` | 最低開始人数を設定（1〜200・既定2） |
 | `/colortag join\|leave <名前>` | 指定プレイヤーを参加／離脱させる（他者操作はOP限定） |
+| `/colortag wand` | 管理ツール（設定用アイテム）を受け取る。右クリックで管理メニューを開く |
+| `/colortag menu` | 管理メニュー（GUI）を開く |
 | `/colortag stop` | 進行中の試合を強制停止（結果発表・成績記録なしで即ロビーへ） |
+| `/colortag reload` | config.yml を再読み込み（ソロ設定・看板も再反映） |
+| `/colortag forceunlock <名前> [confirm]` | 他ゲーム参加中フラグが異常で残った場合に強制解除 |
 
 !!! tip "TAB補完に対応"
-    `/colortag` のサブコマンド（管理者には設定系も表示）、`setsign` の種別（join/leave/oni/start/delete）、`setfield` の番号（1/2）、`join` / `leave` / `stats` のオンラインプレイヤー名はTAB補完できます。
+    `/colortag` のサブコマンド（管理者には設定系も表示）、`setsign` の種別（join/leave/oni/start/solo/delete）、`setfield` の番号（1/2）、`solo` / `solotop` の難易度、`join` / `leave` / `stats` / `forceunlock` のオンラインプレイヤー名はTAB補完できます。
 
 ## 成績の記録（stats.yml）
 
@@ -262,8 +302,8 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 ??? failure "逃走者が落下で死んでしまう"
     床の下に **水** を敷いて落下を受け止めてください（ゲーム中は落下・奈落・溺れダメージが無効化されますが、水で確実に受け止める想定です）。初期スポーンへ戻されるため、初期スポーンがフィールド近くにあるか確認してください。
 
-??? failure "config.yml（パレット・難易度）を編集したのに反映されない"
-    `reload` コマンドが無いため、`palette` / `difficulty` の変更は **サーバー再起動** で反映されます。`setzanki` / `settime` / `setdelay` はコマンド実行で即反映されます。
+??? failure "config.yml（パレット・難易度・ソロ）を編集したのに反映されない"
+    `palette` / `difficulty` / `solo` の変更は **`/colortag reload`**（または管理メニューのリロード・サーバー再起動）で反映されます。`setzanki` / `settime` / `setdelay` はコマンド実行で即反映されます。
 
 ---
 
@@ -286,7 +326,7 @@ OP権限（`colortag.admin`）で、設定したい場所に **立って／対�
 | `messages.already-in-other-game` | 他ゲーム参加中に拒否したときの文言 |
 
 !!! note "config は自動で追記されるようになりました"
-    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。**このため、当ページ内の「既存サーバーは config が自動追記されません」という旧記載は本改修で解消されています。** 座標・看板・会場・ステージなどのデータ領域は補完対象外です。
+    起動時・`/colortag reload` 時に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／変更があったときのみ `config.yml.bak` を保存）。座標・看板・フィールド・`solo.difficulties` などのデータ領域は補完対象外です。
 
 ---
 

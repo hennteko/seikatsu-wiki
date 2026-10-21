@@ -20,9 +20,9 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 導入後、おおまかに **設定ツール取得 → ロビー・初期スポーン → 使うモードの地点 → 看板 → 各種調整** の順に設定します。地点系は **実行した位置** を登録し、看板系は看板を **見ながら**（5ブロック以内）実行します。地点・数値はすべて設定GUI（`/pvpbattle wand`）からも操作できます。
 
 1. ビルドした `PvpBattle` の jar を `plugins/` に入れてサーバーを起動すると、`config.yml` が自動生成されます。
-2. 設定ツール（ネザースター）を受け取り、右クリックで設定GUIを開けます。
+2. 設定ツール（ブレイズロッド「管理ツール」）を受け取り、右クリックで設定GUIを開けます。
 
-```text title="設定ツール（ネザースター）を受け取る（旧名 tool も使用可）"
+```text title="設定ツール（ブレイズロッド）を受け取る"
 /pvpbattle wand
 ```
 
@@ -129,7 +129,7 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 
 | コマンド | 説明 |
 |---|---|
-| `/pvpbattle wand` | 設定ツール（右クリックで設定GUI）を受け取る（旧名 `tool`） |
+| `/pvpbattle wand` | 設定ツール（ブレイズロッド・右クリックで設定GUI）を受け取る |
 | `/pvpbattle setlobby` | ロビー地点を設定（現在地） |
 | `/pvpbattle setstartspawn` | 初期スポーン（途中抜け・離脱時の戻り先）を設定（現在地） |
 | `/pvpbattle setfield <1\|2>` | FFAフィールド範囲の角を設定（2点・現在地） |
@@ -218,7 +218,7 @@ PvPバトルの導入・地点/看板設定・モード別の設定差分・conf
 
 | 権限ノード | 既定 | 用途 |
 |---|---|---|
-| `pvpbattle.admin` | OP | `wand`（旧 `tool`）・各 `set` 系・`setsign`・`stop`・`reload`・`lobbyfix`・`ranking reset`、他プレイヤーの `join`/`leave`/`solo`、PvPバトル看板の破壊 など管理系すべて |
+| `pvpbattle.admin` | OP | `wand`・各 `set` 系・`setsign`・`stop`・`reload`・`lobbyfix`・`ranking reset`、他プレイヤーの `join`/`leave`/`solo`、PvPバトル看板の破壊 など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
     `/pvpbattle join`・`leave`（自分）・`start`・`status`・`stats`・`solo`（自分）・`ranking solo` は権限チェックがなく、全プレイヤーが使えます。`start` はコンソール・コマンドブロックからも実行できます（この場合 manual/draft は自動割り当てになります）。`/pvpbattle solo <名前>` で他人を指定できるのは OP・コンソール・コマンドブロックだけです。

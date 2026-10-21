@@ -25,7 +25,50 @@
 3. 後述の手順でスポーン・看板・擬態ブロックを設定する。
 4. `/kakurenbo status` で設定状況を確認する。
 
-## セットアップ手順
+## 設定ツール（おすすめ）
+
+コマンドを打たずに、見ているブロック・看板へ直接セットアップできる OP用ツール（ブレイズロッド）と GUI メニューを用意しています。いずれも `kakurenbo.admin` 権限が必要で、非OPが入手しても使えません（受け取り時・使用時・メニューを開く時・クリック時のそれぞれで権限を確認します）。
+
+```text title="OP用の設定ツール（ブレイズロッド）を受け取る"
+/kakurenbo wand
+```
+
+```text title="設定メニュー（GUI）を開く"
+/kakurenbo menu
+```
+
+!!! warning "かくれんぼに参加中は受け取れません"
+    ロビー在籍中は持ち物が退室時の復元で上書きされるため、設定ツールは渡しません。先に `/kakurenbo leave` で離脱してから実行してください。
+
+### 設定ツールの操作
+
+| 操作 | 内容 |
+|---|---|
+| 左クリック／長押し（ブロック） | そのブロックを **フィールド範囲の角1** にする |
+| 右クリック／タップ（ブロック） | そのブロックを **フィールド範囲の角2** にする |
+| 右クリック／タップ（看板） | 選んでいる **看板モード** で登録・解除する（モードなしなら登録状況を表示） |
+| 右クリック／タップ（空中） | 設定状況の要約を表示（統合版は空中タップでも可） |
+| しゃがみ＋左クリック／長押し（ブロック） | そのブロックを **擬態パレットに追加**（登録済みなら削除） |
+| しゃがみ＋右クリック／タップ | **設定メニュー** を開く（開かないときは `/kakurenbo menu`） |
+
+!!! tip "フィールド範囲は天井側も含めて囲む"
+    角1・角2のブロックを含む直方体がフィールドです。両方を床のブロックにすると高さが1マスになり、参加者がジャンプした瞬間にフィールド外と判定されて動けなくなります。**片方は床、もう片方は天井側（高い位置）のブロック** にしてください。高さが4マス未満のときは設定ツールが注意を出します。
+
+### 設定メニューでできること
+
+| 区分 | ボタン |
+|---|---|
+| 地点（現在地で設定） | 初期スポーン／ロビー／鬼スポーン（ソロのスタート地点）／隠れる側スポーン（任意）／鬼待機ステージ（任意） |
+| 表示 | フィールド範囲（角1・角2・大きさ）／擬態パレット（登録数・中身） |
+| 看板モード | 参加／離脱／開始／ブロック選択／鬼立候補／ソロ／登録解除／モード解除 |
+| 数値（−／＋で即保存） | 最大人数／最小人数／制限時間（30秒刻み）／隠れ時間（5秒刻み） |
+| 切り替え | ソロ「見つけて」の有効・無効（`solo.enabled`） |
+| 進行 | ゲーム開始／強制停止（通常戦・ソロとも。在籍は維持）／設定状況を表示／閉じる／設定ツールを回収 |
+
+!!! note "統合版（スマホ・Switch など）"
+    メニューは1tick遅らせて開き、数値は −／＋ の別ボタンにしてタップでも操作できるようにしています。空中のタップが右クリックとして届かない場合は、腕振りだけでも設定状況を表示します。ブロックへの左クリックで壊れたように見えたブロックは送り直します。
+
+## セットアップ手順（コマンド）
 
 OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対象を見て** 実行します。地点は `locations.yml` に即保存されます。
 
@@ -274,7 +317,7 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kakurenbo.admin` | OP | setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・forceunlock・join/leave/solo の他プレイヤー指定・ranking reset |
+| `kakurenbo.admin` | OP | wand・menu・setsign系・setlobby・setspawn系・setstage・setfield・setmax・setmin・settime・setdelay・addblock・removeblock・stop・reload・forceunlock・join/leave/solo の他プレイヤー指定・ranking reset |
 | `kakurenbo.play` | 全員 | ゲームへの参加（`join`） |
 
 !!! note "join / leave / start / status / solo / ranking は権限不要で全員可"
@@ -290,10 +333,12 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `/kakurenbo ranking [solo] [難易度]` | 全員 | ソロのランキング |
 | `/kakurenbo solo <プレイヤー> [難易度]` | `kakurenbo.admin` | 指定した人をソロへ（コンソール・コマンドブロック可） |
 | `/kakurenbo ranking reset <プレイヤー\|all> [難易度\|all]` | `kakurenbo.admin` | ソロの記録を消す（コンソール可） |
+| `/kakurenbo wand` | `kakurenbo.admin` | OP用の設定ツール（ブレイズロッド）を受け取る（参加中は不可） |
+| `/kakurenbo menu` | `kakurenbo.admin` | 設定メニュー（GUI）を開く |
 | `/kakurenbo setlobby` / `setstartspawn` | `kakurenbo.admin` | ロビー / 初期スポーンを設定 |
 | `/kakurenbo setspawn [seeker]` | `kakurenbo.admin` | 隠れ側スポーン（引数なし）／鬼スポーン（`seeker`）を設定 |
 | `/kakurenbo setstage` | `kakurenbo.admin` | 鬼の待機ステージ（隠れ時間中の隔離地点）を設定 |
-| `/kakurenbo setfield <1\|2>` | `kakurenbo.admin` | フィールド範囲の頂点を設定 |
+| `/kakurenbo setfield <1\|2>` | `kakurenbo.admin` | フィールド範囲の頂点を設定（立っているマスが角になる。設定ツールならクリックしたブロック） |
 | `/kakurenbo setsign <join\|leave\|start\|block\|oni\|solo\|delete>` | `kakurenbo.admin` | 視線先の看板を各用途で登録 / 解除 |
 | `/kakurenbo setmax` / `setmin <人数>` | `kakurenbo.admin` | 最大 / 最小人数を設定 |
 | `/kakurenbo settime <秒>` / `setdelay <秒>` | `kakurenbo.admin` | 制限時間 / 隠れ時間を設定 |

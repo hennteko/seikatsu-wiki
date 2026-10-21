@@ -9,7 +9,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | MinecraftMOBA |
-| バージョン | 1.0.0 |
+| バージョン | 1.2.2 |
 | api-version | 26.1.2 |
 | メインコマンド | `/moba`（エイリアス `/mb`）、`/shop` |
 | 依存プラグイン | なし |
@@ -20,7 +20,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 ## 導入手順
 
-1. ビルドした `MinecraftMOBA-1.0.0.jar` をサーバーの `plugins/` フォルダに配置する。
+1. ビルドした `MinecraftMOBA-1.2.2.jar` をサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動すると `plugins/MinecraftMOBA/config.yml` が自動生成される。
 3. 後述の手順でマップ座標を設定する。
 4. 設定を変更したら `/moba reload` で再読み込みする。
@@ -213,7 +213,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 
 - `MINION` … スポーン間隔（30秒）、有効レーン（既定 `LANE_MID` のみのARAM想定）、構成（ゾンビ3＋スケルトン2）、時間強化係数を設定。
 - `NEUTRAL_CREEPS` … 通常（ゾンビ）／バフ（アイアンゴーレム・撃破で力）／ボス（ウィザー・チーム強化）の有効化・HP・報酬・`RESPAWN_TIME` などを設定。湧き座標は **編集ステージ固有** で `STAGES.<識別子>.CREEP_SPAWNS.<NORMAL\|BUFF\|BOSS>` に保存され、`/moba setcamp <NORMAL\|BUFF\|BOSS>` で追加します。**湧き座標が空だとクリープが湧きません**（既定ステージの参考値は `NEUTRAL_CREEPS.<タイプ>.SPAWN_LOCATIONS` にあります）。
-- `SHOP` … **現バージョンの店の品揃えはコード側にハードコード**されており、`config.yml` の `SHOP.ITEMS` は読み込まれていません。実際の店には **剣4種・鉄防具4種・金リンゴ・ルーン5種（攻撃の宝珠/守りの宝珠/俊足のブーツ/賢者のオーブ/加速のルーン）の計14品** のみが並びます。`SHOP.ITEMS` に書いた弓・矢・各ポーション・革防具・ワード等は店に反映されないため、品揃え変更にはコード修正が必要です。
+- `SHOP` … **現バージョンの店の品揃えはコード側にハードコード**されており、`config.yml` の `SHOP.ITEMS` は読み込まれていません。実際の店には **剣4種・鉄防具4種・金リンゴ・ワード・ルーン5種（攻撃の宝珠/守りの宝珠/俊足のブーツ/賢者のオーブ/加速のルーン）の計15品** が並びます（ワードの価格のみ `VISION.WARD.COST`＝既定75 を参照）。`SHOP.ITEMS` に書いた弓・矢・各ポーション・革防具等は店に反映されないため、品揃え変更にはコード修正が必要です。
 
 ### チャンピオン/スキル・AFK・リコール・ワード
 
@@ -250,8 +250,8 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 !!! note "ソロの記録データ"
     自己ベスト・ランキング（ステージ×モード×コース別）はプラグインのデータファイルに保存され、`/moba ranking reset` で消去できます。config のキーではありません。
 
-!!! warning "既存サーバーを更新する場合（config自動マージなし）"
-    本プラグインは `saveDefaultConfig()` のみで、**既存の `config.yml` に新セクションを自動追記しません**。旧バージョンから更新したサーバーでは `AFK` / `RECALL` / `VISION` / `NEUTRAL_CREEPS` / `SKILL_UNLOCK_LEVELS` / `SIGNS.CHAMPION`・`START` 等が無いままになります。コード側に既定値があるので落ちはしませんが、「クリープが湧かない」「2つ目以降のスキルがLv1で即解放」などの想定外動作になります。さらに本バージョンからは **ステージ固有ジオメトリが `STAGES.<識別子>.*`（既定 `EDIT_STAGE: default`）配下に保存される** 仕様になったため、旧 `MAP_SETTINGS.TEAM_RED` 等に直接書いていた座標は読まれません（既定値の参考用としては残ります）。コア・防衛塔・スポーン・エリア・レーン・クリープ湧きは `setstage` で編集ステージを選んだうえで `setcore` / `setturret` / `setspawn` / `setfield` / `setlane` / `setcamp` で再設定してください。**新規インストール、または config を退避して再生成（手動マージ）を推奨** します。
+!!! warning "既存サーバーを更新する場合（設定は自動追記・ジオメトリは要再設定）"
+    起動時・`/moba reload` 時に **`ConfigUpdater` が不足している設定キーを既定値＋コメント付きで自動追記** します（既存の値は変更せず、変更がある場合のみ更新前のファイルを `config.yml.bak` に保存）。そのため `AFK` / `RECALL` / `VISION` / `NEUTRAL_CREEPS` / `SKILL_UNLOCK_LEVELS` などの新セクションは旧 config でも自動補完されます。ただし **ジオメトリ・看板などのデータ領域（`MAP_SETTINGS` / `STAGES` / `SIGNS` / `EDIT_STAGE` / `solo.cs.courses`）は補完対象外** です。さらに本バージョンからは **ステージ固有ジオメトリが `STAGES.<識別子>.*`（既定 `EDIT_STAGE: default`）配下に保存される** 仕様になったため、旧 `MAP_SETTINGS.TEAM_RED` 等に直接書いていた座標は読まれません（既定値の参考用としては残ります）。コア・防衛塔・スポーン・エリア・レーン・クリープ湧きは `setstage` で編集ステージを選んだうえで `setcore` / `setturret` / `setspawn` / `setfield` / `setlane` / `setcamp` で再設定してください。
 
 !!! note "設定変更後は必ず `/moba reload`"
     `config.yml` を編集したら `/moba reload` を実行してください。マップ座標・経済・ショップ・クリープ・看板などの変更が反映されます。
@@ -313,7 +313,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
     参加導線は **ロビー看板** です。看板が正しく設置されているか、`/moba setlobby` でロビー座標が設定済みかを確認してください。
 
 ??? failure "中立クリープが湧かない"
-    クリープの湧き座標は編集ステージ固有で `STAGES.<識別子>.CREEP_SPAWNS.<タイプ>` に保存されます。これが空だと湧きません。`/moba setcamp <NORMAL|BUFF|BOSS>` で湧き地点を追加するか、config に座標を記載してください。旧configから更新したサーバーは `NEUTRAL_CREEPS` の有効化設定が無い場合もあります（再生成推奨）。
+    クリープの湧き座標は編集ステージ固有で `STAGES.<識別子>.CREEP_SPAWNS.<タイプ>` に保存されます。これが空だと湧きません（この座標領域は `ConfigUpdater` の補完対象外です）。`/moba setcamp <NORMAL|BUFF|BOSS>` で湧き地点を追加するか、config に座標を記載してください。`NEUTRAL_CREEPS` の有効化設定自体は起動時に自動補完されます。
 
 ??? failure "2つ目以降のスキルが最初から使える / おかしい"
     `EXPERIENCE.LEVEL_UP_REWARDS.SKILL_UNLOCK_LEVELS` が空（旧config）だと、2つ目以降のスキルがLv1で即解放されます。`[6, 11, 16]` を設定してください。
@@ -339,7 +339,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
     - ミニオンの Pathfinding は簡易実装で、経路が正しくても期待通り動かない場合があります。
     - ボスクリープのバフは現状 **力（STRENGTH）固定** で、`BUFF_EFFECT` の設定値を反映しません。
     - クリープをスキル/投射物で倒した場合、撃破者の判定（報酬付与）が状況により外れることがあります。
-    - ショップのルーン・ワードの価格/効果はコードにハードコードされており、`SHOP` config の値とは連動しません。
+    - ショップのルーンの価格/効果はコードにハードコードされており、`SHOP` config の値とは連動しません（ワードの価格のみ `VISION.WARD.COST` を参照）。
     - 既存サーバーは config の新セクションが自動追記されません（上記「既存サーバーを更新する場合」を参照）。
 
 ---
@@ -364,7 +364,7 @@ MinecraftMOBA の導入・マップ設定・config・権限・管理コマンド
 | `messages.vault-save-failed` | 持ち物の退避（ファイル保存）に失敗して参加を中止したときの文言 |
 
 !!! note "config は自動で追記されるようになりました"
-    起動時（`reload` 対応プラグインは reload 時も）に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は `config.yml.bak` を保存）。**このため、当ページ内の「既存サーバーは config が自動追記されません」という旧記載は本改修で解消されています。** 座標・看板・会場・ステージなどのデータ領域は補完対象外です。
+    起動時・`/moba reload` 時に、`config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／変更がある場合のみ更新前のファイルを `config.yml.bak` に保存）。これにより `AFK` / `RECALL` / `VISION` / `NEUTRAL_CREEPS` / `SKILL_UNLOCK_LEVELS` などの設定セクションは旧 config でも自動補完されます。座標・看板・ステージ（`MAP_SETTINGS` / `STAGES` / `SIGNS` / `EDIT_STAGE` / `solo.cs.courses`）などのデータ領域は補完対象外です。
 
 ---
 

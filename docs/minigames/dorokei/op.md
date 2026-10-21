@@ -9,7 +9,7 @@ DorokeiGame の導入・会場（ロビー＋エリア）の設定・config・�
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | DorokeiGame |
-| バージョン | 3.1（コマンド統合・簡略化版） |
+| バージョン | 3.2（ソロモード〈CPU警察〉追加版） |
 | api-version | 26.1.2 |
 | 作者 | へんりー |
 | メインコマンド | `/dorokei`（エイリアス `/dk`） |
@@ -45,10 +45,10 @@ DorokeiGame の導入・会場（ロビー＋エリア）の設定・config・�
 1. ビルドした `DorokeiGame` の jar ファイルをサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動・再起動すると `plugins/DorokeiGame/config.yml` が自動生成される。
 3. 後述の手順でゲーム（ロビー＋エリア）を設定する。
-4. 必要に応じて `config.yml` を直接編集し、サーバーを再起動して反映する。
+4. 必要に応じて `config.yml` を直接編集し、**`/dorokei reload`**（またはサーバー再起動）で反映する。
 
 !!! note "config の反映について"
-    本プラグインには config 再読み込み用のコマンドがありません。`config.yml` を手で編集した場合は **サーバーの再起動** で反映してください。なお `setstartspawn` / `setlobby` / `setfield` / `setjail` / `addchest` / `setcop` / `settime` / `setmax` / `setmin` / `delete` 系コマンドで変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます（`chest-settings` の出現重み・クールダウンを手動編集した場合のみ再起動が必要です）。
+    `config.yml` を手で編集した場合は **`/dorokei reload`**（OP・管理メニューのリロードでも可）で反映できます（進行中の試合には次の試合から反映）。なお `setstartspawn` / `setlobby` / `setfield` / `setjail` / `addchest` / `setcop` / `settime` / `setmax` / `setmin` / `delete` 系コマンドや、ソロの地点設定（`setspawn` / `sethideout` / `settreasure` / `setpatrol` / `setjailexit`）で変更した内容は即座にファイルへ保存され、ゲームインスタンスへも即時反映されます。
 
 ## config.yml 設定項目
 
@@ -138,7 +138,7 @@ games:
 | `ender_escape` | 緊急テレポート | 5 | エンダーパール（バニラ動作） |
 | `cobweb_trap` | 蜘蛛の巣トラップ | 5 | 足元に蜘蛛の巣を設置（約8秒で消滅） |
 | `slow_trap` | 鈍足の罠 | 5 | 周囲6m以内の警官を4秒間 鈍足 |
-| `radar_jammer` | レーダージャマー | 4 | 全警官の追跡コンパスを20秒間 無効化 |
+| `radar_jammer` | レーダージャマー | 4 | 全警官の追跡コンパスを20秒間 無効化（ソロではCPU警察の視界を一時的に半減） |
 
 ```yaml title="chest-settings の記述例"
 chest-settings:
@@ -154,7 +154,7 @@ chest-settings:
 ```
 
 !!! note "loot 未設定でも動作します"
-    `chest-settings.loot` が未設定（または空）の場合は、上表の組み込み既定テーブルで動作します。特定のアイテムを出さないようにしたい場合は、その行を削除するか `loot` を書き換えてサーバーを再起動してください。
+    `chest-settings.loot` が未設定（または空）の場合は、上表の組み込み既定テーブルで動作します。特定のアイテムを出さないようにしたい場合は、その行を削除するか `loot` を書き換えて **`/dorokei reload`**（またはサーバー再起動）で反映してください。
 
 ## セットアップ手順（単一会場）
 
@@ -273,9 +273,63 @@ chest-settings:
 3. ゲームは「カウントダウン → 逃走準備（既定30秒）→ 追跡開始 → 決着」と進行します。
 4. 終了から既定10秒後に参加者は自動でロビーへ戻され、同じロビーへ再参加した状態になります。
 
+## ソロモード（CPU警察）
+
+v3.2 で、1人でも遊べる **ソロモード** が追加されました。プレイヤーは泥棒となり、**CPU（コンピューター）の警察から逃げながら宝を集めてアジトへ納品し、捕まっても脱獄してスコアを競います**。
+
+### ソロの会場設定
+
+通常戦のロビー・エリア・牢屋に加えて、ソロ専用の地点を設定します（**設定地点に立って実行**・即保存）。
+
+```text title="ソロの開始地点（泥棒のスタート位置）"
+/dorokei setspawn
+```
+
+```text title="アジト（集めた宝の納品地点）"
+/dorokei sethideout
+```
+
+```text title="宝の出現地点を現在地に追加（1か所以上必須／clearで全解除）"
+/dorokei settreasure
+```
+
+```text title="CPU警察の巡回地点を現在地に追加（任意／clearで全解除）"
+/dorokei setpatrol
+```
+
+```text title="脱獄後の出口を現在地に設定（牢屋番号を指定・任意／clearで解除）"
+/dorokei setjailexit 1
+```
+
+```text title="ソロメニューを開く看板を登録（任意）"
+/dorokei setsign solo
+```
+
+!!! note "ソロの入り方・記録"
+    プレイヤーは `/dorokei solo [難易度]`、ロビー中に配られる **ソロメニューアイテム**（既定 NETHER_STAR・ホットバー5番）の右クリック、または **ソロ看板** のクリックで入れます。難易度省略でメニューが開きます。結果は `plugins/DorokeiGame/solo-records.yml` に保存され、`/dorokei solotop <難易度>` で上位（既定10人）を表示します。ラッキーチェストはソロでも使えます（レーダージャマーはソロではCPU警察の視界を一時的に半減させます）。
+
+### solo セクション（config.yml）
+
+ソロモードの設定は `config.yml` の `solo` セクションにまとまっています。主なキーは次のとおりです（詳細はファイル内コメント参照）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロモードの有効/無効 |
+| `solo.menu-delay` | 3 | 試合後ロビー復帰からソロメニューを開くまでの秒数 |
+| `solo.broadcast-result` | best-only | 結果の全体通知（none／best-only／all） |
+| `solo.menu-item` | NETHER_STAR / slot 4 | ロビー中に持つソロメニューアイテム |
+| `solo.ranking.size` | 10 | `/dorokei solotop` の表示件数 |
+| `solo.treasure` | — | 宝の挙動（納品方式 `bank-mode`・拾う距離・同時所持数・種類と点数） |
+| `solo.escape` | score 20 / 無敵3秒 | 脱獄1回の点数と脱獄直後の無敵秒数 |
+| `solo.cpu` | ZOMBIE 他 | CPU警察の見た目・視野角・捕獲距離・索敵の挙動 |
+| `solo.difficulties` | easy / normal / hard | 難易度定義（CPU数・速度・視界・制限時間・捕獲上限・スコア倍率・ランク基準） |
+
+!!! note "ソロの難易度（既定3段階）"
+    `easy`（かんたん・★1・CPU1体）／`normal`（ふつう・★2・CPU2体）／`hard`（むずかしい・★3・CPU3体＋看守）の3段階。難しいほどCPUが増え・速く・視界が広くなり、`max-captures`（捕まってよい回数）が設定されます（hardは3回で終了）。最大7個まで難易度を追加できます。編集後は `/dorokei reload` で反映します。
+
 ## 管理コマンド一覧
 
-セットアップ・看板・数値設定・`delete` は **OP（`dorokei.admin`）限定**、`start` / `join` / `leave` / `list` / `status` / `stats` は **全員可** です。
+セットアップ・看板・数値設定・`delete`・`stop`・`reload` は **OP（`dorokei.admin`）限定**、`start` / `join` / `leave` / `solo` / `solotop` / `list` / `status` / `stats` は **全員可** です。
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
@@ -293,16 +347,28 @@ chest-settings:
 | `/dorokei setcopratio <割合%> [最大人数]` | OP | 警官人数表を割合で一括再計算する |
 | `/dorokei setresultwait <秒>` | OP | 結果発表からロビーに戻るまでの待機時間を設定する |
 | `/dorokei loadout <cop\|civilian> ...` | OP | 警官／市民の配布装備の中身を編集する |
-| `/dorokei tool` | OP | OP専用の設定アイテムを入手する（右クリックでGUIメニュー） |
+| `/dorokei wand` | OP | 管理ツール（設定用アイテム）を入手する（右クリックで管理メニュー） |
+| `/dorokei menu` | OP | 管理メニュー（GUI）を開く（参加中も可） |
 | `/dorokei settime <秒>` | OP | 制限時間を設定する（10秒以上） |
 | `/dorokei setmax <人数>` | OP | ロビー最大人数を設定する（1以上） |
 | `/dorokei setmin <人数>` | OP | 開始に必要な最低人数を設定する（1以上） |
+| `/dorokei setspawn` | OP | ソロの開始地点を現在地に設定する |
+| `/dorokei sethideout` | OP | ソロのアジト（宝の納品地点）を現在地に設定する |
+| `/dorokei settreasure [clear]` | OP | ソロの宝地点を現在地に追加（`clear` で全解除） |
+| `/dorokei setpatrol [clear]` | OP | ソロのCPU警察の巡回地点を現在地に追加（`clear` で全解除） |
+| `/dorokei setjailexit <牢屋番号> [clear]` | OP | ソロの脱獄後の出口を現在地に設定（`clear` で解除） |
 | `/dorokei delete` | OP | 会場の設定を削除する |
 | `/dorokei setsign join` | OP | 視線先の看板を参加看板に登録する |
 | `/dorokei setsign leave` | OP | 視線先の看板を離脱看板に登録する |
 | `/dorokei setsign start` | OP | 視線先の看板を開始看板に登録する |
+| `/dorokei setsign solo` | OP | 視線先の看板をソロ看板（クリックでソロメニュー）に登録する |
 | `/dorokei setsign delete` | OP | 視線先の看板の登録を解除する |
+| `/dorokei stop` | OP | 進行中の試合（通常・ソロ）を強制停止する |
+| `/dorokei reload` | OP | config.yml を読み直す（看板・ソロ設定も再反映） |
+| `/dorokei forceunlock <名前> [confirm]` | OP | 他ゲーム参加中フラグが異常で残った場合に強制解除する |
 | `/dorokei start` | 全員 | ゲームを開始する（コマンドブロック可・`gamestart` も可） |
+| `/dorokei solo [難易度]` | 全員 | ソロモードに入る（引数省略でメニュー・難易度指定で即開始） |
+| `/dorokei solotop [難易度]` | 全員 | ソロモードのランキングを表示する |
 | `/dorokei list` | 全員 | 会場の状態を表示する |
 | `/dorokei status` | 全員 | 設定状況を確認する |
 | `/dorokei stats [名前]` | 全員 | 成績を確認する（名前省略時は自分） |
@@ -310,7 +376,7 @@ chest-settings:
 | `/dorokei leave [名前]` | 全員（他者操作はOP） | ロビーから退出する（通常は看板を使用） |
 
 !!! note "後方互換エイリアス"
-    `gamestart`（→ `start`）・`setchest` / `setchest clear`（→ `addchest` / `removechest clear`）・`setstart`（→ `setsign start`）・`removesign`（→ `setsign delete`）も引き続き受理されます。
+    `gamestart`（→ `start`）・`setchest` / `setchest clear`（→ `addchest` / `removechest clear`）・`setstart`（→ `setsign start`）・`removesign`（→ `setsign delete`）も引き続き受理されます。旧 `/dorokei tool` は廃止され、実行すると `/dorokei wand` を案内するメッセージが出ます。
 
 ## 権限ノード
 
@@ -318,10 +384,10 @@ chest-settings:
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `dorokei.admin` | OP | セットアップ系（`setstartspawn` / `setlobby` / `setfield` / `setjail` / `addchest` / `removechest`） / 数値設定（`setcop` / `settime` / `setmax` / `setmin`） / 看板系（`setsign` join/leave/start/delete） / `delete` / 他プレイヤーの `join` / `leave` の実行 |
+| `dorokei.admin` | OP | セットアップ系（`setstartspawn` / `setlobby` / `setfield` / `setjail` / `addchest` / `removechest`） / ソロ地点（`setspawn` / `sethideout` / `settreasure` / `setpatrol` / `setjailexit`） / 数値設定（`setcop` / `settime` / `setmax` / `setmin` / `setresultwait` / `loadout`） / 看板系（`setsign` join/leave/start/solo/delete） / `delete` / `wand` / `menu` / `stop` / `reload` / `forceunlock` / 他プレイヤーの `join` / `leave` の実行 |
 
 !!! note "全員可コマンドについて"
-    `/dorokei start`・`join`（自分）・`leave`（自分）・`status`・`list`・`stats` は **権限不要で誰でも実行できます**（読み取りや自分の操作のため権限チェックなし）。他プレイヤーを指定する `/dorokei join <名前>` / `leave <名前>` のみ OP 限定です。看板の右クリックも従来どおり権限不要で利用できます。
+    `/dorokei start`・`join`（自分）・`leave`（自分）・`solo`・`solotop`・`status`・`list`・`stats` は **権限不要で誰でも実行できます**（読み取りや自分の操作のため権限チェックなし）。他プレイヤーを指定する `/dorokei join <名前>` / `leave <名前>` のみ OP 限定です。看板の右クリック（参加／離脱／開始／ソロ）も従来どおり権限不要で利用できます。
 
 ## 実装状況
 
@@ -346,9 +412,9 @@ chest-settings:
     - ゲーム終了後の自動ロビー帰還・再参加
 
 !!! warning "注意点・制限"
-    - 一部コマンドは名称が統一されました（`gamestart` → `start`、`setchest` → `addchest`、`setstart` → `setsign start` など）。旧名も後方互換で受理されますが、新名の使用を推奨します。
-    - config 再読み込み用コマンドはありません。`config.yml` を手動編集した場合はサーバー再起動が必要です。
-    - 会場は1つ（`main`）のみです。複数会場の同時運用には対応していません。
+    - 一部コマンドは名称が統一されました（`gamestart` → `start`、`setchest` → `addchest`、`setstart` → `setsign start`、`tool` → `wand` など）。旧名も後方互換で受理されますが（`tool` は案内メッセージのみ）、新名の使用を推奨します。
+    - `config.yml` を手動編集した場合は **`/dorokei reload`**（またはサーバー再起動）で反映します。
+    - 会場は1つ（`main`）のみです。複数会場の同時運用には対応していません（ソロモードも同じ会場を共用します）。
 
 ## トラブルシューティング
 
@@ -368,13 +434,13 @@ chest-settings:
     `/dorokei setsign join` で登録済みか確認してください（座標登録が必要なため手書きは機能しません）。対象ロビーがゲーム中の場合は参加できません。
 
 ??? failure "config.yml を編集したのに反映されない"
-    config 再読み込みコマンドはありません。サーバーを再起動して反映してください。
+    `/dorokei reload`（OP・管理メニューのリロードでも可）で読み直せます。進行中の試合には次の試合から反映されます。サーバー再起動でも反映できます。
 
 ??? failure "ラッキーチェストを右クリックしても何も出ない"
     まず `/dorokei addchest` でそのチェストが登録済みか確認してください（`/dorokei status` の「ラッキーチェスト」件数で確認できます）。登録済みでも、**警官が開いた場合**や**収監中**は出ません（逃走者専用のため）。また同じチェストには再開封クールダウン（既定45秒）があります。なお `/dorokei addchest` はチェスト・トラップチェスト・樽のいずれかを **5ブロック以内で見ながら** 実行する必要があります。
 
 ??? failure "アップグレード後、ラッキーチェストの抽選内容を変えたい / 反映されない"
-    `chest-settings.loot` を編集してサーバーを再起動してください。**v3.0 など古いバージョンから更新した既存サーバーでは、既存の `config.yml` に `chest-settings` が自動追記されません**（組み込み既定テーブルで動作します）。抽選内容をカスタムしたい場合は、`config.yml` に `chest-settings` セクションを手動追記するか、一度 `config.yml` を退避してサーバー再起動で再生成してください。
+    `chest-settings.loot` を編集して **`/dorokei reload`**（またはサーバー再起動）で反映してください。現在は起動時・`reload` 時に不足キーが既定値で自動追記されるため、既存サーバーでも `chest-settings` セクションが補完されます（データ領域は補完対象外）。
 
 ??? failure "会場を丸ごと作り直したい"
     `/dorokei delete` で会場の設定を丸ごと削除できます。削除後に同じ手順で再設定してください。牢屋だけを取り直したい場合は `/dorokei setjail clear` で全解除してから登録し直せます。

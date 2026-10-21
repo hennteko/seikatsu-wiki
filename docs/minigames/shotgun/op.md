@@ -68,12 +68,16 @@
 /shotgun setsign start main br
 ```
 
+```text title="ソロ看板を登録（エリア指定・AIディーラー戦のソロメニューを開く）"
+/shotgun setsign solo main
+```
+
 ```text title="視線先の看板の登録を解除（種別を自動判別・テキストもクリア）"
 /shotgun setsign delete
 ```
 
 !!! success "看板は複数設置できます"
-    参加・離脱・開始の各看板を **複数拠点に設置** できます（参加はエリアごと、開始はエリア＋モード `br`/`dealer`/`team` ごと、離脱はエリア不問）。登録は上書きではなく **追記** され、`/shotgun setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join.<エリア>` / `signs.leave`（リスト）・`signs.start.<エリア>.<br|dealer|team>`（リスト）です。
+    参加・離脱・開始・ソロの各看板を **複数拠点に設置** できます（参加・ソロはエリアごと、開始はエリア＋モード `br`/`dealer`/`team` ごと、離脱はエリア不問）。登録は上書きではなく **追記** され、`/shotgun setsign delete` は視線先の1枚だけ解除します。保存形式は `signs.join.<エリア>` / `signs.leave`（リスト）・`signs.start.<エリア>.<br|dealer|team>`・`signs.solo.<エリア>`（リスト）です。
 
 ## 設定GUIとクイック設定コマンド
 
@@ -141,6 +145,22 @@
 | `bet.enabled` | true | 観戦者の実弾/空砲予想を有効化 |
 | `keep-food` | true | 満腹度を減らさない |
 
+### ソロモード（`solo`）
+
+1人でAIディーラーと対戦するモードです。卓（席）は通常戦と共用で、席1・2を使います（ディーラーは4席あれば席3、無ければ席2に着席）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | true | ソロモードの有効化 |
+| `solo.menu-delay` | 3 | 試合終了後、ソロメニューを開き直すまでの秒数 |
+| `solo.exclude-items` | `[SHIELD, ENDER_PEARL, BELL]` | ソロでは配らないアイテム（エンダーパールは指定が無くても配られません） |
+| `solo.dealer.name` | ディーラー | AIディーラーの表示名 |
+| `solo.dealer.entity` | ARMOR_STAND | 見た目（`ARMOR_STAND` / `MANNEQUIN`） |
+| `solo.levels.<id>` | easy/normal/hard | ソロメニューのボタン（上から順・最大5つ）。`enabled: false` で非表示 |
+| `solo.rewards.win` | `[]` | 勝利時にコンソールから実行（`%player%` / `%level%` 置換・既定は空） |
+
+各難易度（`solo.levels.<id>`）は `display`（表示名）/ `icon`（アイコン素材）/ `dealer-lives`（ディーラー残機）/ `think-ticks`（1行動の思考時間・20=1秒）/ `mistake-rate`（次弾不明時に逆を選ぶ確率0〜1）/ `use-items`（アイテム使用可否）/ `tactics`（`basic`/`advanced`/`expert`）で調整します。既定は かんたん★（basic）・ふつう★★（advanced）・むずかしい★★★（expert）の3段階です。`solo.levels-version` は自動移行用のため手動で変更しないでください。
+
 ### 報酬（`rewards`）
 
 順位ごとにコンソールから実行するコマンドを登録できます（`%player%` 置換・既定は空）。他プラグインの経済には影響しません。
@@ -169,6 +189,8 @@
 
 | コマンド | 説明 |
 |---|---|
+| `/shotgun wand` | 管理ツール（ブレイズロッド）を受け取る（右クリックで管理メニュー） |
+| `/shotgun menu` | 管理メニューを開く（在籍中でも開ける） |
 | `/shotgun setstartspawn` | 初期スポーン地点を設定（共通） |
 | `/shotgun setlobby [エリア]` | ロビー地点を設定（エリア省略で共通ロビー） |
 | `/shotgun setseat <エリア> <1-4>` | 席を登録（実行者の位置・向き。エリア自動作成。単一エリアなら `<エリア>` 省略可） |
@@ -178,7 +200,7 @@
 | `/shotgun setlives <n>` | 残機の初期値を設定（1〜10・次の試合から） |
 | `/shotgun settimer <秒>` | 手番タイマーを設定（10〜120・次の試合から） |
 | `/shotgun settings` | OP用設定アイテム（設定GUI）を配布 |
-| `/shotgun setsign <join [エリア]\|leave\|start <エリア> <br\|dealer\|team>\|delete>` | 看板を設定／解除 |
+| `/shotgun setsign <join [エリア]\|leave\|start <エリア> <br\|dealer\|team>\|solo <エリア>\|delete>` | 看板を設定／解除（solo＝ソロメニューを開く看板） |
 | `/shotgun leave <プレイヤー>` | 指定プレイヤーを強制離脱させる（OP限定。引数なしは全員可の自己離脱） |
 | `/shotgun lobbyfix <プレイヤー> [force]` | ロビー退避データを手動で復旧する |
 | `/shotgun stop [エリア]` | ゲームを強制終了（結果なしでロビーへ） |

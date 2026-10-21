@@ -10,7 +10,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 |---|---|
 | プラグイン名 | Yukicraft |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukicraft <join\|leave\|start\|status\|solo\|ranking\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setsign\|reload\|lobbyfix>` |
+| メインコマンド | `/yukicraft <join\|leave\|start\|status\|solo\|ranking\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setsign\|reload\|lobbyfix\|wand\|menu>` |
 | 依存プラグイン | なし（統合版対応のため Floodgate / Geyser-Spigot があれば自動連携する softdepend） |
 | 設定ファイル | `plugins/Yukicraft/config.yml`／ソロの記録 `plugins/Yukicraft/solo-records.yml`／ロビー退避 `plugins/Yukicraft/lobby-inventory.yml` |
 
@@ -135,6 +135,47 @@ Geyser / Floodgate 経由の統合版プレイヤー向けの調整です。
 | `bedrock.spectator-style` | AUTO | 観戦方式（AUTO＝統合版だけゴースト観戦／GHOST＝全員ゴースト／VANILLA＝全員観戦モード） |
 | `bedrock.name-prefix` | `.` | Floodgate が入っていないときに統合版と見なす名前の接頭辞 |
 
+## 設定ツール（おすすめ）
+
+コマンドを打たずに、見ているブロック・看板へ直接セットアップできる OP用ツール（ブレイズロッド）と GUI メニューを用意しています。いずれも `yukicraft.admin` 権限が必要で、非OPが入手しても使えません（受け取り時・使用時・メニューを開く時・クリック時のすべてで権限を確認します）。
+
+```text title="OP用の設定ツール（ブレイズロッド）を受け取る"
+/yukicraft wand
+```
+
+```text title="設定メニュー（GUI）を開く"
+/yukicraft menu
+```
+
+### 設定ツールの操作
+
+| 操作 | 内容 |
+|---|---|
+| 左クリック/長押し（ブロック） | フィールド範囲の角1 |
+| 右クリック/タップ（ブロック） | フィールド範囲の角2 |
+| 右クリック/タップ（看板） | 選んでいる看板モードで登録・解除（モードなしなら登録状況を表示） |
+| 右クリック/タップ（空中） | 設定状況の要約を表示（統合版は空中タップ） |
+| しゃがみ＋左クリック/長押し | フィールドの外枠・雪の層の高さ・ゲームスポーンを10秒間パーティクルで表示（自分だけに見える） |
+| しゃがみ＋右クリック/タップ | 設定メニューを開く |
+
+- フィールドの角は **X・Z だけ** を記録します。高さは config の `snow-layers`・`clear-min-y`・`clear-max-y` で決まります。
+- 試合中（通常戦・ソロ挑戦中）はフィールドを変更できません。
+- 雪クラフトに参加中（ロビー在籍中）は受け取れません。持ち物が退室時の復元で上書きされるためです。
+
+### 設定メニューの中身
+
+| 区分 | ボタン |
+|---|---|
+| 地点 | 初期スポーン／ロビー／ゲームスポーンを **現在地** に設定 |
+| フィールド | 雪フィールドを作り直す（見た目の確認用・試合中は不可）／範囲と雪の層を表示／角1・角2の設定状況 |
+| 看板 | 参加・離脱・開始・ソロ・登録解除の看板モード／看板モードの解除 |
+| 切り替え | 通常戦のクリーパー ON/OFF（`creeper.enabled`）／爆発で雪を壊す ON/OFF（`creeper.block-damage`）／ソロモード 有効/無効（`solo.enabled`） |
+| 数値（−/＋） | 最大人数（`game.max-players`）／結果表示秒数（`game.result-seconds`）／クリーパー間隔 5秒刻み（`creeper.interval`）／クリーパー数（`creeper.count`）／ソロ制限時間 10秒刻み（`solo.modes.dig.time-limit`） |
+| 進行 | ゲーム開始／強制停止（ソロ挑戦中ならソロを中断）／閉じる／設定ツールを回収 |
+
+- メニューで変えた値は **すぐに config.yml へ保存** されます（`/yukicraft reload` は不要）。
+- 統合版でも開けます（開く処理を1tick遅らせています）。ボタンの説明（lore）の見え方は実機で確認してください。
+
 ## セットアップ手順
 
 専用ワールドを用意し、OP権限で以下のコマンドを **その場に立って** 実行します（実行位置が座標として保存されます）。
@@ -177,6 +218,8 @@ Geyser / Floodgate 経由の統合版プレイヤー向けの調整です。
 | `/yukicraft setsign <join\|leave\|start\|solo\|delete>` | `yukicraft.admin` | 視線先の看板を参加／離脱／開始／ソロ看板として登録、または登録解除する |
 | `/yukicraft reload` | `yukicraft.admin` | config.yml を再読み込みする（看板位置も再読込） |
 | `/yukicraft lobbyfix <プレイヤー> [force]` | `yukicraft.admin` | ロビーの持ち物が戻らないときの復旧（`force` で退避データを破棄してロック解除） |
+| `/yukicraft wand` | `yukicraft.admin` | OP用の設定ツール（ブレイズロッド）を受け取る |
+| `/yukicraft menu` | `yukicraft.admin` | 設定メニュー（GUI）を開く |
 | `/yukicraft solo` | 全員 | ソロで在籍してソロメニューを開く（在籍中なら開き直す） |
 | `/yukicraft solo <モード>` | 全員 | メニューを通さずソロを開始する（例：`/yukicraft solo dig`） |
 | `/yukicraft ranking solo [モード]` | 全員 | ソロのランキング（上位 `ranking-size` 人と自分） |
@@ -213,7 +256,7 @@ Geyser / Floodgate 経由の統合版プレイヤー向けの調整です。
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `yukicraft.admin` | OP | stop / setstartspawn / setlobby / setspawn / setfield / setsign / reload / lobbyfix / join &lt;対象&gt; / leave &lt;対象&gt; / solo &lt;プレイヤー&gt; / ranking reset（管理者コマンドすべて） |
+| `yukicraft.admin` | OP | stop / setstartspawn / setlobby / setspawn / setfield / setsign / reload / lobbyfix / wand / menu / join &lt;対象&gt; / leave &lt;対象&gt; / solo &lt;プレイヤー&gt; / ranking reset（管理者コマンドすべて） |
 
 ## ゲームの運営
 

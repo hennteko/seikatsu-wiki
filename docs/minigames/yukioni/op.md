@@ -11,7 +11,7 @@ Yukioni の導入・初期設定・config・権限・管理コマンドをまと
 | プラグイン名 | Yukioni |
 | 説明 | 雪鬼ごっこミニゲームプラグイン |
 | api-version | 26.1.2 |
-| メインコマンド | `/yukioni <join\|leave\|setstartspawn\|setlobby\|setfield\|setsign\|start\|stop\|status\|reload>`（join/leaveは全員可） |
+| メインコマンド | `/yukioni <join\|leave\|start\|status\|stats\|setstartspawn\|setlobby\|setfield\|setsign\|setmax\|setmin\|settime\|setdelay\|wand\|menu\|stop\|reload\|forceunlock>`（join/leave/start/status/statsは全員可） |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Yukioni/config.yml` |
 | 座標保存ファイル | `plugins/Yukioni/locations.yml`（自動生成・自動保存） |
@@ -68,8 +68,8 @@ game:
 !!! note "設定変更後は `/yukioni reload`"
     `config.yml` を編集したら `/yukioni reload` を実行してください。設定が再読み込みされます。
 
-!!! warning "既存サーバーは config が自動追記されません"
-    本プラグインは `saveDefaultConfig()` のみのため、**既存の `config.yml` に新しいキーは自動追記されません**。コード側に既定値があるため動作はしますが、`sign.start` 等を編集したい場合は手動追記、または config を退避して再生成してください。
+!!! note "不足キーは起動時に自動追記されます"
+    起動時・`/yukioni reload` 時に、jar 内の最新 `config.yml` と突き合わせて**不足している項目を既定値＋コメント付きで自動追記**します（既存の値は変更しません／変更があったときのみ `config.yml.bak` を保存）。ただし **`sign.start` は jar 内の config.yml に既定セクションが無い**ため自動追記されません。開始看板の文言を変えたい場合のみ、手動で `sign.start`（line1〜line4）を追記してください。
 
 ## セットアップ手順
 
@@ -152,6 +152,8 @@ game:
 | `/yukioni setlobby` | `yukioni.admin` | ロビー地点を設定 |
 | `/yukioni setfield 1` | `yukioni.admin` | ゲームエリアの角1を設定 |
 | `/yukioni setfield 2` | `yukioni.admin` | ゲームエリアの角2を設定 |
+| `/yukioni wand` | `yukioni.admin` | 管理ツール（設定用アイテム）を受け取る。右クリックで管理メニューを開く |
+| `/yukioni menu` | `yukioni.admin` | 管理メニュー（GUI）を開く |
 | `/yukioni join [名前]` | 全員（他人指定はOP） | ロビーに参加する。名前を指定すると対象を参加させる（OP限定） |
 | `/yukioni leave [名前]` | 全員（他人指定はOP） | ロビーから退出する。名前を指定すると対象を退出させる（OP限定） |
 | `/yukioni setsign <join\|leave\|start\|delete>` | `yukioni.admin` | 視線先の看板を参加／離脱／開始看板に登録。`delete` は視線先の登録看板を解除 |
@@ -164,6 +166,7 @@ game:
 | `/yukioni status` | 全員 | 設定状況を確認する（読み取り専用） |
 | `/yukioni stats [名前]` | 全員 | 成績を確認する（読み取り専用） |
 | `/yukioni reload` | `yukioni.admin` | config.yml を再読み込み |
+| `/yukioni forceunlock <名前>` | `yukioni.admin` | 他ゲーム参加中フラグが異常で残った場合に強制解除 |
 
 !!! note "ゲームの開始について"
     プレイヤーがロビー看板から参加し、`min-players` 以上集まったら `/yukioni start` で開始します。`start` は全員可（コンソール／コマンドブロックからも実行可）で、人数が不足している場合は開始できません。異常時は `/yukioni stop` で強制終了できます（`stop` はOP限定）。

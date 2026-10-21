@@ -175,7 +175,7 @@ role_distribution:
 | `zinro.admin` | OP | 管理・セットアップコマンドすべて |
 
 !!! note "プレイヤー向けの権限"
-    `/zinro join`・`/zinro leave`・`/zinro start`・`/zinro status` は **権限不要で全プレイヤーが使えます**（`join`・`leave`・`start` はゲート看板と同等）。ショップを開くコマンドはなく、ショップは看板またはショップの杖から開きます。それ以外の設定・管理コマンドは `zinro.admin`（OP）が必要です。
+    `/zinro join`・`/zinro leave`・`/zinro start`・`/zinro status`・`/zinro shop`・`/zinro vote` は **権限不要で全プレイヤーが使えます**（`join`・`leave`・`start` はゲート看板と同等、`shop` は看板・ショップの杖と同等、`vote` は投票用紙と同等）。それ以外の設定・管理コマンドは `zinro.admin`（OP）が必要です。
 
 ## 管理コマンド
 
@@ -184,7 +184,11 @@ role_distribution:
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/zinro join` / `leave` / `start` / `status` | 全員 | 参加 / 退出 / 開始（ゲート看板と同等）/ 設定状況の確認 |
+| `/zinro shop` | 全員 | ショップを開く（試合中・生存中。看板・ショップの杖と同等） |
+| `/zinro vote [player]` | 全員 | 投票画面を開く／直接投票（昼・生存中。投票用紙と同等） |
 | `/zinro stop` | admin | ゲームを強制終了する |
+| `/zinro wand` | admin | 管理ツールを受け取る（右クリックで管理メニュー。ロビー在籍中は受け取れない） |
+| `/zinro menu` | admin | 管理メニューを開く |
 | `/zinro setstartspawn` | admin | 初期スポーン地点を現在地に設定 |
 | `/zinro setlobby` | admin | ロビー地点を現在地に設定 |
 | `/zinro setspawn` | admin | ゲームスポーン地点を現在地に設定 |
@@ -194,6 +198,7 @@ role_distribution:
 | `/zinro setsign delete` | admin | 視線先の看板（ゲート看板・占い看板）の登録を解除 |
 | `/zinro leave <player>` | admin | 指定プレイヤーをロビーから強制離脱させる |
 | `/zinro reload` | admin | 設定を再読み込みする |
+| `/zinro lobbyfix <player> [force]` | admin | ロビー入室前の持ち物が戻らないときの復旧（`force` で退避データを破棄しロックのみ解除） |
 
 !!! note "設定の保存・`/zinro setstart` について"
     各設定コマンドは実行時に自動保存されるため、`/zinro save` コマンドは存在しません。また旧 `/zinro setstart` は廃止され、開始看板の登録は `/zinro setsign start` に統一されています。
@@ -227,8 +232,8 @@ role_distribution:
 !!! warning "同梱ドキュメントとコマンド体系の差異"
     Zinroには複数の同梱ドキュメント（README.md・SETUP_GUIDE.md・QUICKSTART.md・各種PHASEレポートなど）が含まれていますが、内容が古く現行バージョンと食い違う箇所があります。**このWIKIは現行コード（v1.4.0）の実装を正としています。** 特に次の点に注意してください。
 
-    - `/zinro vote`・`/zinro config`・`/zinro setup ...`・`/zinro save`・`/zinro setstart` といったコマンドは、現行コードには **存在しません**。投票は投票用紙GUIで行います。参加・退出・開始は `/zinro join`・`/zinro leave`・`/zinro start`（全員可）またはゲート看板で行えます。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。開始看板の登録は `/zinro setsign start`、看板の登録解除は `/zinro setsign delete` です。設定は実行時に自動保存されます。
-    - 一部ドキュメントに「死神（REAPER）削除済み」とありますが、現行の役職定義には未使用の死神が残っています。実際の配役には登場しないため通常プレイへの影響はありません。
+    - `/zinro config`・`/zinro setup ...`・`/zinro save`・`/zinro setstart` といったコマンドは、現行コードには **存在しません**。投票は投票用紙GUIまたは `/zinro vote`（全員可）で行います。参加・退出・開始は `/zinro join`・`/zinro leave`・`/zinro start`（全員可）またはゲート看板で行えます。位置設定は `/zinro setstartspawn`・`/zinro setlobby`・`/zinro setspawn`・`/zinro setfield` です。開始看板の登録は `/zinro setsign start`、看板の登録解除は `/zinro setsign delete` です。設定は実行時に自動保存されます。
+    - `config.yml` の `role_distribution` 説明コメントに `SEER`・`MEDIUM`・`KNIGHT` という役職名が挙げられていますが、現行の役職定義（村人・狼付き・人狼・狂人・吸血鬼・キューピット）には含まれず、配役には登場しません。占い・霊媒・騎士の役割はショップアイテム（占いの心・霊媒の遺灰・騎士の加護）で再現されます。
     - 価格変更コマンドや `shop_prices` 設定は現行の同梱 `config.yml` には含まれません。ショップ価格は固定です。
 
 ---

@@ -224,6 +224,14 @@ nav:
           - minigames/twodtreasure/index.md
           - 👤 プレイヤー向け: minigames/twodtreasure/player.md
           - 🛠️ OP・運営向け: minigames/twodtreasure/op.md
+      - 椅子取りゲーム（MusicChair）:
+          - minigames/musicchair/index.md
+          - 👤 プレイヤー向け: minigames/musicchair/player.md
+          - 🛠️ OP・運営向け: minigames/musicchair/op.md
+      - ステップダンス（StepDance）:
+          - minigames/stepdance/index.md
+          - 👤 プレイヤー向け: minigames/stepdance/player.md
+          - 🛠️ OP・運営向け: minigames/stepdance/op.md
   - 10 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
@@ -307,6 +315,10 @@ nav:
           - 🛠️ OP・運営向け: mobs/mobball/op.md
       - TerrainTools（統合）: terrain/terraintools.md
       - WorldEdit: terrain/worldedit.md
+      - RedstoneMover（レッドストーン連動移動）:
+          - transport/redstonemover/index.md
+          - 👤 プレイヤー向け: transport/redstonemover/player.md
+          - 🛠️ OP・運営向け: transport/redstonemover/op.md
   - 14 案内:
       - Tutorial2:
           - utility/tutorial/index.md
