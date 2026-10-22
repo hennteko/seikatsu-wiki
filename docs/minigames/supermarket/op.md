@@ -81,6 +81,10 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 /supermarket setsign start <識別子>
 ```
 
+```text title="ソロ営業看板を登録（クリックでソロメニュー）"
+/supermarket setsign solo
+```
+
 ```text title="視線先の看板の登録を解除"
 /supermarket setsign delete
 ```
@@ -120,9 +124,48 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 | `settings.coin-rounding` | 10 | 金額の丸め単位 |
 | `settings.order-delivery-seconds` | 20 | 発注してから搬入口に届くまでの秒数 |
 | `settings.price-change-step` | 10 | 価格変更の刻み幅 |
+| `settings.not-carried-satisfaction` | 0.5 | 欲しい商品がどの棚にも無かった（取り扱いなし）客の満足度（0〜1。品切れ0.1・満足1.0の中間） |
 
 !!! note "自動生成される領域（手動編集不要）"
     `lobby-spawn` / `default-spawn` / `game-spawn` / `customer-spawn` / `field` / `signs` / `stations` はコマンド・ツールで自動保存されます。プリセット・商品データも専用ファイルで管理されます。
+
+## ソロ営業（`solo`）
+
+1人でも遊べる **ソロ営業** の設定です。ロビーで配られるメニューアイテム・ソロ看板・`/supermarket solo` から起動し、店舗は通常営業と共用です（誰かが営業中は使えません）。モードごとに自己ベスト・前回結果が `solo-records.yml` に記録されます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `solo.enabled` | `true` | ソロ営業（コマンド・看板・メニューアイテム）を使えるか。`false` で無効化 |
+| `solo.menu-delay` | 3 | 営業後ロビーに戻ってからソロメニューを開くまでの秒数 |
+| `solo.modes.<id>.enabled` | `true` | そのモードを表示するか（使わないモードは削除せず `false` 推奨） |
+| `solo.modes.<id>.name` | — | モード表示名（`&` カラーコード可） |
+| `solo.modes.<id>.icon` | — | メニューのアイコン（Material 名） |
+| `solo.modes.<id>.preset` | `solo_<id>` | 使うプリセット。無ければ起動時に `initial` の値で作成（以後は管理メニューで編集） |
+| `solo.modes.<id>.initial.*` | — | 初回作成時の難易度・営業日数・初期資金・固定費/日 |
+| `solo.modes.<id>.customer-interval-multiplier` | — | 客の湧き間隔の倍率（大きいほど客が少ない。通常戦は1.0相当） |
+| `solo.modes.<id>.max-customers` | — | 同時に店内にいる客の上限（通常戦は12） |
+| `solo.modes.<id>.box-quantity-multiplier` | — | 1箱あたりの個数の倍率（仕入れ値も個数に合わせて増える） |
+| `solo.modes.<id>.delivery-seconds` | — | 発注から搬入までの秒数 |
+| `solo.modes.<id>.prepare-seconds` / `business-seconds` | — | 準備・営業フェーズの秒数 |
+
+!!! note "既定のソロモード"
+    既定で **easy（かんたん）/ normal（ふつう）/ hard（むずかしい）** の3モードが用意されています。モードは最大7個まで。モード名・プリセット名に「`.`」は使えません。`/supermarket status` でモードの設定状況（プリセットの有無・客の量・上限・箱倍率）を確認できます。
+
+## 雇用（`hire`）
+
+準備フェーズ中に搬入口の発注画面から雇える **レジ係** の設定です。雇うと営業中、列が一番長いレジの先頭客を一定秒数ごとに自動会計します。雇用費は1回、日給は閉店時に固定費と一緒に引かれ、状態は1営業ごとにリセットされます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `hire.solo` | `true` | ソロ営業で雇用を使えるか |
+| `hire.team` | `false` | 通常の営業（複数人）で雇用を使えるか |
+| `hire.cashier.name` | `店員` | レジ係の表示名（レジ上の名札に出る） |
+| `hire.cashier.levels.<lv>.hire-cost` | Lv1:3000 / Lv2:4000 | 雇用費（1回） |
+| `hire.cashier.levels.<lv>.wage-per-day` | Lv1:1500 / Lv2:2500 | 日給（閉店時に引く） |
+| `hire.cashier.levels.<lv>.serve-interval-seconds` | Lv1:8 / Lv2:5 | 会計の間隔（この秒数に1人） |
+
+!!! info "既定では雇用はソロ営業のみ"
+    `hire.team` は既定 `false` のため、通常の複数人営業では雇用できません。通常営業でも使いたい場合は `true` にします。レベル数は `levels` のキー数で決まります（既定 Lv1・Lv2）。
 
 ## 管理コマンド
 
@@ -133,7 +176,7 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 | `/supermarket setlobby` / `setstartspawn` / `setspawn` / `setcustomerspawn` | 各地点を設定 |
 | `/supermarket setfield <1\|2>` | フィールド範囲の角を設定 |
 | `/supermarket setstation <種類> [商品ID]` | ステーションを登録／解除 |
-| `/supermarket setsign <join\|leave\|start <識別子>\|delete>` | 看板を設定／解除 |
+| `/supermarket setsign <join\|leave\|start <識別子>\|solo\|delete>` | 看板を設定／解除（`solo`＝ソロ営業看板） |
 | `/supermarket preset <create\|delete> <識別子>` | プリセットの作成／削除 |
 | `/supermarket reload` | 設定ファイルの再読み込み |
 | `/supermarket stop` | 営業を強制終了（在籍者全員を解散） |
@@ -147,7 +190,7 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 | `supermarket.admin` | OP | 設定ツール・地点／ステーション設定・看板設置・プリセット管理・強制終了など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/supermarket join`・`/supermarket leave`・`/supermarket ready`・`/supermarket start <識別子>`・`/supermarket status` は権限チェックがなく、全プレイヤーが使えます。
+    `/supermarket join`・`/supermarket leave`・`/supermarket ready`・`/supermarket start <識別子>`・`/supermarket solo [モード]`・`/supermarket status` は権限チェックがなく、全プレイヤーが使えます。
 
 ## トラブルシューティング
 
