@@ -102,6 +102,10 @@ nav:
           - minigames/pvpbattle/index.md
           - 👤 プレイヤー向け: minigames/pvpbattle/player.md
           - 🛠️ OP・運営向け: minigames/pvpbattle/op.md
+      - 攻城戦（SiegeWar）:
+          - minigames/siegewar/index.md
+          - 👤 プレイヤー向け: minigames/siegewar/player.md
+          - 🛠️ OP・運営向け: minigames/siegewar/op.md
   - 02 個人戦・バトロワ:
       - 1vs1:
           - minigames/1vs1/index.md

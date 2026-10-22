@@ -2,7 +2,7 @@
 
 # Supermarket ― OP・運営ガイド { .page-op #supermarket-op }
 
-Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ステーション設定・看板・プリセット・config・権限・管理コマンドをまとめます。地点・ステーション・看板はコマンドまたは **設定ツール（`/supermarket tool`）** で登録すると自動保存されます。
+Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ステーション設定・看板・プリセット・config・権限・管理コマンドをまとめます。地点・ステーション・看板はコマンドまたは **設定ツール（`/supermarket wand`）** で登録すると自動保存されます。
 
 ## 基本情報
 
@@ -25,14 +25,18 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 6. `/supermarket status` で設定状況を確認する。
 
 !!! tip "設定は「設定ツール」が便利です"
-    `/supermarket tool` で受け取る設定ツール（右クリックでメニュー）から、**地点設定・ステーション登録・プリセット管理・商品設定** の4メニューをGUIで操作できます。地点・ステーション登録はコマンドでも同じ設定ができますが、プリセットの中身と商品データ（仕入/売価/賞味期限/解放日など）の編集は設定ツール専用です。
+    `/supermarket wand` で受け取る設定ツール（右クリックでメニュー）から、**地点設定・ステーション登録・プリセット管理・商品設定** の4メニューをGUIで操作できます。ツールを持っていなくても `/supermarket menu` で同じ管理メニューを直接開けます。地点・ステーション登録はコマンドでも同じ設定ができますが、プリセットの中身と商品データ（仕入/売価/賞味期限/解放日など）の編集は設定ツール専用です。
 
 ## セットアップ手順
 
 地点系は **実行した位置**、ステーション・看板系は対象ブロック／看板を **見ながら（6ブロック以内）** 実行します。すべて `supermarket.admin` 権限が必要です。
 
 ```text title="設定ツールを受け取る"
-/supermarket tool
+/supermarket wand
+```
+
+```text title="管理メニューを直接開く"
+/supermarket menu
 ```
 
 ```text title="受付ロビー（その場に立って実行）"
@@ -94,10 +98,10 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 ```
 
 !!! note "プリセットの編集は設定ツールから"
-    作成したプリセットの中身（**難易度・営業日数・初期資金・固定費/日**、CUSTOM難易度時の最大商品数）は、`/supermarket tool` の **プリセット管理GUI** から編集します。`/supermarket start <識別子>` や開始看板でプリセットを指定して開始します。
+    作成したプリセットの中身（**難易度・営業日数・初期資金・固定費/日**、CUSTOM難易度時の最大商品数）は、`/supermarket wand`（または `/supermarket menu`）の **プリセット管理GUI** から編集します。`/supermarket start <識別子>` や開始看板でプリセットを指定して開始します。
 
 !!! info "難易度と最大商品数"
-    難易度は `EASY`（最大10商品）/ `NORMAL`（15）/ `HARD`（20）/ `CUSTOM`（5〜20で個別指定）の4種です。商品の解放日（何日目に販売解禁になるか）は各商品ごとの設定で、`/supermarket tool` の **商品設定GUI**（または `products.yml`）で調整します。
+    難易度は `EASY`（最大10商品）/ `NORMAL`（15）/ `HARD`（20）/ `CUSTOM`（5〜20で個別指定）の4種です。商品の解放日（何日目に販売解禁になるか）は各商品ごとの設定で、`/supermarket wand` の **商品設定GUI**（または `products.yml`）で調整します。
 
 ## config.yml 設定項目（`settings`）
 
@@ -124,13 +128,16 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
 
 | コマンド | 説明 |
 |---|---|
-| `/supermarket tool` | 設定ツールを入手 |
+| `/supermarket wand` | 設定ツールを入手（右クリックで管理メニュー） |
+| `/supermarket menu` | 管理メニューを直接開く |
 | `/supermarket setlobby` / `setstartspawn` / `setspawn` / `setcustomerspawn` | 各地点を設定 |
 | `/supermarket setfield <1\|2>` | フィールド範囲の角を設定 |
 | `/supermarket setstation <種類> [商品ID]` | ステーションを登録／解除 |
 | `/supermarket setsign <join\|leave\|start <識別子>\|delete>` | 看板を設定／解除 |
 | `/supermarket preset <create\|delete> <識別子>` | プリセットの作成／削除 |
-| `/supermarket stop` | 営業を強制終了 |
+| `/supermarket reload` | 設定ファイルの再読み込み |
+| `/supermarket stop` | 営業を強制終了（在籍者全員を解散） |
+| `/supermarket forceunlock <プレイヤー> [confirm]` | 参加中フラグの強制解除（コンソール可） |
 | `/supermarket status` | 設定状況・現在の状況を確認（全員可） |
 
 ## 権限ノード
@@ -151,7 +158,7 @@ Supermarket（協力スーパー経営ミニゲーム）の導入・地点／ス
     棚（`shelf`）に商品IDが正しく割り当てられ、搬入口から補充できているか確認してください。棚が空だと客は購入できません。
 
 ??? failure "設定を変えたのに反映されない"
-    営業パラメータは `config.yml` の `settings`、難易度・商品構成はプリセットで管理されます。プリセットは `/supermarket tool` のGUIから編集してください。
+    営業パラメータは `config.yml` の `settings`、難易度・商品構成はプリセットで管理されます。プリセットは `/supermarket wand`（または `/supermarket menu`）のGUIから編集してください。
 
 ---
 

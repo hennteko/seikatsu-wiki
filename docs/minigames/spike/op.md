@@ -199,12 +199,31 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `combat.base-health` | 20.0 | 素の最大体力（HP。20 = 10ハート） |
-| `combat.bow-damage-multiplier` | 1.0 | 弓のダメージ倍率（バニラ計算 × この値） |
-| `combat.magazine-size` | 10 | 装弾数 |
+| `combat.magazine-size` | 25 | 銃の装弾数 |
 | `combat.reload-seconds` | 2.0 | リロード時間（秒） |
 | `combat.sword-damage` | 4.0 | 木の剣の1撃のダメージ（HP。4 = 2ハート） |
 | `combat.sword-speed-bonus` | 0.10 | 木の剣を持っている間の移動速度アップ（0.10 = +10%） |
 | `combat.kill-assist-seconds` | 10 | 死亡時、この秒数以内に最後にダメージを与えた敵をキルにする |
+| `combat.hide-name-tags` | true | 試合中は全員のネームタグを消す（false にすると味方のネームタグだけ見える） |
+
+### 銃（`gun`）
+
+戦闘の主武器はヒットスキャンの銃（見た目は鉄のクワ）。弾は重力で落ちず、撃った瞬間にまっすぐ届きます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `gun.fire-interval-ticks` | 3 | 連射の間隔（tick。20=1秒。3=毎秒約6.7発）。右クリック長押し中この間隔で撃つ |
+| `gun.range` | 64 | 射程（ブロック） |
+| `gun.body-damage` | 4.0 | 体に当たったときのダメージ（HP。4=2ハート） |
+| `gun.headshot-multiplier` | 3.0 | 頭に当たったときの倍率（体のダメージ × この値） |
+| `gun.head-size` | 0.4 | 頭の当たり判定の一辺（ブロック。目の位置が中心。バニラの頭は約0.5） |
+| `gun.spread.standing` / `moving` / `airborne` | 0.3 / 5.0 / 9.0 | ブレ（度）。止まって撃つ／歩き（走ると最大）／空中 |
+| `gun.spread.sneak-multiplier` | 0.5 | スニーク中にブレへ掛ける倍率 |
+| `gun.move-speed-while-firing` | 1.0 | 撃っている間の移動速度（1.0=ふだん通り）。Java版のみ |
+| `gun.can-sprint` | true | 撃っている間もダッシュできるか。Java版のみ |
+| `gun.bedrock-burst` | 3 | 統合版：タップ1回で撃つ弾数（統合版は長押しの連射が届かないため） |
+| `gun.tracer` | true | 弾道のパーティクルを出す |
+| `gun.item-model` | `minecraft:iron_hoe` | 銃の見た目（item_model）。リソースパックで専用モデルを指定可。統合版は鉄のクワの見た目 |
 
 ### クレジット（`credits`）
 
@@ -252,7 +271,7 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | `solo.guard.lookout` | hp 20 / damage 3 / sweep-degrees 60 / sweep-seconds 4 | 見張り（スケルトン・弓）。首振り角度・1往復の秒数 |
 | `solo.guard.sentinel` | hp 24 / damage 6 | 番兵（ヴィンディケーター・斧）の基本値 |
 | `solo.guard.sneak-range-multiplier` | 0.6 | スニーク中の視界距離の倍率 |
-| `solo.guard.noise-radius` | 6 | 物音（ダッシュ・外れた矢）で振り向く距離（ブロック） |
+| `solo.guard.noise-radius` | 6 | 物音（ダッシュ・外れた弾）で振り向く距離（ブロック） |
 | `solo.guard.call-radius` | 12 | 見つけた警備が仲間を呼ぶ距離（ブロック） |
 | `solo.guard.lose-seconds` | 5 | 見失ってから捜索に入るまで（秒） |
 | `solo.guard.search-seconds` | 5 | 捜索をあきらめるまで（秒） |

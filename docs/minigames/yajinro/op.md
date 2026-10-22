@@ -13,7 +13,7 @@
 | バージョン | 1.0.0 |
 | api-version | 26.1.2 |
 | 作者 | henry |
-| 依存プラグイン | なし（会話は外部のDiscord Bot／運営が担当） |
+| 依存プラグイン | なし（`softdepend`: floodgate / Geyser-Spigot＝統合版対応。会話は外部のDiscord Bot／運営が担当） |
 | 設定ファイル | `plugins/Yajinro/config.yml` |
 | 権限ノード | `yajinro.admin`（既定OP） |
 
@@ -139,7 +139,7 @@
 |---|---|---|
 | `buttons.required` | 5 | 別々のボタンを何個押すと報酬か |
 | `buttons.reset-pressed-after-reward` | false | trueで報酬後に同じボタンを再利用可 |
-| `special-items.enabled` | 7種すべて | 抽選対象（早い者勝ち・被りなし）。外したいものは行削除 |
+| `special-items.enabled` | 11種すべて | 抽選対象（早い者勝ち・被りなし）。外したいものは行削除 |
 | `special-items.tp-trident.uses` | 5 | 瞬間移動トライデントの使用回数 |
 | `special-items.hero-sword.speed-multiplier` | 1.5 | かけだし勇者の剣の移動速度倍率 |
 | `special-items.hero-sword.jump-bonus` | 0.5 | 同・跳躍力の加算 |
@@ -148,8 +148,15 @@
 | `special-items.cobweb.radius` | 1 | 蜘蛛の巣トラップの半径（1=3×3） |
 | `special-items.cobweb.duration` | 6 | 同・消えるまでの秒数 |
 | `special-items.swap.notify-target` | true | 入れ替えられた側に通知するか |
+| `special-items.custom-teleporter.uses` | 3 | カスタムテレポーターのワープ回数（使い切ると壊れる） |
+| `special-items.custom-teleporter.pickup-radius` | 1.5 | ワープポイントを回収できる距離（ブロック） |
+| `special-items.hide-ball.invisible-seconds` | 20 | 隠れ玉で透明になる秒数 |
+| `special-items.hide-ball.glow-seconds` | 5 | 透明が切れた後に発光する秒数（0=発光しない） |
+| `special-items.dictator-switch.reveal-target` | true | 独裁スイッチを押した人に、誰が消されたかを教えるか |
+| `special-items.speed-potion.seconds` | 30 | 千里馬の薬で速くなる秒数 |
+| `special-items.speed-potion.level` | 5 | 移動速度のレベル（5＝移動速度V） |
 
-`special-items.enabled` の初期値は `[SPREAD_CROSSBOW, TP_TRIDENT, HERO_SWORD, LEGEND_ROD, LIGHTNING_TRAP, COBWEB_TRAP, SWAP]` の7種です。
+`special-items.enabled` の初期値は `[SPREAD_CROSSBOW, TP_TRIDENT, HERO_SWORD, LEGEND_ROD, LIGHTNING_TRAP, COBWEB_TRAP, SWAP, CUSTOM_TELEPORTER, HIDE_BALL, DICTATOR_SWITCH, SPEED_POTION]` の11種です。
 
 ### チャット・Discord・環境
 
@@ -175,6 +182,28 @@
 | `lobby-inventory.reset-health` | true | ロビーで体力をリセット |
 | `lobby-inventory.reset-exp` | true | ロビーで経験値をリセット |
 | `lobby-inventory.expire-days` | 30 | 退避データの保持日数 |
+
+### 名前表示（`name-tag`）
+
+参加すると頭上ネームタグ・Tabリスト・チャットの名前が「【ゲーム名】名前」になり、離脱・ログアウト・プラグイン停止で元に戻ります。参加時にはサーバー全体へ参加通知を出します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `name-tag.enabled` | true | false にすると名前表示を付けない |
+| `name-tag.display-name` | 弓人狼 | 「【】」に入れる正式名 |
+| `name-tag.color` | GOLD | ゲーム名の色（`GOLD`/`AQUA`/`GREEN`/`RED`/`YELLOW` など） |
+| `name-tag.announce-join` | true | false でサーバー全体への参加通知を出さない |
+
+### 統合版対応（`bedrock`）
+
+Floodgate / Geyser-Spigot 経由の統合版プレイヤーに対応します。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `bedrock.wax-signs` | true | 登録看板を蝋引きする（統合版でタップ時に編集画面を開かせない） |
+| `bedrock.swing-to-use` | true | 統合版は空中タップ（腕振り）でも特殊アイテム・能力を使える |
+| `bedrock.spectator-style` | AUTO | 観戦方式（`AUTO`＝統合版だけゴースト観戦／`GHOST`＝全員ゴースト／`VANILLA`＝全員観戦モード） |
+| `bedrock.name-prefix` | `.` | Floodgate 未導入時に統合版と見なす名前の接頭辞 |
 
 ### 配役（`role-distribution`）
 
