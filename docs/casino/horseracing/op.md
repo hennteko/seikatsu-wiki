@@ -51,6 +51,7 @@ modules:
 | `betting.takeout_rate` | `0.2` | 控除率（同梱されているが、**現在のコードでは参照されていません**） |
 | `betting.minimum_odds` | `1.1` | 最低オッズ（同梱されているが、**現在のコードでは参照されていません**。最低オッズは券種ごとに内部固定） |
 | `betting.virtual_bet_amount` | `5000` | 同梱されているが、**実際に読み込まれるのは `race.virtual_bet_amount`** です（下記参照） |
+| `betting.min-bet` | `1` | 1回のベットの最低額（エメラルド）。管理メニューの「最低ベット額」でも変更できる |
 
 !!! warning "実際に効くオッズ調整キーは `race.virtual_bet_amount`"
     オッズのバラつき（仮想ベットの合計エメラルド額）を制御する有効なキーは **`race.virtual_bet_amount`**（既定 `5000`）です。同梱 `horse.yml` の `betting.virtual_bet_amount` はコードが参照しないため、こちらを編集してもオッズは変わりません。`race.virtual_bet_amount` は初回起動時に horse モジュールが `horse.yml` へ自動追記します（既存ファイルにも未設定なら追記されます）。値を変えたいときは `race:` セクションの `virtual_bet_amount` を編集してください。なお `betting.takeout_rate` と `betting.minimum_odds` は現状のコードでは使われていません。控除率（払戻率）は `odds.payout-rate`、最低オッズは `odds.types.<券種>.min` で設定します（いずれも後述の「オッズ設定」を参照）。
@@ -97,13 +98,33 @@ modules:
 
 | 券種（キー） | base | min | max |
 |---|---|---|---|
-| 単勝（`WIN`） | `0.3` | `1.2` | `4.0` |
+| 単勝（`WIN`） | `1.1` | `1.2` | `8.0` |
 | 複勝（`PLACE`） | `0.15` | `1.1` | `2.0` |
 | 馬連（`QUINELLA`） | `0.4` | `1.5` | `8.0` |
 | 馬単（`EXACTA`） | `1.2` | `3.0` | `25.0` |
 | ワイド（`WIDE`） | `0.3` | `1.3` | `5.0` |
 | 3連複（`TRIO`） | `1.0` | `3.0` | `20.0` |
 | 3連単（`TRIFECTA`） | `3.0` | `8.0` | `60.0` |
+
+### 少人数・一人開催の固定オッズ（`fixed-odds`）
+
+ベット受付が締まった時点の「実際に賭けた人数」が少ないレースは、賭け金の取り合い（パリミュチュエル）をやめ、馬の能力値から出した的中確率で払い戻します。一人でも券種ごとの配当が釣り合い、自分の賭け金で倍率が下がりません。予測と実際のずれは `/horseracing oddsstats`（後述）で確認できます。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `fixed-odds.mode` | `AUTO` | `AUTO` = 下の人数以下で固定オッズ／`ALWAYS` = 常に固定オッズ／`NEVER` = 使わない |
+| `fixed-odds.max-players` | `3` | `AUTO` のとき、ベットした人数がこの人数以下なら固定オッズに切り替える |
+| `fixed-odds.payout-rate` | `0.85` | 還元率（オッズ ＝ 還元率 ÷ 的中確率） |
+| `fixed-odds.sharpness` | `2.0` | 能力差を勝率にどれだけ反映するか（大きいほど本命が強い想定） |
+| `fixed-odds.apply-longshot-bonus` | `false` | 固定オッズのレースで人気薄ボーナスを掛けるか（オッズに人気薄が反映済みのため既定 `false`） |
+
+### 会場（観覧範囲 `venue`）
+
+競馬は在籍（ロビー参加）の無い **観覧型** です。スコアボード・荒れレース告知などの進行表示は「今レースのベット者」と「会場にいる人」だけに出ます（レース結果だけは全体告知）。会場 ＝ ロビー地点・各馬のスタート地点・チェックポイントのいずれかから `venue.radius` ブロック以内（同じワールド）です。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `venue.radius` | `96` | 会場（観覧範囲）の半径（ブロック）。この範囲内のプレイヤーに進行表示が出る |
 
 ### 配当ボーナス（`longshot` / `wild` / `streak`）
 
@@ -137,13 +158,13 @@ modules:
 **② 各馬のスタート地点を設定** — 1番馬のスタートさせたい位置に立って実行。2番馬以降も番号を変えて全頭ぶん実行します。
 
 ```text title="1番馬のスタート地点を現在地に設定（2頭目以降は番号を変える）"
-/horseracing sethousepoint 1
+/horseracing setstart 1
 ```
 
 **③ チェックポイントを設定** — コースの通過地点に立って順に登録します。
 
 ```text title="チェックポイント1を現在地に設定（2つ目以降は番号を変える）"
-/horseracing setlocation 1
+/horseracing setcheckpoint 1
 ```
 
 **④ 速度倍率を調整（任意）**
@@ -155,11 +176,11 @@ modules:
 **⑤ ロビー・スポーン地点を設定**
 
 ```text title="ロビー地点を現在地に設定"
-/horseracing setup lobby
+/horseracing setlobby
 ```
 
-```text title="退出先（会場外）を現在地に設定"
-/horseracing setup spawn
+```text title="退出先（会場外・初期スポーン）を現在地に設定"
+/horseracing setstartspawn
 ```
 
 **⑥ 看板を設置（任意）** — 移動用の看板を設置します（後述）。
@@ -171,10 +192,10 @@ modules:
 
 ### 競馬看板
 
-看板を設置し、看板を見ながら（6ブロック以内）以下のコマンドを実行すると、テキストが自動で整形されます。
+看板を設置し、看板を見ながら以下のコマンドを実行すると、テキストが自動で整形されます。
 
-```text title="ロビー看板"
-/horseracing setsign lobby
+```text title="参加（ロビー）看板"
+/horseracing setsign join
 ```
 
 ```text title="離脱看板"
@@ -182,7 +203,7 @@ modules:
 ```
 
 ```text title="馬券販売看板"
-/horseracing setsign getitem
+/horseracing setsign shop
 ```
 
 ```text title="レース進行看板（クリックで /horseracing start 相当・全員可、一般は発走まで最低30秒）"
@@ -190,17 +211,17 @@ modules:
 ```
 
 ```text title="看板の設定を解除"
-/horseracing setsign remove
+/horseracing setsign delete
 ```
 
 | 種類 | クリック時の動作 |
 |---|---|
-| ロビー看板（`lobby`） | クリックしたプレイヤーをロビー地点へテレポート |
+| 参加（ロビー）看板（`join`） | クリックしたプレイヤーをロビー地点へテレポート |
 | 離脱看板（`leave`） | クリックしたプレイヤーをスポーン地点へテレポート |
-| 馬券販売看板（`getitem`） | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
+| 馬券販売看板（`shop`） | クリックしたプレイヤーに競馬ベット券（右クリックでベット画面）を配布 |
 | レース進行看板（`start`） | クリックでレースを進行（`/horseracing start` と同じ。ベット開始 → 発走の順に進む） |
 
-看板は必ず上記の `/horseracing setsign <種類>` で登録してください。登録座標と種類は `horse.yml` の `signs.registry` に保存され、クリック判定は看板の文字ではなく登録座標で行われます（**1行目 `[HorseRacing]` ＋ 2行目に種類を書くだけの手書き設置は廃止されました**。既存の手書き看板をクリックすると OP には登録を促す案内が表示されます）。看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。ロビー地点・スポーン地点は事前に `/horseracing setup` で設定しておいてください。`/horseracing setsign remove`（または `delete`）で看板の登録を解除できます。
+看板は必ず上記の `/horseracing setsign <種類>` で登録してください。登録座標と種類は `horse.yml` の `signs.registry` に保存され、クリック判定は看板の文字ではなく登録座標で行われます（**1行目 `[HorseRacing]` ＋ 2行目に種類を書くだけの手書き設置は廃止されました**。既存の手書き看板をクリックすると OP には登録を促す案内が表示されます）。看板の作成には `horseracing.admin` 権限（OP）が必要です。ロビー地点・スポーン地点は事前に `/horseracing setlobby`・`/horseracing setstartspawn` で設定しておいてください。`/horseracing setsign delete` で看板の登録を解除できます。
 
 ## レース運営コマンド
 
@@ -218,6 +239,26 @@ modules:
 
 ```text title="指定プレイヤーにベット券を配布（枚数: 1〜64）"
 /horseracing givebetitem <プレイヤー名> <枚数>
+```
+
+```text title="固定オッズの予測と実際のずれを表示（reset で実績リセット）"
+/horseracing oddsstats [reset]
+```
+
+```text title="管理ツールを受け取る"
+/horseracing wand
+```
+
+```text title="管理メニューを開く"
+/horseracing menu
+```
+
+```text title="設定を再読み込み"
+/horseracing reload
+```
+
+```text title="預かり中の持ち物を手動復元（force で強制）"
+/horseracing lobbyfix <プレイヤー名> [force]
 ```
 
 ## プレイヤーも実行できるコマンド
@@ -238,30 +279,34 @@ modules:
 | `/horseracing start` | 全員可（一般は発走まで最低30秒） | レース進行のトグル（停止中→ベット期間開始、ベット期間中→発走）。コマンドブロック／コンソールからも実行可 |
 | `/horseracing stop` | `horseracing.admin` | レースを緊急停止し、馬を撤去して賭け金を全額返金 |
 | `/horseracing sethorse <頭数>` | `horseracing.admin` | 出走馬の数を設定（1〜18頭） |
-| `/horseracing sethousepoint <馬番号>` | `horseracing.admin` | 指定馬番号のスタート地点を現在地に設定（プレイヤー専用） |
-| `/horseracing setlocation <番号>` | `horseracing.admin` | チェックポイントを現在地に設定（プレイヤー専用） |
+| `/horseracing setstart <馬番号>` | `horseracing.admin` | 指定馬番号のスタート地点を現在地に設定（プレイヤー専用） |
+| `/horseracing setcheckpoint <番号>` | `horseracing.admin` | チェックポイントを現在地に設定（プレイヤー専用） |
 | `/horseracing setspeed <倍率>` | `horseracing.admin` | コース全体の速度倍率を設定 |
-| `/horseracing setup <spawn\|lobby>` | `horseracing.admin` | スポーン地点／ロビー地点を現在地に設定（プレイヤー専用） |
-| `/horseracing getbetitem [対象]` | OP（対象指定時は `horseracing.admin` または `horseracing.giveitem`） | 競馬ベット券を入手。プレイヤー名を指定すると配布 |
-| `/horseracing givebetitem <対象> [枚数]` | OP（`horseracing.admin` または `horseracing.giveitem`） | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
-| `/horseracing bet [対象]` | OP（`horseracing.admin`） | ベット画面を開く。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックして開く |
-| `/horseracing setsign <join\|lobby\|leave\|getitem\|start\|remove>` | `horseracing.admin` または `horseracing.sign.create` | 視線先の看板を競馬看板として登録/解除する（`join` は `lobby` の別名） |
+| `/horseracing setlobby` | `horseracing.admin` | ロビー地点を現在地に設定（プレイヤー専用） |
+| `/horseracing setstartspawn` | `horseracing.admin` | 退出先（会場外・初期スポーン）を現在地に設定（プレイヤー専用） |
+| `/horseracing getbetitem [対象]` | `horseracing.admin` | 競馬ベット券を入手。プレイヤー名を指定すると配布 |
+| `/horseracing givebetitem <対象> [枚数]` | `horseracing.admin` | 指定プレイヤーに競馬ベット券を配布（1〜64枚） |
+| `/horseracing bet [対象]` | `horseracing.admin` | ベット画面を開く。プレイヤーは `[HorseRacing] shop` 看板で取得した馬券アイテムを右クリックして開く |
+| `/horseracing oddsstats [reset]` | `horseracing.admin` | 固定オッズの予測と実際のずれを表示（`reset` で実績リセット） |
+| `/horseracing setsign <join\|leave\|shop\|start\|delete>` | `horseracing.admin` | 視線先の看板を競馬看板として登録／解除する（`shop` は馬券販売看板） |
+| `/horseracing wand` | `horseracing.admin` | 管理ツールを受け取る |
+| `/horseracing menu` | `horseracing.admin` | 管理メニューを開く |
+| `/horseracing reload` | `horseracing.admin` | `horse.yml` を再読み込み |
+| `/horseracing lobbyfix <対象> [force]` | `horseracing.admin` | 預かり中の持ち物を手動復元（`force` で強制） |
 
 !!! note "レース進行と緊急停止"
     レースの基本フローは「`start`（ベット期間開始）→ `start`（発走）→ 自動でゴール・配当」です。途中でやめたいときは `/horseracing stop` を使うと、馬が撤去され、購入済みの馬券の賭け金が全プレイヤーへ全額返金されます。CasinoPlugin の無効化時にも自動で緊急停止が走ります。
 
 ## 権限ノード
 
-CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノードは次の3つです。
+CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノードは1つだけです。
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `horseracing.admin` | OP | 競馬の管理コマンド全権限（start / stop / sethorse / sethousepoint / setlocation / setspeed / setup / givebetitem / bet など） |
-| `horseracing.bet` | OP | `/horseracing bet` の実行権限。プレイヤーは `[HorseRacing] getitem` 看板で取得した馬券アイテムを右クリックしてベット画面を開く |
-| `horseracing.sign.create` | OP | `[HorseRacing]` 看板（lobby / leave / getitem / start）の設置権限 |
+| `horseracing.admin` | OP | 競馬の管理コマンド全権限（start / stop / sethorse / setstart / setcheckpoint / setspeed / setlobby / setstartspawn / setsign / getbetitem / givebetitem / bet / oddsstats / wand / menu / reload / lobbyfix など） |
 
-!!! note "細分化された権限ノードについて"
-    内部実装上、管理コマンドには `horseracing.config.horse` / `horseracing.config.point` / `horseracing.config.speed` / `horseracing.config.stop` / `horseracing.setup` / `horseracing.giveitem` といった、機能ごとに分かれた権限ノードも参照されています。これらは plugin.yml には明示宣言されていないため、特定の管理機能だけを一部スタッフに委譲したい場合は、権限プラグイン（LuckPerms 等）で個別に付与してください。`horseracing.admin` を持っていれば、これら個別ノードがなくてもすべての管理機能を使えます。
+!!! note "権限ノードは `horseracing.admin` の1本に統合されました"
+    以前は `horseracing.bet` / `horseracing.sign.create` / `horseracing.config.*` / `horseracing.setup` / `horseracing.giveitem` など機能ごとに分かれた権限ノードがありましたが、これらは廃止され、管理コマンドの判定はすべて **OP または `horseracing.admin`** の1本になりました。一般プレイヤーが使えるのは `join` / `leave` / `start` / `status` で、これらは権限不要です。
 
 ## トラブルシューティング
 
@@ -272,19 +317,19 @@ CasinoPlugin の `plugin.yml` で宣言されている競馬の権限ノード�
     競馬は bank モジュールのエメラルド口座機能に依存します。`modules.bank.enabled` を `true` にしてから起動してください。bank が無効だと horse モジュールは `EmeraldAPI not bound` で起動できません。
 
 ??? failure "レース準備で「スタート地点が未設定」と出る / 馬がスポーンしない"
-    出走頭数ぶんのスタート地点が登録されていない可能性があります。`/horseracing sethorse <頭数>` で設定した頭数すべてについて、`/horseracing sethousepoint <番号>` でスタート地点を登録してください。地点のワールドが読み込まれていない場合もスポーンに失敗します。
+    出走頭数ぶんのスタート地点が登録されていない可能性があります。`/horseracing sethorse <頭数>` で設定した頭数すべてについて、`/horseracing setstart <番号>` でスタート地点を登録してください。地点のワールドが読み込まれていない場合もスポーンに失敗します。
 
 ??? failure "看板を作成できない"
-    `[HorseRacing]` 看板の作成には `horseracing.admin` または `horseracing.sign.create` 権限が必要です。1行目に `[HorseRacing]`、2行目に `lobby` / `leave` / `getitem` / `start` のいずれかを正しく入力しているかも確認してください。
+    `[HorseRacing]` 看板の登録には `horseracing.admin` 権限（OP）が必要です。看板を見ながら `/horseracing setsign <join\|leave\|shop\|start>` を実行して登録してください（1行目 `[HorseRacing]` ＋ 2行目に種類を書くだけの手書き設置は廃止されています）。
 
 ??? failure "ロビー／離脱看板を押しても移動しない"
-    ロビー地点・スポーン地点が未設定の可能性があります。それぞれ `/horseracing setup lobby`・`/horseracing setup spawn` を、目的の地点に立った状態で実行してください。
+    ロビー地点・スポーン地点が未設定の可能性があります。それぞれ `/horseracing setlobby`・`/horseracing setstartspawn` を、目的の地点に立った状態で実行してください。
 
 ??? failure "オッズの幅が極端 / 配当を調整したい"
     `horse.yml` の **`race.virtual_bet_amount`** を大きくするとオッズの変動が緩やかになります（実際に読み込まれるのは `betting.virtual_bet_amount` ではなく `race.virtual_bet_amount` です）。馬の実力差は `horse_stats` の各 min / max で調整します。設定変更後はサーバーの再起動で反映してください。なお `betting.takeout_rate`・`betting.minimum_odds` は現状のコードでは参照されないため、編集しても挙動は変わりません。
 
 ??? failure "ベットを受け付けない"
-    ベットできるのは `/horseracing start` でベット期間を開始してから、発走（2回目の `start`）までの間だけです。レース中・停止中はベット画面を開けません。プレイヤーはコマンドではなく `[HorseRacing] getitem` 看板から馬券アイテムを受け取り、右クリックでベット画面を開く流れです。
+    ベットできるのは `/horseracing start` でベット期間を開始してから、発走（2回目の `start`）までの間だけです。レース中・停止中はベット画面を開けません。プレイヤーはコマンドではなく馬券販売（`shop`）看板から馬券アイテムを受け取り、右クリックでベット画面を開く流れです。
 
 ---
 

@@ -4,7 +4,7 @@
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎲 カジノ・ギャンブル</span></div>
-  <div class="quick-card"><span class="label">形式</span><span class="value">クイックヨット（1人用GUI）＋ジャックポット</span></div>
+  <div class="quick-card"><span class="label">形式</span><span class="value">クイックヨット（1人用GUI）＋役比べ（マルチ2〜4人）＋ジャックポット</span></div>
   <div class="quick-card"><span class="label">通貨</span><span class="value">エメラルド</span></div>
   <div class="quick-card"><span class="label">遊び方</span><span class="value">看板 または `/yacht quick`</span></div>
 </div>
@@ -12,8 +12,8 @@
 !!! info "CasinoPlugin のモジュールです"
     ヨットは統合プラグイン **CasinoPlugin** の **yacht モジュール** として提供されています。賭け金・配当はエメラルド銀行の残高でやり取りされ、他のゲームと残高は共通です。CasinoPlugin 全体の構成は [CasinoPlugin の概要ページ](../casino-plugin/index.md) をご覧ください。
 
-!!! note "現フェーズはクイックヨット＋ジャックポット"
-    現在は **クイックヨット**（サッと1回勝負のGUI）と **ジャックポット** に対応しています。ソロのスコアアタックや対戦ポットは今後のフェーズで追加予定です。
+!!! note "現フェーズはクイックヨット＋役比べ＋ジャックポット"
+    現在は **クイックヨット**（サッと1回勝負のGUI）、**役比べ**（2〜4人で手番ごとに振って役を比べるマルチ対戦）、**ジャックポット** に対応しています。ソロのスコアアタックは今後のフェーズで追加予定です。
 
 ## ページを選ぶ
 

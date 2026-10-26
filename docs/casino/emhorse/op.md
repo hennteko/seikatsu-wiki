@@ -38,11 +38,12 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 ## 管理コマンド
 
-`join` のみ全プレイヤーが使用でき、それ以外は `/emhorse <sub>`（OP または `emhorse.admin`）です。
+`solo` / `status` / `help` は全プレイヤーが使用でき、それ以外は `/emhorse <sub>`（OP または `emhorse.admin`）です。
 
 | コマンド | 説明 |
 |---|---|
-| `/emhorse join` | **全員可**。`[厩舎]` 看板と同等に厩舎を開く（2頭以上なら所有馬一覧、1頭なら厩舎GUI、未所有ならメッセージ） |
+| `/emhorse solo` | **全員可**。`[厩舎]` 看板と同等に厩舎を開く（2頭以上なら所有馬一覧、1頭なら厩舎GUI、未所有ならメッセージ） |
+| `/emhorse status` | **全員可**。設定状況を表示（看板数・`max_horses`・1レースの出走枠・体調消費・出走待ち人数など） |
 | `/emhorse setsign <shop\|stable\|entry\|delete>` | 視線先の看板を各種看板に設定/解除する（`delete` は `remove` も可） |
 | `/emhorse givefoal <player> [bronze\|silver\|gold] [個数]` | 子馬券を付与（既定 bronze・1個） |
 | `/emhorse givewhistle <player>` | 呼び笛を付与 |
@@ -52,7 +53,13 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 | `/emhorse setrating <player> <値>` | 選択中の馬のレーティングを直接設定 |
 | `/emhorse setlevel <player> <stat> <Lv>` | 選択中の馬の指定ステータス（SPEED/ACCEL/STAMINA/BURST/GUTS）のレベルを設定 |
 | `/emhorse reload` | `modules/emhorse.yml` を再読み込み |
-| `/emhorse status [player]` | 馬の状態を確認（自分対象なら厩舎GUI、他者なら選択中の馬をテキスト表示） |
+| `/emhorse info [player]` | 馬の状態を確認（自分対象なら厩舎GUI、他者なら選択中の馬をテキスト表示） |
+| `/emhorse wand` / `/emhorse menu` | 管理ツールの取得・管理メニューを開く |
+| `/emhorse stop` | 強制停止（育成馬は即時型のため止める試合はなく「進行中の試合はありません」と表示） |
+| `/emhorse lobbyfix <player> [force]` | 預かり中の持ち物を手動で復元する |
+
+!!! note "`/emhorse join` はソロ専用の案内のみ"
+    育成馬にロビーはないため、`/emhorse join` は「育成馬はソロ専用です（ロビーはありません）。`/emhorse solo` で厩舎を開きます。レースは `/horseracing join` から。」と案内を出すだけで厩舎は開きません。厩舎を開くのは `/emhorse solo` です。
 
 !!! warning "`/emhorse give` は所有上限を無視して追加します"
     `give` は対象がすでに馬を持っていても **上書きせず新しい1頭を追加** し、その馬を選択中にします。`max_horses`（既定5）を超えても付与できるため、配りすぎに注意してください。`setcondition` / `setrating` / `setlevel` はいずれも **選択中の馬** に作用します。
@@ -61,9 +68,9 @@ CasinoPlugin の育成馬モジュール（emhorse）の看板・コマンド・
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `emhorse.admin` | OP | `/emhorse` 各サブコマンド（`join` を除く）・看板設置 |
+| `emhorse.admin` | OP | `/emhorse` 各サブコマンド（`solo`・`status`・`help` を除く）・看板設置 |
 
-プレイヤー向けの専用権限はありません（看板・アイテム操作で遊びます）。`/emhorse join` のみ権限を問わず全プレイヤーが使用できます。
+プレイヤー向けの専用権限はありません（看板・アイテム操作で遊びます）。`/emhorse solo`・`/emhorse status`・`/emhorse help` は権限を問わず全プレイヤーが使用できます。
 
 ## modules/emhorse.yml 主要項目
 

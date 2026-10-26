@@ -39,6 +39,10 @@ modules:
 /roulette setstartspawn
 ```
 
+```text title="ロビー地点（卓参加時の移動先）を現在地に設定（未設定ならホイール位置へ）"
+/roulette setlobby
+```
+
 ```text title="看板を登録（看板を見ながら実行・複数設置可）"
 /roulette setsign <play|join|leave|start>
 ```
@@ -56,7 +60,7 @@ modules:
 ```
 
 !!! success "看板は4種類・複数設置できます"
-    看板は `play`（ソロGUIを開く）・`join`（卓に参加）・`leave`（卓から離脱）・`start`（スピン手動開始）の4種類を登録でき、それぞれ複数拠点に設置できます。登録内容は `signs.registry` に、`setwheel` で保存される盤の位置は `wheel-location`（`"world;x;y;z;yaw"`）、`setstartspawn` の戻り先は `start-spawn` として自動保存されます。いずれも手編集不要です。
+    看板は `play`（ソロGUIを開く）・`join`（卓に参加）・`leave`（卓から離脱）・`start`（スピン手動開始）の4種類を登録でき、それぞれ複数拠点に設置できます。登録内容は `signs.registry` に、`setwheel` で保存される盤の位置は `wheel-location`（`"world;x;y;z;yaw"`）、`setstartspawn` の戻り先は `start-spawn`、`setlobby` の卓参加時の移動先は `lobby-location` として自動保存されます。いずれも手編集不要です。
 
 ## roulette.yml 設定項目
 
@@ -69,7 +73,7 @@ modules:
 | `multi.betting_seconds` | 30 | ベット受付時間（秒） |
 | `multi.min_players` | 1 | 開始に必要な最少参加人数（1人でも回せる） |
 | `multi.max_players` | 10 | 卓の最大人数（0以下で無制限。満員時は参加を拒否） |
-| `multi.clear_inventory` | false | 卓参加時にインベントリを預かる（退場で復元）か |
+| `multi.clear_inventory` | true | 卓参加時にインベントリを預かる（退場で復元）か（共通ルール 6 章により既定 true） |
 
 ### ベット
 
@@ -103,21 +107,28 @@ modules:
 | `display.spins` | 4 | スピン時の周回数（演出） |
 
 !!! note "自動生成される領域（手編集不要）"
-    `wheel-location`（`/roulette setwheel`）・`start-spawn`（`/roulette setstartspawn`）・`signs.registry`（`/roulette setsign <play|join|leave|start>`）はコマンドで自動保存されます。
+    `wheel-location`（`/roulette setwheel`）・`start-spawn`（`/roulette setstartspawn`）・`lobby-location`（`/roulette setlobby`）・`signs.registry`（`/roulette setsign <play|join|leave|start>`）はコマンドで自動保存されます。
 
 ## 管理コマンド・権限
 
-`/roulette` の `play`/`join`/`leave`/`start`/`status` は全員可（`start` はコンソール・コマンドブロックからも実行可）、`setwheel`/`setstartspawn`/`setsign`/`reload` は **OP（コード側で判定）** です。
+`/roulette` の `play`（`solo` も同義）/`join`/`leave`/`start`/`status` は全員可（`start` はコンソール・コマンドブロックからも実行可）、`setwheel`/`setlobby`/`setstartspawn`/`setsign`/`stop`/`wand`/`menu`/`reload`/`lobbyfix` と「他プレイヤー指定の join/leave」は **OP（コード側で判定）** です。
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
-| `/roulette play` | 全員 | ソロGUIを開く |
+| `/roulette play`（`solo`） | 全員 | ソロGUIを開く |
 | `/roulette join` / `leave` | 全員 | マルチ卓に参加／離脱 |
 | `/roulette start` | 全員 | マルチ卓のスピンを手動開始（コンソール/コマブロ可） |
 | `/roulette status` | 全員 | 状況確認 |
+| `/roulette help` | 全員 | コマンド一覧を表示 |
 | `/roulette setwheel` | OP | 盤（疑似ホイール）の基準点を設定 |
+| `/roulette setlobby` | OP | ロビー地点（卓参加時の移動先）を設定（未設定ならホイール位置へ） |
 | `/roulette setstartspawn` | OP | 卓を離れたとき・再接続時の戻り先を設定 |
 | `/roulette setsign <play\|join\|leave\|start>` | OP | 看板を登録（`delete` で解除・複数可） |
+| `/roulette join` / `leave` `<プレイヤー>` | OP | 指定プレイヤーを卓に参加／離脱させる |
+| `/roulette stop [multi\|solo [プレイヤー]]` | OP | 進行中のスピンを強制停止してベットを返金（コンソール可） |
+| `/roulette wand` | OP | 管理ツール（看板設置用）を受け取る |
+| `/roulette menu` | OP | 管理メニューを開く |
+| `/roulette lobbyfix <プレイヤー> [force]` | OP | 預かった持ち物を手動で復元 |
 | `/roulette reload` | OP | 設定を再読み込み |
 
 ## トラブルシューティング

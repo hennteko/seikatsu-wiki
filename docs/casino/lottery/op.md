@@ -14,7 +14,7 @@
 | 設定ファイル | `plugins/CasinoPlugin/modules/lottery.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.lottery.enabled` |
 | 共通通貨 | エメラルド（bank モジュールの口座残高） |
-| 抽選券の価格 | 1枚 10エメラルド（実装で固定） |
+| 抽選券の価格 | 既定 1枚 10エメラルド（`lottery.yml` の `price-per-ticket`・`/kuzi menu` で変更可） |
 
 !!! info "CasinoPlugin のモジュールです"
     宝くじは単独プラグインではなく、CasinoPlugin に統合された **lottery モジュール** です。導入手順・共通設定（`config.yml`）・モジュール構成の全体像は [CasinoPlugin の OP・運営ガイド](../casino-plugin/op.md) を参照してください。このページは lottery モジュール固有の設定のみを扱います。
@@ -42,7 +42,11 @@ modules:
 
 ## lottery.yml 設定項目
 
-`lottery.yml` で手動設定するのは **景品テーブル（`prizes`）** です（このほか購入看板の座標が `signs.registry` に自動記録されます）。抽選券の価格（1枚10エメラルド）はソース側で固定されており、設定ファイルでは変更できません。
+`lottery.yml` で手動設定するのは **景品テーブル（`prizes`）** と **抽選券の価格（`price-per-ticket`）** です（このほか購入看板の座標が `signs.registry` に自動記録されます）。
+
+| キー | 既定 | 説明 |
+|---|---|---|
+| `price-per-ticket` | 10 | 抽選券1枚あたりの価格（エメラルド）。1〜100,000 の範囲で設定でき、`/kuzi menu`（管理メニュー）の ＋/− でも変更できる |
 
 `prizes` の下に5つのカテゴリー（`ore` / `food` / `function` / `build` / `other`）があり、各カテゴリーの下に `マテリアル名: 個数` の形式で景品を列挙します。
 
@@ -136,42 +140,54 @@ prizes:
 ```
 
 ```text title="購入GUIを開く（全プレイヤー可）"
-/kuzi join
+/kuzi solo
 ```
 
 ```text title="設定状況を確認（全プレイヤー可）"
 /kuzi status
 ```
 
+```text title="管理メニューを開く（価格の変更など・OP専用）"
+/kuzi menu
+```
+
+```text title="進行中の処理を停止（OP専用）"
+/kuzi stop
+```
+
 | コマンド | 説明 |
 |---|---|
-| `/kuzi reload` | `lottery.yml` の景品テーブルを再読み込みする |
-| `/kuzi setsign shop` | 視線先の看板を `[宝くじ]` 購入看板（購入GUIを開く）として登録する（引数省略時も `shop`） |
-| `/kuzi setsign delete` | 視線先の看板の購入看板登録を解除する |
+| `/kuzi solo` | 購入GUIを開く（**全プレイヤー実行可**。看板の代わりに使える） |
+| `/kuzi status` | 購入看板の登録状況・くじ種類・価格を表示する（**全プレイヤー実行可**） |
+| `/kuzi help` | ヘルプを表示する（**全プレイヤー実行可**） |
+| `/kuzi reload` | `lottery.yml` の景品テーブル・価格を再読み込みする（OP） |
+| `/kuzi setsign shop` | 視線先の看板を `[宝くじ]` 購入看板（購入GUIを開く）として登録する（引数省略時も `shop`・OP） |
+| `/kuzi setsign delete` | 視線先の看板の購入看板登録を解除する（OP） |
 | `/kuzi gui` | 購入GUIを開く（OP専用） |
 | `/kuzi <種類> <枚数>` | 抽選券を直接購入する（OP専用） |
-| `/kuzi status` | 購入看板の登録状況・くじ種類・価格を表示する（**全プレイヤー実行可**） |
-| `/kuzi join` | 購入GUIを開く（**全プレイヤー実行可**。看板の代わりに使える） |
+| `/kuzi menu` | 管理メニューを開く（価格の変更など・OP） |
+| `/kuzi wand` | 管理ツールを受け取る（OP） |
+| `/kuzi stop` | 進行中の処理を停止する（OP） |
+| `/kuzi lobbyfix <プレイヤー> [force]` | 預かり持ち物を手動で復元する（OP） |
 
-!!! note "/kuzi join は全プレイヤーが使える"
-    `/kuzi join` は OP 判定の前に処理されるため、**権限を問わず全プレイヤー** が実行でき、`[宝くじ]` 看板と同じ購入GUIを開きます。`/kuzi gui` は OP 専用ですが、`/kuzi join` は一般プレイヤーにも開放されている点が異なります。
+!!! note "/kuzi solo は全プレイヤーが使える"
+    `/kuzi solo` は OP 判定の前に処理されるため、**権限を問わず全プレイヤー** が実行でき、`[宝くじ]` 看板と同じ購入GUIを開きます。`/kuzi gui` は OP 専用ですが、`/kuzi solo` は一般プレイヤーにも開放されている点が異なります。宝くじはソロ専用のため `/kuzi join` は「`/kuzi solo` で購入画面を開きます」と案内を出すだけです。
 
-`/kuzi reload` はコンソール、OP、または `kuzi.reload` 権限を持つプレイヤーが実行できます。`lottery.yml` を編集したらこのコマンドで反映してください（サーバー再起動でも反映されます）。
+`/kuzi reload` はコンソールまたは OP（`kuzi.admin`）が実行できます。`lottery.yml` を編集したらこのコマンドで反映してください（サーバー再起動でも反映されます）。
 
 !!! tip "TAB 補完"
-    `/kuzi` の第1引数で TAB を押すと、**全プレイヤー** に `join`・`status`（と読み込み済みの各くじ種類）が表示されます。OP または `kuzi.reload` 権限保持者にはさらに `reload`、`kuzi.admin` 保持者には `setsign` と `gui` も表示されます。`setsign` の第2引数では `shop` / `delete` が補完されます。
+    `/kuzi` の第1引数で TAB を押すと、**全プレイヤー** に `solo`・`status`・`help` が表示されます。OP または `kuzi.admin` 保持者にはさらに読み込み済みの各くじ種類・`setsign`・`gui`・`stop`・`wand`・`menu`・`lobbyfix`・`reload` も表示されます。`setsign` の第2引数では `shop` / `delete` が補完されます。
 
 ## 権限ノード
 
-`/kuzi` コマンドは **OP専用** です（`reload` / `join` / `status` を除く）。一般プレイヤーは `[宝くじ]` 看板から購入し、抽選券の右クリック使用は全員が利用できます。
+`/kuzi` コマンドは **OP専用** です（`solo` / `join` / `status` / `help` を除く）。一般プレイヤーは `[宝くじ]` 看板から購入し、抽選券の右クリック使用は全員が利用できます。
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `kuzi.reload` | OP | `/kuzi reload` の実行可否 |
-| `kuzi.admin` | OP | `/kuzi` コマンド（購入・`setsign`・`gui`）の実行可否 |
+| `kuzi.admin` | OP | `/kuzi` の管理コマンド（購入・`setsign`・`gui`・`menu`・`stop`・`reload`・`lobbyfix`）の実行可否 |
 
-!!! note "kuzi.reload について"
-    `kuzi.reload` は plugin.yml で `default: op` として宣言されています。OP は権限の有無に関わらず `/kuzi reload` を実行できます。一般プレイヤーにも reload を許可したい場合は、LuckPerms 等の権限プラグインで `kuzi.reload` を付与してください。
+!!! note "権限ノードは kuzi.admin の1本"
+    旧 `kuzi.reload` は廃止され、`kuzi.admin` に統合されました。`reload` を含むすべての管理コマンドは OP または `kuzi.admin` 保持者が実行できます。
 
 ## トラブルシューティング
 

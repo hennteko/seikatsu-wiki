@@ -45,9 +45,25 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `shonben-probability-percent` | `5` | サイコロ1つあたりに「ションベン」（出目0）が出る確率（パーセント）。3つのサイコロそれぞれに独立で判定される |
+| `max-players` | `6` | ロビーの定員（親を含む最大人数）。満員になると参加を断る |
+| `turn-timeout-seconds` | `30` | 手番の制限時間（秒）。過ぎると自動でスタンド（一度も振っていなければ1回振ってから） |
+| `payouts.normal` | `1` | 通常の目・役なしで勝ったときの倍率 |
+| `payouts.shigoro` | `2` | シゴロ（4-5-6）の倍率 |
+| `payouts.zorome` | `3` | ゾロ目の倍率 |
+| `payouts.pinzoro` | `5` | ピンゾロ（1-1-1）の倍率。預かり額の基準になる最大倍率 |
+| `payouts.hifumi` | `2` | ヒフミ（1-2-3）を出した側が払う罰倍率 |
+| `payouts.shonben` | `1` | ションベンを出した側が払う罰倍率 |
+| `solo.menu-delay` | `3` | ソロ: ゲーム終了からメニューを開くまでの秒数 |
+| `solo.min-bet` | `10` | ソロ: ベット額の下限（親のときは子1人あたり） |
+| `solo.max-bet` | `5000` | ソロ: ベット額の上限 |
+| `solo.default-cpu` | `2` | ソロ: メニューを開いたときの CPU 人数（1〜5） |
+| `solo.cpu-roll-ticks` | `20` | ソロ: CPU がサイコロを1回振る間隔（tick） |
+| `solo.stats-save-interval-seconds` | `60` | ソロ戦績（`tintiro_solo_stats.yml`）の保存間隔 |
 | `locations.spawn` | （未設定） | スポーン地点（離脱時の転送先）。`/tintiro setstartspawn` で書き込まれる |
 | `locations.lobby` | （未設定） | ロビー地点（参加時・ゲーム終了時の転送先）。`/tintiro setlobby` で書き込まれる |
 | `locations.field1` / `field2` | （未設定） | ゲームエリアの対角2点。`/tintiro setfield <1\|2>` で書き込まれる |
+| `locations.solospawn` | （未設定） | ソロ地点（ソロ開始時の移動先）。`/tintiro setsolospawn` で書き込まれる。未設定ならその場 |
+| `signs.registry` / `signs.solo-registry` | （自動保存） | 登録済みの看板（通常 / ソロ）。`/tintiro setsign` が座標で書き込む |
 | `bet_options` | （未設定） | （任意）`bet` 看板クリックで開く掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1〜1,000,000）を使用する |
 
 !!! tip "掛け金GUIの金額を変えるには bet_options"
@@ -56,8 +72,8 @@
 !!! note "座標は手動編集より設定コマンドを推奨"
     `locations.spawn` / `locations.lobby` / `locations.field1` / `locations.field2` は `world` / `x` / `y` / `z` / `yaw` / `pitch` を持つ座標ブロックです。ゲーム内で `/tintiro setstartspawn` ・ `/tintiro setlobby` ・ `/tintiro setfield <1|2>` を実行すると、実行時の立ち位置が自動で書き込まれます。手動で編集する場合は tintiro.yml 内のコメントに記載された形式に従ってください。
 
-!!! tip "役の倍率は設定では変更できません"
-    役の判定ロジックと配当倍率（役のランク差 × ベット額）は実装に組み込まれており、`tintiro.yml` で個別に変更する項目はありません。調整できるのは `shonben-probability-percent`（ションベン確率）のみです。
+!!! tip "配当倍率は payouts で変更できます"
+    配当は **勝った側の役の倍率** で決まります（旧「役のランク差 × ベット額」方式は廃止）。倍率は `tintiro.yml` の `payouts`（`normal` / `shigoro` / `zorome` / `pinzoro` / `hifumi` / `shonben`）で調整できます。`pinzoro`（最大倍率）は開始時に預かる額の基準にもなります。ほかに `shonben-probability-percent`・`max-players`・`turn-timeout-seconds`・`solo.*` も設定で変更できます。
 
 ## セットアップ手順
 
@@ -103,7 +119,7 @@
 ```
 
 ```text title="振りGUI看板"
-/tintiro setsign open
+/tintiro setsign action
 ```
 
 ```text title="掛け金変更GUI看板"
@@ -118,6 +134,10 @@
 /tintiro setsign start
 ```
 
+```text title="ソロ看板（クリックでソロチンチロのメニュー）"
+/tintiro setsign solo
+```
+
 ```text title="看板の設定を解除"
 /tintiro setsign delete
 ```
@@ -126,10 +146,11 @@
 |---|---|
 | 参加看板（`join` / `lobby`） | チンチロロビーに参加し、ロビー地点へ転送 |
 | 退出看板（`leave`） | チンチロロビーから離脱し、スポーン地点へ転送 |
-| 振りGUI看板（`open`） | 自分の番にサイコロGUIを開く（`/tintiro open` 相当） |
+| 振りGUI看板（`action`） | 自分の番にサイコロGUIを開く（`/tintiro action` 相当） |
 | 掛け金看板（`bet`） | クリックで掛け金変更GUIを開く |
 | 固定額ベット看板（`bet <金額>`） | クリックでロビー全員のベット額をその金額に設定 |
 | 開始看板（`start`） | ゲームを開始する（全員可。クリックした人が親になる） |
+| ソロ看板（`solo`） | クリックでソロチンチロ（CPU 対戦）のメニューを開く |
 
 !!! note "看板の自動整形について"
     `setsign` は **視線先の看板（5ブロック以内）** を種別に応じて自動整形します。1行目は `[チンチロ]`、2〜4行目は種別ごとの説明・人数表示などに書き換わります。参加看板は `join` と `lobby` のどちらの種別名でも同じ参加看板になります。`bet` 看板は金額引数なしだとクリックで掛け金変更GUIが開き、`setsign bet <金額>`（例: `setsign bet 1000`）とすると **その金額に直接設定する固定額ベット看板** になります（金額は末尾の `E` を付けても省いても可）。
@@ -156,11 +177,11 @@
 ```
 
 ```text title="自分の番にサイコロGUIを開く"
-/tintiro open
+/tintiro action
 ```
 
-```text title="ゲームを強制終了（全体にアナウンス）"
-/tintiro stop
+```text title="ゲームを強制終了（マルチ/ソロを指定可・全体にアナウンス）"
+/tintiro stop [multi|solo [プレイヤー]]
 ```
 
 ## 管理コマンド一覧
@@ -171,15 +192,20 @@
 |---|---|
 | `/tintiro join [プレイヤー名]` | 指定プレイヤー（省略時は自分）をロビーに参加させる |
 | `/tintiro leave [プレイヤー名]` | 指定プレイヤー（省略時は自分）をロビーから退出させる |
-| `/tintiro bet <金額>` | ロビー全員のベット額を設定する |
-| `/tintiro start` | ゲームを開始する（実行者が親になる） |
-| `/tintiro open` | 自分の番にサイコロGUIを開く |
-| `/tintiro stop` | ゲームを強制終了する（全体にアナウンスされる） |
+| `/tintiro bet <金額>` | ロビー全員のベット額を設定する（ロビー在籍者は全員可。他プレイヤー指定時のみ OP） |
+| `/tintiro start` | ゲームを開始する（全員可。実行者が親になる） |
+| `/tintiro action` | 自分の番にサイコロGUIを開く（全員可。別名 `open`） |
+| `/tintiro solo [stats [名前]\|ranking]` | ソロチンチロのメニュー／戦績／ランキング（全員可。`ranking` は `rank` でも可） |
+| `/tintiro stop [multi\|solo [プレイヤー]]` | ゲームを強制終了する（マルチ/ソロを指定可・全体にアナウンス） |
 | `/tintiro setstartspawn` | 初期リスポーン地点を現在地に設定する |
 | `/tintiro setlobby` | ロビー地点を現在地に設定する |
+| `/tintiro setsolospawn` | ソロ地点（ソロ開始時の移動先）を現在地に設定する |
 | `/tintiro setfield <1\|2>` | ゲームエリアの角1/角2を現在地に設定する |
-| `/tintiro status` | 地点の設定状況を表示する |
-| `/tintiro setsign <join\|leave\|bet [金額]\|open\|start\|delete>` | 視線先の看板をチンチロ看板として登録/解除する（`bet` のみだと掛け金変更GUI看板、`bet <金額>` で固定額ベット看板） |
+| `/tintiro status` | 地点の設定状況を表示する（全員可） |
+| `/tintiro setsign <join\|leave\|bet [金額]\|action\|start\|solo\|delete>` | 視線先の看板をチンチロ看板として登録/解除する（`bet` のみだと掛け金変更GUI看板、`bet <金額>` で固定額ベット看板、`solo` でソロ看板） |
+| `/tintiro wand` / `/tintiro menu` | 管理ツールを受け取る／管理メニューを開く |
+| `/tintiro reload` | tintiro.yml を再読み込みする |
+| `/tintiro lobbyfix <プレイヤー> [force]` | ロビーの持ち物を手動で復元する |
 
 !!! note "地点設定コマンドはプレイヤー専用"
     `setstartspawn` / `setlobby` / `setfield` は立ち位置を座標として保存するため、コンソールからは実行できません（プレイヤーが実行する必要があります）。`stop` は進行中のゲームを強制終了し、全体に「○○ がゲームを強制終了しました」とアナウンスします。
@@ -190,8 +216,8 @@
 |---|---|---|
 | `tintiro.admin` | OP | plugin.yml に定義される管理権限ノード |
 
-!!! info "/tintiro コマンドは原則 OP 専用（判定は OP かどうか）"
-    `/tintiro` 系のコマンド（`bet` / `open` / `stop` / `setstartspawn` / `setlobby` / `setfield` / `setsign`）は **OP（またはコマンドブロック）のみ** 実行できます。判定は実際には「OP かどうか」で行われるため、`tintiro.admin` 権限を非 OP プレイヤーに付与してもコマンドは実行できません。例外として `/tintiro start`（開始・実行者が親）・ `/tintiro status`（状況確認）は一般プレイヤーでも実行でき、`/tintiro join` ・ `/tintiro leave` は **自分自身を対象にする場合のみ一般プレイヤーでも実行可能** で、他プレイヤー名を指定して参加/離脱させる場合のみ OP 権限が必要です。一般プレイヤーは `[チンチロ]` 看板（`join` / `leave` / `bet` / `open`）から操作してください。チンチロ看板の設置にも OP 権限が必要です。
+!!! info "OP 専用コマンドと全員可コマンドの切り分け"
+    一般プレイヤーが実行できるのは `join` / `leave` / `start` / `bet <金額>` / `action`（旧 `open`）/ `status` / `solo [stats\|ranking]` です（`bet` はロビー在籍者が対象）。OP 専用は `stop` / `setstartspawn` / `setlobby` / `setsolospawn` / `setfield` / `setsign` / `wand` / `menu` / `reload` / `lobbyfix`、および **他プレイヤー名を指定した** `join` / `leave` / `bet` です。判定は `OP または tintiro.admin` で行われます。コマンドブロックから実行できるのは `start` と `status` だけで、OP 専用コマンドはコマンドブロックからは実行できません。チンチロ看板の設置にも OP 権限が必要です。
 
 ## トラブルシューティング
 
@@ -205,10 +231,10 @@
     `lobby` 地点が未設定の可能性があります。OP権限で `/tintiro setlobby` を実行し、`/tintiro status` で「設定済み」になっているか確認してください。また、ゲーム進行中や満員（6人）のときも参加できません。
 
 ??? failure "チンチロ看板が設置できない"
-    看板の設置（`/tintiro setsign`）には **OP権限** が必要です。視線先（5ブロック以内）に看板がある状態で `/tintiro setsign <join|leave|bet [金額]|open|start|delete>` を実行してください。看板が見つからない場合は「看板を見ながら実行してください（5ブロック以内）」と表示されます。
+    看板の設置（`/tintiro setsign`）には **OP権限** が必要です。視線先（5ブロック以内）に看板がある状態で `/tintiro setsign <join|leave|bet [金額]|action|start|solo|delete>` を実行してください。看板が見つからない場合は「看板を見ながら実行してください（5ブロック以内）」と表示されます。
 
 ??? failure "ゲームが開始できない"
-    `/tintiro start` には、親（コマンド実行者）以外に **最低1人の子** が必要です。また、各プレイヤーがベット額を設定し、**ベット額の最大支払額（ベット額の7倍）ぶんの残高** を持っている必要があります。残高不足のプレイヤーは自動でロビーから退出させられます。
+    `/tintiro start` には、親（コマンド実行者）以外に **最低1人の子** が必要です。また、各プレイヤーがベット額を設定し、**ベット額の最大支払額（ベット額の5倍＝最強役ピンゾロの倍率。親は子のベット合計の5倍）ぶんの残高** を持っている必要があります。残高不足のプレイヤーは自動でロビーから退出させられます。
 
 ??? failure "賭け金・配当が処理されない"
     エメラルドのやり取りは `bank` モジュール（EmeraldAPI）経由です。bank モジュールが有効か確認してください。送金に失敗した場合はコンソールに「EmeraldAPI transact failed!」の警告が出ます。

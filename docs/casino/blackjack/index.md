@@ -1,12 +1,12 @@
 # ブラックジャック <span class="badge done">公開中</span>
 
-ディーラー側（サーバー）にエメラルドを賭け、配られたカードの合計を **21 に近づける** ことを目指す定番のカードゲームです。複数人が同じ卓に参加し、各自が手札を引くか止めるかを選択。最も高いスコア（バーストしないこと）を出したプレイヤーがポット（賭け金の合計）を獲得します。生活鯖では統合プラグイン **CasinoPlugin に含まれる blackjack モジュール** として動作します。
+エメラルドを賭け、配られたカードの合計を **21 に近づける** ことを目指す定番のカードゲームです。遊び方は2通り。**マルチ卓** は複数人が同じ卓に参加して最も高いスコア（バーストしないこと）を出したプレイヤーがポット（賭け金の合計）を獲得し、**ソロ卓** は1人でディーラーと勝負します。生活鯖では統合プラグイン **CasinoPlugin に含まれる blackjack モジュール** として動作します。
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎰 カジノ・ギャンブル</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">1〜6人（看板参加時）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">マルチ卓 1〜10人（既定6）／ソロ卓 1人</span></div>
   <div class="quick-card"><span class="label">通貨</span><span class="value">エメラルド</span></div>
-  <div class="quick-card"><span class="label">勝敗</span><span class="value">21 に最も近いプレイヤーがポット獲得</span></div>
+  <div class="quick-card"><span class="label">勝敗</span><span class="value">マルチ=最高スコアがポット獲得／ソロ=ディーラーに勝てば配当</span></div>
 </div>
 
 !!! info "CasinoPlugin のモジュールです"

@@ -1,10 +1,10 @@
 # チンチロ <span class="badge done">公開中</span>
 
-3つのサイコロを振って役の強さを競う **日本式のサイコロ賭博** です。親（ディーラー）と子（参加者）に分かれ、ピンゾロ・シゴロ・ゾロ目などの役と出目の強さで勝敗が決まります。賭け金はエメラルドで、役の格差に応じて配当倍率が変わります。チンチロは単独プラグインではなく、統合プラグイン **CasinoPlugin に含まれる tintiro モジュール** として動作します。
+3つのサイコロを振って役の強さを競う **日本式のサイコロ賭博** です。親（ディーラー）と子（参加者）に分かれ、ピンゾロ・シゴロ・ゾロ目などの役と出目の強さで勝敗が決まります。賭け金はエメラルドで、配当は勝った側の役に応じた倍率で支払われます。1人で遊べる CPU 対戦のソロモードもあります。チンチロは単独プラグインではなく、統合プラグイン **CasinoPlugin に含まれる tintiro モジュール** として動作します。
 
 <div class="quick-grid">
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🎲 カジノ・ギャンブル</span></div>
-  <div class="quick-card"><span class="label">人数</span><span class="value">親1人＋子（最大6人）</span></div>
+  <div class="quick-card"><span class="label">人数</span><span class="value">最大6人（親を含む）／ソロは1人＋CPU</span></div>
   <div class="quick-card"><span class="label">通貨</span><span class="value">エメラルド</span></div>
   <div class="quick-card"><span class="label">参加方法</span><span class="value">看板 または `/tintiro`</span></div>
 </div>

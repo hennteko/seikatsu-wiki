@@ -177,7 +177,7 @@ SPIKE の導入・マップ設定・看板・config・権限・管理コマン�
 | `win-rounds` | 5 | 何ラウンド先取で勝利か（延長なし） |
 | `buy-phase-seconds` | 15 | 購入フェーズ（秒） |
 | `round-seconds` | 100 | 戦闘フェーズ（秒）。時間切れは防衛側の勝利 |
-| `spike-timer-seconds` | 30 | スパイク設置から爆発まで（秒） |
+| `spike-timer-seconds` | 45 | スパイク設置から爆発まで（秒） |
 | `interval-seconds` | 5 | ラウンド決着から次の購入フェーズまで（秒） |
 | `result-seconds` | 5 | 試合終了後、結果を見せてからロビーへ戻すまで（秒） |
 

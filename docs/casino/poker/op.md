@@ -46,6 +46,9 @@ modules:
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `settings.maxRaiseAmount` | `1000` | 1ハンドあたりの合計ベット額の上限（レイズ上限）。`/poker raisemoney` でも変更でき、変更内容はこのキーに保存される |
+| `settings.sb-amount` | `10` | スモールブラインド（SB）額。ビッグブラインド（BB）はこの2倍。`/poker bet`・掛け金看板・管理メニューで変更すると自動保存 |
+| `settings.min-players` | `2` | マルチ卓の最低開始人数（2以上） |
+| `settings.max-players` | `6` | マルチ卓の最大参加人数（2〜10の範囲で設定可。既定は6） |
 | `bet_options` | （未設定） | （任意・トップレベルキー）SB掛け金変更GUIに並べる金額リスト。未設定時は既定の18段階（1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000）を使用。コマンドからは書き込まれないため、変更する場合のみ手動で追記する |
 
 ### input（アクション入力・統合版対応）
@@ -63,6 +66,7 @@ modules:
 
 | キー | 既定値 | 説明 |
 |---|---|---|
+| `solo.menu-delay` | 3 | 席を立ってからソロメニューを開くまでの秒数 |
 | `solo.result-seconds` | 6 | ハンド結果を見せる秒数 |
 | `solo.action-timeout-seconds` | 60 | 無操作でチェック/フォールドするまでの秒数 |
 | `solo.rebuy-timeout-seconds` | 60 | バスト後のリバイ待ちの制限時間（秒）。過ぎると離席・精算 |
@@ -92,12 +96,12 @@ modules:
 
 ### locations（誘導用の座標）
 
-`locations.lobby` / `locations.spawn` と、ゲームエリアの対角2点 `locations.field1` / `locations.field2` に、プレイヤー誘導用の座標が保存されます。`/poker setlobby` / `setstartspawn` / `setfield <1|2>` コマンドで設定され、各エントリは `world` / `x` / `y` / `z` / `yaw` / `pitch` を持ちます。なお `locations.gamearea` のみ専用のセットアップコマンドが無く、手動記入が必要です（下表参照）。
+`locations.lobby` / `locations.spawn` / `locations.gamearea` と、ゲームエリアの対角2点 `locations.field1` / `locations.field2` に、プレイヤー誘導用の座標が保存されます。`/poker setlobby` / `setstartspawn` / `setspawn` / `setfield <1|2>` コマンドで設定され、各エントリは `world` / `x` / `y` / `z` / `yaw` / `pitch` を持ちます。すべてコマンドから自動保存されるため、手動記入は不要です。
 
 | 座標 | 役割 |
 |---|---|
 | `locations.lobby` | 参加看板クリック時とゲーム終了時に転送されるロビー |
-| `locations.gamearea` | ゲーム開始時に全員が転送される着席地点。専用コマンドは無く、poker.yml に手動記入する |
+| `locations.gamearea` | ゲーム開始時に全員が転送される着席地点。`/poker setspawn` で現在地に設定（未設定ならロビーのまま進行） |
 | `locations.field1` / `field2` | ゲームエリア（対戦卓）の範囲を記録する対角2点（開始時の転送先ではない） |
 | `locations.spawn` | 離脱時に転送されるスポーン地点 |
 
@@ -106,7 +110,7 @@ modules:
 
 ## セットアップ手順
 
-ポーカー会場を作るには、座標3地点と公開札看板5枚を設定します。OP 権限（`poker.admin.setup`）を持った状態で、以下を順に実行します（座標系はその場に立って、看板系は看板を見ながら実行）。
+ポーカー会場を作るには、座標地点と公開札看板5枚を設定します。OP 権限（`poker.admin`）を持った状態で、以下を順に実行します（座標系はその場に立って、看板系は看板を見ながら実行）。
 
 ```text title="① ロビーを現在地に設定"
 /poker setlobby
@@ -122,6 +126,10 @@ modules:
 
 ```text title="③ 離脱スポーンを現在地に設定"
 /poker setstartspawn
+```
+
+```text title="ゲーム開始時の着席地点を現在地に設定（任意・未設定ならロビーのまま進行）"
+/poker setspawn
 ```
 
 公開札看板を5枚設置し、それぞれの看板を見ながら1枚ずつ実行します。
@@ -183,7 +191,7 @@ modules:
 卓ID は既定で `low` / `mid` / `high`（`poker.yml` の `solo.tables`）です。プレイヤーは `[Poker Solo]` 看板または `/poker solo <卓ID>` で着席します。
 
 !!! tip "公開札看板の役割"
-    `card1`〜`card5`（poker.yml では `signs.sign1`〜`sign5`）の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが設定されていないとゲームを開始できません（`/poker start` 実行時にチェックされます）。
+    `card1`〜`card5`（poker.yml では `signs.sign1`〜`sign5`）の看板には、フロップ・ターン・リバーで公開されるカードが順に表示されます。5枚すべてが揃っていなくてもゲームは開始できます（`/poker start` 実行時に不足分を警告したうえで、公開カードはチャット表示で続行します）。看板を使って見やすく表示したい場合は5枚設置してください。
 
 !!! note "看板の種類とフォーマット"
     看板は視線先（5ブロック以内）を見ながら `/poker setsign <join|leave|bet|start|solo <卓ID>|card1〜5|delete>` で登録します。種別ごとの動作は次のとおりです。
@@ -191,7 +199,7 @@ modules:
     - `join`（`lobby` でも可）: 参加看板。クリックで待機リストに追加＆ロビーへ転送。参加人数（最大6人）を自動表示
     - `leave`: 離脱看板。クリックで待機リスト／ゲームから離脱
     - `bet`: SB掛け金変更看板。クリックで **SB掛け金変更GUI** が開く（金額の変更はOPのみ）。GUIに並ぶ金額は poker.yml の `bet_options` で変更可能
-    - `start`: 開始看板。クリックでゲーム開始（OP専用）
+    - `start`: 開始看板。クリックでゲーム開始（全員可）
     - `card1`〜`card5`: 公開札看板
     - `delete`（`remove` でも可）: 視線先の登録済み看板を解除（公開札看板の場合は登録を取り消し）
 
@@ -199,7 +207,7 @@ modules:
 
 ## ゲーム運営コマンド
 
-```text title="ゲームを開始（最少2人・公開札看板5枚が必要）"
+```text title="ゲームを開始（最少2人。公開札看板が5枚未満なら警告のうえチャット表示で続行）"
 /poker start
 ```
 
@@ -219,25 +227,30 @@ modules:
 
 | コマンド | 必要権限 | 説明 |
 |---|---|---|
-| `/poker setlobby` | `poker.admin.setup` | 現在地をロビー座標に設定 |
-| `/poker setfield <1\|2>` | `poker.admin.setup` | 現在地をゲームエリアの角1/角2に設定 |
-| `/poker setstartspawn` | `poker.admin.setup` | 現在地を離脱スポーン座標に設定 |
-| `/poker setsign card<1-5>` | `poker.admin.setup` | 見ている看板を公開札看板に登録（poker.yml の `signs.sign1`〜`sign5`） |
-| `/poker setsign <join\|leave\|bet\|start>` | `poker.admin.setup` | 見ている看板を参加／離脱／SB掛け金GUI／開始看板として登録（自動整形） |
-| `/poker setsign <delete\|remove>` | `poker.admin.setup` | 見ている登録済み看板を解除する |
-| `/poker bet <額>` | `poker.admin.setup` | スモールブラインド（SB）額を設定（BB はその2倍。ゲーム進行中は変更不可） |
-| `/poker raisemoney <額>` | `poker.admin.setup` | レイズ上限を設定（poker.yml に保存される） |
-| `/poker getraisemoney` | なし | 現在のレイズ上限を表示 |
-| `/poker start` | `poker.admin.control` | ゲームを開始（最少2人・看板5枚が必要） |
-| `/poker stop` | `poker.admin.control` | 進行中のゲームを強制終了 |
-| `/poker status` | なし | 設定状況・待機人数・ゲーム状態を表示 |
-| `/poker money` | なし | 現在のポット額を表示 |
-| `/poker join [プレイヤー名]` | `poker.admin.control` または OP | プレイヤーを待機リストに追加（プレイヤーは `[Poker]` 看板から参加） |
-| `/poker leave [プレイヤー名]` | `poker.admin.control` または OP | プレイヤーを待機リスト／ゲームから離脱させる |
-| `/poker debug hand <カード7枚>` | `poker.admin.debug` | 7枚のカードで役判定をテスト（例: `SA SK SQ SJ ST H2 D3`） |
+| `/poker setlobby` | `poker.admin` | 現在地をロビー座標に設定 |
+| `/poker setspawn` | `poker.admin` | 現在地をゲーム開始時の着席地点（`locations.gamearea`）に設定 |
+| `/poker setfield <1\|2>` | `poker.admin` | 現在地をゲームエリアの角1/角2に設定 |
+| `/poker setstartspawn` | `poker.admin` | 現在地を離脱スポーン座標に設定 |
+| `/poker setsolospawn` | `poker.admin` | 現在地をソロ卓の着席位置に設定 |
+| `/poker setsign card<1-5>` | `poker.admin` | 見ている看板を公開札看板に登録（poker.yml の `signs.sign1`〜`sign5`） |
+| `/poker setsign <join\|leave\|bet\|start\|solo <卓ID>>` | `poker.admin` | 見ている看板を参加／離脱／SB掛け金GUI／開始／ソロ看板として登録（自動整形） |
+| `/poker setsign <delete\|remove>` | `poker.admin` | 見ている登録済み看板を解除する |
+| `/poker bet <額>` | `poker.admin` | スモールブラインド（SB）額を設定（BB はその2倍。ゲーム進行中は変更不可） |
+| `/poker raisemoney <額>` | `poker.admin` | レイズ上限を設定（poker.yml に保存される） |
+| `/poker getraisemoney` | `poker.admin` | 現在のレイズ上限を表示 |
+| `/poker start` | なし（全員可） | ゲームを開始（最少2人。看板5枚未満なら警告のうえ続行） |
+| `/poker stop [multi\|solo [プレイヤー]]` | `poker.admin` | 進行中のゲームを強制終了（`multi`＝マルチのみ、`solo [名前]`＝ソロ） |
+| `/poker status` | なし（全員可） | 設定状況・待機人数・ゲーム状態・ポット額・レイズ上限を表示 |
+| `/poker money` | `poker.admin` | 現在のポット額を表示 |
+| `/poker join [プレイヤー名]` | 自分は全員可／他人指定は `poker.admin`（OP） | プレイヤーを待機リストに追加（プレイヤーは `[Poker]` 看板から参加） |
+| `/poker leave [プレイヤー名]` | 自分は全員可／他人指定は `poker.admin`（OP） | プレイヤーを待機リスト／ゲームから離脱させる |
+| `/poker wand` | `poker.admin` | 管理ツール（右クリックで各種設定）を受け取る |
+| `/poker menu` | `poker.admin` | 管理メニューGUIを開く |
+| `/poker reload` | `poker.admin` | poker.yml を再読み込み |
+| `/poker lobbyfix <プレイヤー> [force]` | `poker.admin` | ロビーで預かった持ち物を手動で復元する |
 
-!!! note "start / stop はコマンドブロックからも実行可能"
-    `/poker start` と `/poker stop` は、コマンドブロックからも実行できます（コマンドブロック実行時は権限チェックが省略されます）。プレイヤー・コンソールから実行する場合は `poker.admin.control` 権限が必要です。`/poker bet` はゲーム進行中は実行できません。
+!!! note "コマンドブロックから実行できるのは start と status だけ"
+    コマンドブロックから実行できるのは `/poker start` と `/poker status` のみです。`/poker stop` を含むその他の管理コマンドはコマンドブロックからは実行できません。`/poker bet` はゲーム進行中は実行できません。
 
 ## 権限ノード
 
@@ -245,12 +258,9 @@ modules:
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `poker.admin` | OP | ポーカー管理コマンドの全権限（下記3つを子に持つ） |
-| `poker.admin.setup` | OP | セットアップ系コマンド（setlobby / setstartspawn / setfield / setsign / bet / raisemoney） |
-| `poker.admin.control` | OP | ゲーム制御系コマンド（start / stop） |
-| `poker.admin.debug` | OP | デバッグ系コマンド（debug hand） |
+| `poker.admin` | OP | ポーカー管理コマンドの全権限（看板・座標設定・bet/raisemoney・stop・wand/menu/reload/lobbyfix・他人指定の join/leave など） |
 
-`poker.admin` を付与すると、子権限の `poker.admin.setup` / `poker.admin.control` / `poker.admin.debug` がすべて有効になります。`/poker status` / `/poker money` / `/poker getraisemoney` など情報系のコマンドは権限不要で、全員が実行できます。
+権限判定は `poker.admin` の1本に統合されています（旧 `poker.admin.setup` / `poker.admin.control` / `poker.admin.debug` は廃止）。`/poker start` と `/poker status`、および自分自身の `/poker join` / `leave` / `action` / `doubleup` / `solo` は権限不要で全員が実行できます。`/poker money` / `/poker getraisemoney`（ポット額・レイズ上限の表示）は `poker.admin`（OP）専用です。
 
 ## トラブルシューティング
 
@@ -261,19 +271,18 @@ modules:
     poker モジュールは起動時に bank（エメラルド銀行）の API を必要とします。`modules.bank.enabled` が `true` で、bank モジュールが正常に起動しているか確認してください。bank が未起動だと poker は `EmeraldAPI not bound` で起動に失敗します。
 
 ??? failure "/poker start でゲームが始まらない"
-    開始には次の条件が必要です。いずれかが不足するとエラーメッセージが表示されます。
+    開始には次の条件が必要です。不足するとエラーメッセージが表示されます。
     
     - 待機中のプレイヤーが **2人以上** いること。
-    - 公開札看板 `card1`〜`card5`（poker.yml の `sign1`〜`sign5`）の **5枚すべて** が設定済みであること。
     - 既にゲームが進行中でないこと。
     
-    `/poker status` で待機人数を、看板設定は `/poker setsign card1`〜`card5` の実行履歴を確認してください。
+    公開札看板 `card1`〜`card5`（poker.yml の `sign1`〜`sign5`）は5枚揃っていなくても開始でき、不足時は警告を出して公開カードをチャット表示で進行します。`/poker status` で待機人数を確認してください。
 
 ??? failure "/poker setsign で「看板を見ながら実行」と出る"
     `/poker setsign <種別>` は、看板ブロックを見ながら（5ブロック以内）実行する必要があります。看板を設置してから、その看板に視点を合わせてコマンドを実行してください。
 
 ??? failure "ゲーム開始時にプレイヤーが転送されない"
-    ゲーム開始時の転送先は `locations.gamearea`（着席地点）です。この座標が未設定だと転送がスキップされます（看板やプレイは続行できます）。`locations.gamearea` を設定するセットアップコマンドは無く、poker.yml に `world` / `x` / `y` / `z` / `yaw` / `pitch` の形式で手動記入する必要があります。なお `/poker setfield 1` / `2`（`locations.field1` / `field2`）はゲームエリアの範囲を記録する対角2点で、開始時の転送先ではありません。ゲーム終了時の転送先はロビー（`/poker setlobby`）です。
+    ゲーム開始時の転送先は `locations.gamearea`（着席地点）です。この座標が未設定だとロビーのまま進行します（看板やプレイは続行できます）。`locations.gamearea` は着席させたい場所に立って `/poker setspawn` を実行すると設定できます。なお `/poker setfield 1` / `2`（`locations.field1` / `field2`）はゲームエリアの範囲を記録する対角2点で、開始時の転送先ではありません。ゲーム終了時の転送先はロビー（`/poker setlobby`）です。
 
 ??? failure "公開カードが看板に表示されない"
     `card1`〜`card5` に登録した座標に **看板ブロックが実在する** か確認してください。看板が破壊・移動されていると表示が更新されません。再設置後、`/poker setsign card1`〜`card5` で登録し直してください。

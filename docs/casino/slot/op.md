@@ -10,14 +10,14 @@
 |---|---|
 | 所属プラグイン | CasinoPlugin（統合プラグイン） |
 | モジュール ID | `slot` |
-| メインコマンド | `/slot [join\|status\|remote\|setsign <join\|delete>]` |
+| メインコマンド | `/slot [help\|solo\|status\|remote]` ／ OP: `setsign <join\|delete>\|stop [solo [プレイヤー]]\|wand\|menu\|reload\|lobbyfix <プレイヤー> [force]` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/slot.yml` |
 | 有効化フラグ | `plugins/CasinoPlugin/config.yml` の `modules.slot.enabled` |
 | 通貨 | エメラルド（bank モジュールの口座残高。EmeraldAPI 経由） |
 | 専用jar | 不要（CasinoPlugin に内蔵） |
 
 !!! info "slot モジュールの位置づけ"
-    スロットは CasinoPlugin（銀行＋8ゲームの統合プラグイン）の中の1モジュールです。専用jarの導入は不要で、CasinoPlugin 本体を入れれば slot モジュールも同梱されています。賭け金・配当の処理はすべて bank モジュールの口座（EmeraldAPI）を通じて行われるため、**bank モジュールが先に起動している必要があります**。
+    スロットは CasinoPlugin（銀行＋10ゲームの統合プラグイン）の中の1モジュールです。専用jarの導入は不要で、CasinoPlugin 本体を入れれば slot モジュールも同梱されています。賭け金・配当の処理はすべて bank モジュールの口座（EmeraldAPI）を通じて行われるため、**bank モジュールが先に起動している必要があります**。
 
 ## 有効化
 
@@ -124,27 +124,27 @@ OPは抽選を待たずに手動で開始・終了できます（`casino.admin` 
 
 ## 起動看板の設置
 
-一般プレイヤーは `[Slot]` 看板の右クリックでスロットGUIを開きます。看板を設置し、看板を見ながら（6ブロック以内）以下のコマンドを実行すると自動で整形されます。
+一般プレイヤーは `[Slot]` 看板の右クリックでスロットGUIを開きます。看板を設置し、看板を見ながら（5ブロック以内）以下のコマンドを実行すると自動で整形されます。
 
 ```text title="起動看板を登録"
 /slot setsign
 ```
 
-看板には `[Slot]`／`クリックで`／`スロットを開く` が自動で書き込まれます。手書き設置（1行目に `[Slot]` または `[スロット]` と入力）もサポートされていますが、`slot.admin` 権限が必要です。
+看板には `[Slot]`／`クリックで`／`スロットを開く` が自動で書き込まれます。起動看板は `/slot setsign` での登録（座標で判定）が必要で、手書きの `[Slot]` 看板は起動看板としては動作しません（OPが右クリックすると未登録の案内が表示されます）。
 
 ## 管理コマンド
 
-`/slot` および `/slot join` は **全プレイヤーが使用可能** で、賭け金選択GUIを開きます（`[Slot]` 看板の右クリックと同等）。OP専用なのは `/slot setsign`（看板設置）のみで、`/slot remote` は `slot.remote` 権限を要求します。
+`/slot`（引数なし）と `/slot solo` は **全プレイヤーが使用可能** で、賭け金選択GUIを開きます（`[Slot]` 看板の右クリックと同等）。`/slot status` も全員が実行できます。看板設置・停止・管理ツール・リロードなどは OP または `slot.admin`、`/slot remote` は `slot.remote` 権限を要求します。
 
 ```text title="賭け金選択GUIを開く（全員可）"
 /slot
 ```
 
-```text title="賭け金選択GUIを開く（全員可・join 明示）"
-/slot join
+```text title="賭け金選択GUIを開く（全員可・solo 明示）"
+/slot solo
 ```
 
-```text title="スロットの設定状況（登録看板数）を表示（全員可・読み取り専用）"
+```text title="スロットの設定状況を表示（全員可・読み取り専用）"
 /slot status
 ```
 
@@ -152,35 +152,60 @@ OPは抽選を待たずに手動で開始・終了できます（`casino.admin` 
 /slot remote
 ```
 
-```text title="視線先の看板を [Slot] 起動看板として登録（OP専用・引数省略時は join）"
+```text title="視線先の看板を [Slot] 起動看板として登録（OP / slot.admin・引数省略時は join）"
 /slot setsign
 ```
 
-```text title="視線先の [Slot] 看板設定を解除（OP専用）"
+```text title="視線先の [Slot] 看板設定を解除（OP / slot.admin）"
 /slot setsign delete
+```
+
+```text title="進行中のスロットを強制停止して賭け金を返金（OP / slot.admin）"
+/slot stop [solo [プレイヤー]]
+```
+
+```text title="管理ツールを入手（OP / slot.admin）"
+/slot wand
+```
+
+```text title="管理メニューを開く（OP / slot.admin）"
+/slot menu
+```
+
+```text title="slot.yml を再読み込み（OP / slot.admin）"
+/slot reload
+```
+
+```text title="未復元の預かり持ち物を手動で復元（OP / slot.admin）"
+/slot lobbyfix <プレイヤー> [force]
 ```
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/slot` | 全員 | 賭け金選択GUIを開く |
-| `/slot join` | 全員 | 賭け金選択GUIを開く（`/slot` と同じ） |
-| `/slot status` | 全員 | スロットの設定状況（起動看板の登録数）を表示する読み取り専用コマンド |
+| `/slot solo` | 全員 | 賭け金選択GUIを開く（`/slot` と同じ）。`/slot join` はソロ専用の案内を返すだけ |
+| `/slot status` | 全員 | スロットの設定状況（リール速度・滑り・確変/フィーバーの引き込み率・進行中回転数・起動看板の登録数など）を表示する読み取り専用コマンド |
 | `/slot remote` | `slot.remote`（OP） | スロット起動ロッド（ブレイズロッド）を入手する。右クリックでGUIを開けるアイテム |
 | `/slot setsign` / `/slot setsign join` | OP / `slot.admin` | 視線先の看板を `[Slot]` 起動看板として登録する（引数省略時は `join`） |
 | `/slot setsign delete` | OP / `slot.admin` | 視線先の看板の `[Slot]` 設定を解除する（旧 `remove` も互換で動作） |
+| `/slot stop [solo [プレイヤー]]` | OP / `slot.admin` | 進行中のスロットを強制停止し、賭け金を返金する |
+| `/slot wand` | OP / `slot.admin` | 管理ツール（設置用アイテム）を入手する |
+| `/slot menu` | OP / `slot.admin` | 管理メニューを開く |
+| `/slot reload` | OP / `slot.admin` | `slot.yml` を再読み込みする |
+| `/slot lobbyfix <プレイヤー> [force]` | OP / `slot.admin` | 未復元の預かり持ち物を手動で復元する |
 
 !!! note "設定変更の反映"
-    `slot.yml` を変更したあとは **サーバーの再起動** で反映してください。slot モジュール単体のリロードコマンドはありません。
+    `slot.yml` を変更したあとは `/slot reload` で再読み込みできます。確実に反映したい場合はサーバーの再起動でも構いません。
 
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |
 |---|---|---|
-| `slot.admin` | OP | `/slot setsign`（看板の設置・解除）・`[Slot]` 看板の手書き設置 |
+| `slot.admin` | OP | `/slot setsign`（看板の設置・解除）・`stop`・`wand`・`menu`・`reload`・`lobbyfix` などの管理コマンド |
 | `slot.remote` | OP | `/slot remote` でスロット起動ロッド（ブレイズロッド）を入手できる |
 
 !!! note "GUIを開く操作に権限は不要"
-    賭け金選択GUIを開く操作（`/slot`・`/slot join`・`[Slot]` 看板の右クリック・起動ロッドの右クリック）は **全プレイヤーが利用可能** で、専用の権限ノードはありません。OP権限が要るのは `setsign`（看板設置）のみです。なお旧 `slot.use` 権限は廃止されており、現行コードには存在しません。
+    賭け金選択GUIを開く操作（`/slot`・`/slot solo`・`[Slot]` 看板の右クリック・起動ロッドの右クリック）は **全プレイヤーが利用可能** で、専用の権限ノードはありません。OP権限が要るのは `setsign`（看板設置）・`stop`・`wand`・`menu`・`reload`・`lobbyfix` などの管理コマンドです。なお旧 `slot.use` 権限は廃止されており、現行コードには存在しません。
 
 !!! note "remote 権限の互換"
     `/slot remote` は内部で `slot.remote` または旧 `slot2.remote` のどちらか一方を持っていれば許可される実装です。plugin.yml に宣言されているのは `slot.remote`（`default: op`）のみで、旧プラグイン由来の `slot2.remote` は宣言されていません。一般プレイヤーに起動ロッドを配りたい場合は、権限プラグイン（LuckPerms 等）で `slot.remote` を明示的に付与してください。
@@ -194,7 +219,7 @@ OPは抽選を待たずに手動で開始・終了できます（`casino.admin` 
     slot モジュールは起動時に EmeraldAPI（bank モジュール）が利用可能かを確認し、未準備なら `EmeraldAPI not bound; bank module required before slot` という例外で停止します。`modules.bank.enabled` が `true` になっているか確認してください。
 
 ??? failure "プレイヤーがスロットを利用できない"
-    GUIを開く操作（`/slot`・`/slot join`・`[Slot]` 看板・起動ロッド）は全プレイヤーが利用できます。利用できない場合は、slot モジュールが無効化されていないか、口座残高がマイナス（借金）になっていないかを確認してください。借金状態のプレイヤーはスロットを利用できない仕様です。
+    GUIを開く操作（`/slot`・`/slot solo`・`[Slot]` 看板・起動ロッド）は全プレイヤーが利用できます。利用できない場合は、slot モジュールが無効化されていないか、口座残高がマイナス（借金）になっていないかを確認してください。借金状態のプレイヤーはスロットを利用できない仕様です。
 
 ??? failure "`/slot remote` が「権限がありません」になる"
     `/slot remote` は `slot.remote`（または旧 `slot2.remote`）を要求します。`slot.remote` は plugin.yml 上 `default: op` のため、一般プレイヤーに使わせる場合は権限プラグインで `slot.remote` を付与してください。

@@ -110,6 +110,21 @@
 | `border.outside-damage` | 1.0 | 圏外での1回あたりダメージ |
 | `border.outside-damage-interval-seconds` | 1 | 圏外ダメージの間隔（秒） |
 | `border.warn-before-seconds` | `[30, 10]` | 縮小の予告タイミング（秒前） |
+| `border.warning-distance` | 16 | 端に近づくと画面のふちが赤くなる距離 |
+| `border.particles` | true | 端が近いとき、その辺に赤いパーティクルの壁を本人にだけ表示（統合版でも見える） |
+| `border.particle-distance` | 24 | パーティクルの壁を出し始める距離 |
+| `border.compass-to-center` | true | コンパスが安全地帯の中心を指す |
+
+### 試合中の補助（`match`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `match.hide-name-tags` | true | 試合中は全員の頭上の名前を隠す（Tab・チャットの【異能バトル】は残る） |
+| `match.remove-elytra-on-land` | true | 着地したらエリトラを外す |
+| `match.block-natural-mobs` | true | 登録済みステージのフィールドとソロの会場で、敵の自然湧きを止める（開始時に残っている自然湧きの敵も消す）。ゲームルールは変えず、スポナー・スポーンエッグ・コマンドの Mob や名前付きの Mob は対象外 |
+
+!!! note "安全地帯の見え方"
+    安全地帯はプレイヤーごとの WorldBorder で表示しています。バニラのボーダーは離れていると描画されず、統合版ではさらに見えにくいため、端が近いときはパーティクルの壁も出します。ボーダー表示が外れた場合（再ログインなど）は自動で付け直します。
 
 !!! note "フェーズ切替で全員1回復"
     フェーズが切り替わるたびに全員の体力が1回復します。最終フェーズは中心が `drift-interval-seconds` ごとに `drift-amount` だけランダムに移動します（屋内で即詰みにならないよう移動量に上限あり）。

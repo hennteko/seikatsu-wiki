@@ -12,7 +12,7 @@
 | メインコマンド | `/yacht` |
 | 設定ファイル | `plugins/CasinoPlugin/modules/yacht.yml` |
 | 通貨 | エメラルド銀行（`bank` モジュールに依存） |
-| 現フェーズ | クイックヨット＋ジャックポット（ソロ・対戦は今後のフェーズ） |
+| 現フェーズ | クイックヨット＋役比べ（マルチ2〜4人）＋ジャックポット（ソロ・スコアアタックは今後のフェーズ） |
 
 ## 有効化
 
@@ -29,12 +29,22 @@ modules:
 
 ## セットアップ手順
 
-```text title="ヨット看板を登録（看板を見ながら実行・複数設置可）"
-/yacht setsign
+クイックヨットは看板またはコマンドのみで遊べます。役比べ（マルチ）を使う場合はロビー地点・戻り先と参加/開始看板を設置します。
+
+```text title="ヨット看板を登録（看板を見ながら実行・種類を指定・複数設置可）"
+/yacht setsign <join|leave|start|quick>
 ```
 
 ```text title="視線先のヨット看板を解除"
 /yacht setsign delete
+```
+
+```text title="役比べのロビー地点を現在地に設定"
+/yacht setlobby
+```
+
+```text title="卓を離れたとき・再接続時の戻り先を現在地に設定"
+/yacht setstartspawn
 ```
 
 ```text title="ジャックポット額を確認／設定"
@@ -52,7 +62,7 @@ modules:
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `rolls-per-turn` | 3 | サイコロの投数（ソロ/対戦用・将来実装で使用） |
+| `rolls-per-turn` | 3 | 役比べ（マルチ）の1手番の投数（1〜5） |
 | `quick-rolls` | 2 | クイックの投数（2＝`payout`、3＝`payout-3roll` を使用） |
 | `bet.min` | 100 | 最小ベット |
 | `bet.max` | 10000 | 最大ベット |
@@ -73,10 +83,10 @@ modules:
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `quick.result-seconds` | 3 | 結果表示の秒数 |
+| `quick.result-seconds` | 3 | 【未使用】結果画面は「もう一回／閉じる」を選ぶ方式のため現在使われません |
 | `quick.close-grace-seconds` | 60 | 未確定のまま画面を閉じたときの猶予秒数（猶予内なら `/yacht`・看板で続きから再開。超過で現在の出目で自動確定。0以下で閉じた瞬間に確定） |
-| `quick.extra-roll.enabled` | false | 4投目購入オプション（ONにする前にシミュレーションで倍率調整） |
-| `quick.extra-roll.cost-multiplier` | 1.0 | 4投目購入のコスト倍率 |
+| `quick.extra-roll.enabled` | false | 【未使用】4投目購入（未実装。true にしても変化なし） |
+| `quick.extra-roll.cost-multiplier` | 1.0 | 【未使用】4投目購入のコスト倍率（未実装） |
 
 ### ジャックポット
 
@@ -85,20 +95,43 @@ modules:
 | `jackpot.enabled` | true | ジャックポットの有効化 |
 | `jackpot.seed` | 1000 | 初期値（放出後にこの額から積み上がる） |
 | `jackpot.contribution-rate` | 0.01 | 各ゲームの賭け金から積み立てる割合 |
-| `jackpot.solo-share` | 0.5 | ソロ/対戦でヨット達成時に放出する割合（今後のフェーズ用。クイックは全額放出） |
+| `jackpot.solo-share` | 0.5 | 【未使用】ソロ・スコアアタック用の予約キー（クイックは全額放出、役比べは `multi.jackpot-share` を使う） |
 | `jackpot.broadcast` | true | 当選を全体告知する |
+
+### 役比べ（マルチ）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `multi.min-players` | 2 | 開始に必要な最少人数（2以上） |
+| `multi.max-players` | 4 | 卓の最大人数（2〜4） |
+| `multi.entry-fee.amount` | 500 | 卓の参加費（全員同額。管理メニューで `min`〜`max` の範囲で変更可） |
+| `multi.entry-fee.min` | 100 | 参加費の下限 |
+| `multi.entry-fee.max` | 10000 | 参加費の上限 |
+| `multi.house-rake-percent` | 5 | ポットからハウスが取る手数料（%）。勝者は「参加費合計 − 手数料」を受け取る |
+| `multi.turn-timeout-seconds` | 30 | 手番の制限時間（秒）。振っていなければ自動で振り、今の目で確定 |
+| `multi.jackpot-share` | 0.0 | ヨット達成者へ放出するジャックポットの割合（0.0〜1.0）。`0.0` = 役比べではジャックポット無効（積み立てもしない） |
 
 ## 管理コマンド・権限
 
-`/yacht`・`/yacht quick` は全員可、`setsign`・`reload`・`jackpot set` は **OP（`yacht.admin`）** です。
+`/yacht`・`/yacht quick`・役比べの `join`/`leave`/`start`/`action` は全員可、`setsign`・`setlobby`・`setstartspawn`・`stop`・`jackpot set`・`wand`・`menu`・`reload`・`lobbyfix` は **OP（`yacht.admin`）** です。
 
 | コマンド | 権限 | 説明 |
 |---|---|---|
 | `/yacht` / `/yacht quick [金額]` | 全員 | クイックヨットのGUIを開く |
+| `/yacht join` / `/yacht leave` | 全員 | 役比べのロビーに参加／退出 |
+| `/yacht start` | 全員 | 役比べを開始（自動では始まらない） |
+| `/yacht action` | 全員 | 自分の手番の画面／閉じたクイックを開き直す |
 | `/yacht status` | 全員 | 看板の登録状況・現在のジャックポット額を確認 |
 | `/yacht jackpot` | 全員 | ジャックポット額を確認 |
 | `/yacht jackpot set <額>` | `yacht.admin` | ジャックポット額を設定 |
-| `/yacht setsign <quick\|delete>` | `yacht.admin` | ヨット看板を登録／解除（引数省略時は `quick`） |
+| `/yacht setsign <join\|leave\|start\|quick>` | `yacht.admin` | ヨット看板を登録（看板を見ながら実行） |
+| `/yacht setsign delete` | `yacht.admin` | 視線先の看板を解除 |
+| `/yacht setlobby` | `yacht.admin` | 役比べのロビー地点を設定 |
+| `/yacht setstartspawn` | `yacht.admin` | 卓を離れたとき・再接続時の戻り先を設定 |
+| `/yacht stop [multi\|solo [プレイヤー]]` | `yacht.admin` | 進行中の試合を強制終了（参加費は返金） |
+| `/yacht join\|leave <プレイヤー>` | `yacht.admin` | 指定プレイヤーを役比べに参加／退出させる |
+| `/yacht wand` / `/yacht menu` | `yacht.admin` | 管理ツールを取得／管理メニューを開く |
+| `/yacht lobbyfix <プレイヤー> [force]` | `yacht.admin` | 預かり中の持ち物を手動で復元 |
 | `/yacht reload` | `yacht.admin` | 設定を再読み込み |
 
 ## トラブルシューティング
