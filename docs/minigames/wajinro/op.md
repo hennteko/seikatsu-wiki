@@ -12,7 +12,7 @@ WaJinro（人狼RPG）の導入・地点/看板/ステージ設定・config・�
 | バージョン | 1.0.0 |
 | api-version | 26.1.2 |
 | メインコマンド | `/wajinro`（エイリアス `/wj`） |
-| 依存プラグイン | なし（Discord用の JDA ライブラリは起動時に自動DL） |
+| 依存プラグイン | なし（Discord用の JDA ライブラリは起動時に自動DL）。**Tutorial があればそのサーバー Bot を使う**（softdepend） |
 | 設定ファイル | `plugins/WaJinro/config.yml` |
 
 !!! note "対応環境"
@@ -238,6 +238,7 @@ roles:
 
 ```yaml
 discord:
+  use-server-bot: true
   enabled: false
   bot-token: ""
   guild-id: ""
@@ -247,7 +248,8 @@ discord:
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `discord.enabled` | `false` | Discord連携（夜間VCミュート）の有効化 |
+| `discord.use-server-bot` | `true` | Tutorial のサーバー Bot があればそれを使う（自前の Bot は起動しない・連携も Tutorial と共通） |
+| `discord.enabled` | `false` | 自前の Bot での Discord連携（夜間VCミュート）の有効化（サーバー Bot を使わないときだけ） |
 | `discord.bot-token` | （空） | Discord BOT のトークン |
 | `discord.guild-id` | （空） | Discord サーバー（ギルド）のID |
 | `discord.link-channel-id` | （空） | リンク用メッセージの投稿先チャンネルID（`/wajinro setlinkchannel` でも設定可） |
@@ -408,6 +410,18 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 ## Discord連携（夜間VCミュート）
 
 夜になると、連携済みプレイヤーの Discord VC を自動でミュートし、朝に解除します。
+
+!!! info "サーバー Bot（Tutorial）を使います（2026-10〜）"
+    Discord Bot は **Tutorial プラグインの「サーバー Bot」** に移しました。Tutorial に Bot が設定されていると、人狼RPG は自前の Bot を起動せず、サーバー Bot でミュートします。
+
+    - Bot のトークン・サーバー ID は **Tutorial の config.yml（`discord.bot`）** に設定します（下の手順3は不要）。
+    - 連携は **サーバー共通**（Tutorial）です。`/wajinro link` と `/tutorial link` は同じ連携で、1回連携すればチュートリアルの報酬・VC 報酬にも使えます。
+    - これまでの連携（`links.yml`）は `/tutorial admin importlinks` で取り込みます。取り込み前も予備として読むので、ミュートは止まりません。
+    - `/wajinro linkpost` のロビー連携パネル（名前ボタン）・`setvc`・`setlinkchannel`・`unmuteall` はそのまま使えます。
+    - `/wajinro status` の「BOT」に「サーバーBot（Tutorial）を使用」と出れば OK です。
+    - 詳しくは [Tutorial の OP ページ](../../utility/tutorial/op.md) を見てください。
+
+    以下の手順は、Tutorial を入れずに人狼RPG 単体で Bot を動かす場合のものです。
 
 1. Discord Developer Portal で BOT を作成し、トークンを取得する。
 2. BOT に「メンバーをミュート」「チャンネルを見る」「メッセージを送信」権限を付与し、サーバーへ招待する（Privileged Intent は不要）。

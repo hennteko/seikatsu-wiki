@@ -1,21 +1,31 @@
-# Tutorial2 <span class="badge done">公開中</span>
+# Tutorial（チュートリアル） <span class="badge done">公開中</span>
 
-初参加プレイヤーをサーバーの基本操作・ルールへ案内する **チュートリアルプラグイン** です。初回ログイン時に専用の「紙」を自動配布し、ルールブックの確認・資源ワールド（S1）への移動・基本ツール／装備のクラフト・最終パスワード入力までを **段階的（21ステップ）** に進行させ、各ステップ完了時にエメラルド報酬を付与します。
+ミニゲームサーバーに来た人を、**歩きながら数分で遊び方を覚えて、そのまま最初のミニゲームを遊べる**ところまで案内するプラグインです。チュートリアルのあとも続けて遊んでもらえるように、**ミッション・ログインボーナス・Discord 連携（VC 報酬）** をまとめて持っています。報酬はすべて **E（エメラルド残高）** で受け取ります。
 
 <div class="quick-grid">
-  <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🧰 ユーティリティ・基盤</span></div>
-  <div class="quick-card"><span class="label">主な機能</span><span class="value">初回案内・21ステップ進行</span></div>
-  <div class="quick-card"><span class="label">報酬</span><span class="value">エメラルド（各ステップ）</span></div>
-  <div class="quick-card"><span class="label">バージョン</span><span class="value">1.0</span></div>
+  <div class="quick-card"><span class="label">カテゴリ</span><span class="value">🧭 案内</span></div>
+  <div class="quick-card"><span class="label">主な機能</span><span class="value">チュートリアル・ミッション・ログボ・Discord連携</span></div>
+  <div class="quick-card"><span class="label">報酬</span><span class="value">E（CasinoPlugin の残高）</span></div>
+  <div class="quick-card"><span class="label">バージョン</span><span class="value">2.0.0</span></div>
 </div>
 
-!!! info "進行は自動で記録されます"
-    プレイヤーごとの現在ステップは `userdata.yml` に保存され、サーバー再起動や再ログインをまたいでも引き継がれます。途中で切断しても、再ログイン時に現在の目標が改めて表示されます。
+## もらえる報酬
+
+| 内容 | 報酬 | 回数 |
+|---|---|---|
+| チュートリアル完了 | **100E** | 1回 |
+| ミッション：ミニゲームを3種類遊ぶ | **200E** | 1回 |
+| ミッション：Discord と連携する | **1,000E** | 1回 |
+| ログインボーナス | **100E＋連続ボーナス**（2日目 +150E 〜 7日目以降 +400E） | 毎日 |
+| Discord の VC に参加（5分） | **500E** | 1日1回 |
+
+!!! info "統合版でも同じように遊べます"
+    案内はチャット・タイトル・アクションバーと、チェスト型のメニューだけで表示しています。統合版（Bedrock）でも Java 版と同じ見え方・操作で進められます。
 
 ## ページを選ぶ
 
 [👤 プレイヤー向けページ](player.md){ .md-button .md-button--primary }
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
-- **プレイヤー向け** … チュートリアルの始め方、21ステップの流れ、コマンド、再開・再配布の方法、よくある質問。
-- **OP・運営向け** … 導入手順、`userdata.yml` の扱い、管理コマンド（`/tutorial skip` / `/tutorial paper`）、権限（`tutorial.admin`、既定 op）、トラブルシューティング。
+- **プレイヤー向け** … チュートリアルの流れ、ミッション、ログインボーナス、Discord 連携のやり方、よくある質問。
+- **OP・運営向け** … 導入手順、地点の登録、config、遊んだ回数の数え方、Discord Bot・RCON の設定、管理コマンド、トラブルシューティング。
