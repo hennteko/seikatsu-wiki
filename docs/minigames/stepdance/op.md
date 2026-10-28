@@ -20,10 +20,10 @@
 ## 導入手順
 
 1. ビルドした `StepDance` の jar をサーバーの `plugins/` フォルダに配置する。
-2. サーバーを起動すると `config.yml` と `songs/` フォルダが自動生成される（内蔵のテスト譜面だけでも動作）。
+2. サーバーを起動すると `config.yml` と `songs/` フォルダが自動生成され、**スターター曲（パブリックドメインの曲を編曲したもの）7曲** が `songs/` に置かれる（すぐに遊べる）。
 3. `/sdance setstartspawn`・`/sdance setlobby` で初期スポーン（途中抜けの戻り先）と共通ロビーを設定する。
 4. 曲を鳴らすブースを置きたい方向を向いて座席にしたい場所に立ち、`/sdance addbooth <識別子>` でアリーナとブースを作る（向いた方向の先に壁が自動生成）。
-5. `plugins/StepDance/songs/` に `.nbs` ファイルを置き、`/sdance reload` で読み込む。
+5. 曲を増やすときは `plugins/StepDance/songs/` に `.nbs`・`.mid`（`.midi`）ファイルを置き、`/sdance reload` で読み込む。
 6. 参加・離脱・開始の看板を設置する。
 7. `/sdance status` で設定状況を確認する。
 
@@ -66,7 +66,7 @@
 /sdance setsign leave
 ```
 
-```text title="開始看板を登録（曲はおまかせ・看板を見て実行）"
+```text title="開始看板を登録（押すと選曲画面が開く。看板を見て実行）"
 /sdance setsign start <識別子>
 ```
 
@@ -85,12 +85,12 @@
 !!! note "識別子（アリーナ名）について"
     識別子は英数字・`_`・`-` で16文字以内です（`.` は使えません）。アリーナが1つだけのときは、`join`・`start`・`stop` などで識別子を省略できます。
 
-## 曲（.nbs）の追加
+## 曲（.nbs / .mid）の追加
 
-ステップダンスの曲は **Note Block Studio の `.nbs` ファイル** を使います。
+ステップダンスの曲は **Note Block Studio の `.nbs` ファイル** と **MIDI の `.mid`（`.midi`）ファイル** を使えます。初回起動時に **スターター曲7曲**（`ode_to_joy`・`twinkle_star`・`fur_elise`・`canon`・`minuet_in_g`・`jingle_bells`・`frere_jacques`。いずれもパブリックドメインの曲を編曲したもの）が `songs/` に置かれます。
 
 ```text title="曲を置く場所"
-plugins/StepDance/songs/ に .nbs ファイルを置く
+plugins/StepDance/songs/ に .nbs または .mid（.midi）ファイルを置く
 ```
 
 ```text title="置いたあとに読み込む"
@@ -98,8 +98,9 @@ plugins/StepDance/songs/ に .nbs ファイルを置く
 ```
 
 - 曲 **ID** はファイル名から作られます（小文字化し、空白と `.` を `_` に置換）。`test-` で始まる名前は使えません。
-- 譜面は `.nbs` の音から **自動生成** されます（同じ tick の音を代表音にまとめ、難易度の最小間隔で間引き、音の高さでレーン1〜4に振り分け、同じレーンの連続・詰まりを直す）。曲 ID をシードに使うので、同じ曲・同じ設定なら毎回同じ譜面になります。
-- 音符の無い `.nbs`・読めないファイルは読み込み時にスキップされ、件数が通知されます。曲が1つも無いときは内蔵のテスト譜面で動作します。
+- 譜面は `.nbs`・`.mid` の音から **自動生成** されます（同じ tick の音を代表音にまとめ、難易度の最小間隔で間引き、音の高さでレーン1〜4に振り分け、同じレーンの連続・詰まりを直す）。曲 ID をシードに使うので、同じ曲・同じ設定なら毎回同じ譜面になります。
+- 音符の無いファイル・読めないファイルは読み込み時にスキップされ、件数が通知されます。`.mid` はサーバーの Java に MIDI を読む機能が無いと読み込めません（その場合は `.nbs` に変換してください）。曲が1つも無いときは内蔵のテスト譜面で動作します。
+- スターター曲は `.starter-pack` の記録で管理され、運営が消しても次回以降は置き直しません。
 - 読み込んだ曲は `/sdance songs` で一覧表示できます。
 
 ## 管理メニュー・管理ツール（コマンドを打たない設定）
@@ -143,6 +144,13 @@ plugins/StepDance/songs/ に .nbs ファイルを置く
 | `normal-min-interval` | 4 | NORMAL のノーツ最小間隔（tick） |
 | `hard-min-interval` | 2 | HARD のノーツ最小間隔（tick） |
 | `same-lane-min-interval` | 4 | 同じレーンのノーツ最小間隔（tick）。ping が大きい参加者がいると自動で広げる |
+
+### 選曲画面
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `song-select.enabled` | true | 開始看板・`/sdance start`（曲の指定なし）で選曲画面（GUI）を開く。false なら曲はおまかせ（ランダム）で始める |
+| `song-select.difficulty` | true | 選曲画面で難易度（EASY / NORMAL / HARD）を選べる。false なら `default-difficulty` に固定 |
 
 ### 壁（ノーツ表示）
 
@@ -208,7 +216,7 @@ plugins/StepDance/songs/ に .nbs ファイルを置く
 |---|---|
 | `/sdance join [識別子]` | ロビーに参加（参加看板と同等） |
 | `/sdance leave` | ロビーから離脱（離脱看板と同等） |
-| `/sdance start [識別子] [曲ID]` | 曲を開始（開始看板と同等・コンソール/コマンドブロックも可） |
+| `/sdance start [識別子] [曲ID\|random] [難易度]` | 曲を開始（開始看板と同等・コンソール/コマンドブロックも可）。曲を省くと選曲画面が開く（`random` でおまかせ） |
 | `/sdance status` | 設定・状況を確認（読み取り専用） |
 | `/sdance songs` | 入っている曲の一覧 |
 

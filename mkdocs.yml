@@ -181,6 +181,10 @@ nav:
           - minigames/yajinro/index.md
           - 👤 プレイヤー向け: minigames/yajinro/player.md
           - 🛠️ OP・運営向け: minigames/yajinro/op.md
+      - アモアス（Impostor）:
+          - minigames/impostor/index.md
+          - 👤 プレイヤー向け: minigames/impostor/player.md
+          - 🛠️ OP・運営向け: minigames/impostor/op.md
   - 05 協力プレイ:
       - Overcook（オーバークック風）:
           - minigames/overcook/index.md
@@ -198,6 +202,10 @@ nav:
           - minigames/scrap/index.md
           - 👤 プレイヤー向け: minigames/scrap/player.md
           - 🛠️ OP・運営向け: minigames/scrap/op.md
+      - 鳥人間コンテスト（ToriJin）:
+          - minigames/torijin/index.md
+          - 👤 プレイヤー向け: minigames/torijin/player.md
+          - 🛠️ OP・運営向け: minigames/torijin/op.md
   - 06 レース・タイムアタック:
       - AsureTimer:
           - race/asuretimer/index.md
@@ -236,6 +244,22 @@ nav:
           - minigames/stepdance/index.md
           - 👤 プレイヤー向け: minigames/stepdance/player.md
           - 🛠️ OP・運営向け: minigames/stepdance/op.md
+      - ブロックフォール（BlockFall）:
+          - minigames/blockfall/index.md
+          - 👤 プレイヤー向け: minigames/blockfall/player.md
+          - 🛠️ OP・運営向け: minigames/blockfall/op.md
+      - 伝言しりとり（DengonShiritori）:
+          - minigames/dengonshiritori/index.md
+          - 👤 プレイヤー向け: minigames/dengonshiritori/player.md
+          - 🛠️ OP・運営向け: minigames/dengonshiritori/op.md
+      - マインスイーパー（Minesweeper）:
+          - minigames/minesweeper/index.md
+          - 👤 プレイヤー向け: minigames/minesweeper/player.md
+          - 🛠️ OP・運営向け: minigames/minesweeper/op.md
+      - どうぶつ積みバトル（TsumiBattle）:
+          - minigames/tsumibattle/index.md
+          - 👤 プレイヤー向け: minigames/tsumibattle/player.md
+          - 🛠️ OP・運営向け: minigames/tsumibattle/op.md
   - 10 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md
