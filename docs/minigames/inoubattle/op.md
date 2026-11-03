@@ -121,6 +121,7 @@
 |---|---|---|
 | `match.hide-name-tags` | true | 試合中は全員の頭上の名前を隠す（Tab・チャットの【異能バトル】は残る） |
 | `match.remove-elytra-on-land` | true | 着地したらエリトラを外す |
+| `match.disable-hunger` | true | 食料ゲージを使わない（満腹度が減らず常に走れる・満腹度による自然回復なし）。在籍者だけが対象 |
 | `match.block-natural-mobs` | true | 登録済みステージのフィールドとソロの会場で、敵の自然湧きを止める（開始時に残っている自然湧きの敵も消す）。ゲームルールは変えず、スポナー・スポーンエッグ・コマンドの Mob や名前付きの Mob は対象外 |
 
 !!! note "安全地帯の見え方"
@@ -134,6 +135,9 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `carepackage.claim-limit` | 3 | 1つのケアパケで回収できる人数（先着） |
+| `carepackage.drop-height` | 20 | 何ブロック上から降ってくるか |
+| `carepackage.fall-speed` | 0.25 | 落ちる速さ（ブロック/tick。0.25＝1秒に5ブロック） |
+| `carepackage.pickup-radius` | 1.5 | 着地したケアパケにこの距離まで近づくと自動で回収（0で無効） |
 | `carepackage.item-pool` | 回復スプラッシュ×1 | 中身の抽選プール（`material`/`potion`/`weight`/`min`/`max`。重み方式） |
 | `spectator.chat-isolate` | true | 観戦者チャットを観戦者間のみに制限 |
 
@@ -146,6 +150,14 @@
 
 !!! info "v1で有効（実装済み）の異能"
     既定で有効なのは **疾走（sprint）／隠密（stealth）／速射（rapidfire）／探知（detect）／鑑定（appraise）／追跡（track）／強靭（toughness）** の7種です。その他の異能（跳躍・鉤縄・狙撃・無敵・障壁・背水・捕食・閃光・縮身・巨体・変化・複製・反響・魔眼 など）は **未実装（次回以降）** で、config 上は `false` になっています。実装が進んだら `true` にして有効化できます。
+
+### 異能ごとの調整（`ability-settings`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `ability-settings.stealth.sneak-seconds` | 5 | 隠密：しゃがみ続けて透明化するまでの秒数 |
+| `ability-settings.stealth.duration-seconds` | 8 | 隠密：透明が続く秒数（撃つ・攻撃を受けるとその前でも解ける） |
+| `ability-settings.stealth.cooldown-seconds` | 20 | 隠密：透明が解けてから再使用できるまでの秒数 |
 
 ### ランダムイベント
 

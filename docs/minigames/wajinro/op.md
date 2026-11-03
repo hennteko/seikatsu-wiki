@@ -397,6 +397,7 @@ config.yml を直接編集しなくても、ゲーム内の **チェスト型GUI
 | `/wajinro settime <day\|night\|firstday> <秒>` | admin | 各フェーズの時間を設定 |
 | `/wajinro setmin <人数>` | admin | 開始最低人数を設定（1〜15） |
 | `/wajinro book` | admin | ゲーム管理本を入手（GUIで価格・配役・ver・時間を変更） |
+| `/wajinro wand` | admin | 管理ツールを受け取る（右クリックで管理メニュー）。ロビー待機中も受け取れる。試合中は不可で、試合開始時に回収・ロビーから抜けると手元に戻る |
 | `/wajinro stop` | admin | ゲームを強制終了する |
 | `/wajinro setvc <add\|remove\|list> [ID]` | admin | ミュート対象VCの追加 / 削除 / 一覧 |
 | `/wajinro setlinkchannel <ID>` | admin | リンク用メッセージの投稿先チャンネルを設定 |

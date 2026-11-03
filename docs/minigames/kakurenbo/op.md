@@ -37,8 +37,10 @@
 /kakurenbo menu
 ```
 
-!!! warning "かくれんぼに参加中は受け取れません"
-    ロビー在籍中は持ち物が退室時の復元で上書きされるため、設定ツールは渡しません。先に `/kakurenbo leave` で離脱してから実行してください。
+!!! note "ロビー待機中も受け取れます"
+    - ロビーで待機している間も受け取れます。試合中・ソロ挑戦中は受け取れません
+    - 試合が始まると持ち物と一緒に回収されます。ロビー待機中に受け取った場合は、ロビーから抜けたときに自動で手元に戻ります（戻ったツールの説明文は `/kakurenbo wand` で更新できます）
+    - 捨てると消えるので再度 `/kakurenbo wand` で取得してください
 
 ### 設定ツールの操作
 
@@ -333,7 +335,7 @@ OP権限（`kakurenbo.admin`）で、設定したい場所に **立って／対�
 | `/kakurenbo ranking [solo] [難易度]` | 全員 | ソロのランキング |
 | `/kakurenbo solo <プレイヤー> [難易度]` | `kakurenbo.admin` | 指定した人をソロへ（コンソール・コマンドブロック可） |
 | `/kakurenbo ranking reset <プレイヤー\|all> [難易度\|all]` | `kakurenbo.admin` | ソロの記録を消す（コンソール可） |
-| `/kakurenbo wand` | `kakurenbo.admin` | OP用の設定ツール（ブレイズロッド）を受け取る（参加中は不可） |
+| `/kakurenbo wand` | `kakurenbo.admin` | OP用の設定ツール（ブレイズロッド）を受け取る（ロビー待機中も可、試合中は不可） |
 | `/kakurenbo menu` | `kakurenbo.admin` | 設定メニュー（GUI）を開く |
 | `/kakurenbo setlobby` / `setstartspawn` | `kakurenbo.admin` | ロビー / 初期スポーンを設定 |
 | `/kakurenbo setspawn [seeker]` | `kakurenbo.admin` | 隠れ側スポーン（引数なし）／鬼スポーン（`seeker`）を設定 |

@@ -9,55 +9,48 @@ Tutorial（v2）の導入、地点の登録、config、遊んだ回数の数え�
 1. サーバーの `plugins` から **旧 `Tutorial2.jar` を削除** します（両方入れると `/tutorial` が競合します）。旧データ `plugins/Tutorial2/` は使いません。
 2. `Tutorial.jar` を **ミニゲームサーバー** の `plugins` に入れて起動します。
 3. **CasinoPlugin が必要** です（報酬の E 残高）。CasinoPlugin が止まっている間の報酬は「未払い」として保存し、次のログイン時に渡します。
-4. 下の「地点の登録」をします。
+4. **MiniGameMenu が必要** です（手順1・2でメニューアイテムを使います）。必要なら「地点の登録」をします。
 5. 「Discord 連携の設定（サーバー Bot）」をします（人狼RPG の Bot をこちらへ移します）。
 
 !!! info "対象サーバー"
     ミニゲームサーバー（25566）だけに入れます。E 残高（CasinoPlugin）がミニゲームサーバーにあるため、ログインボーナス・VC 報酬もミニゲームサーバーで受け取ります。
 
-## 地点の登録
+## チュートリアルの流れ（初期設定）
 
-チュートリアルの道順は、地点を登録して作ります。登録したい場所に立って実行してください（向いている方向も保存されます）。
+ホットバー9番目のメニューアイテム（MiniGameMenu）を使って、ミニゲームの参加まで体験させる流れです。看板は「ロビーにもある」と案内するだけで、メインはメニューです。
+
+| 手順 | type | 完了の条件 |
+|---|---|---|
+| 1 メニューを開く | `menu` | MiniGameMenu の一覧画面を開いて閉じた（右クリック・`/mgmenu` どちらでも） |
+| 2 ゲームを1回遊ぶ | `play` | ミニゲームに参加して抜けた（`tutorial.play-min-seconds`＝30秒以上） |
+| 3 E・3サーバーの説明 | `info` | 説明を出して自動で次へ |
+| 4 Discord 連携 | `discord` | 連携した（コードは自動で表示）。`/tutorial later` で後回しにすると連携なしで進む |
+| 完了 | — | 100E・`finish` 地点へ移動 |
+
+- Discord 連携が使えない設定（サーバー Bot 未設定）のときは、手順4は自動で飛ばします。連携済みの人（人狼RPG から取り込んだ人など）もすぐ次へ進みます。
+- MiniGameMenu が入っていないときは、手順1は説明だけ出して進みます。
+- 手順2は **参加中フラグに対応したゲーム** で数えます（ソロモードも含む。下の「遊んだの数え方」）。
+
+## 地点の登録（任意）
+
+開始時・完了時に移動させたい場所があれば登録します（無ければ移動しません）。立っている場所と向きを保存します。
 
 | 地点名 | 使いどころ |
 |---|---|
 | `start` | チュートリアル開始時に移動する場所 |
-| `lobby` | 手順1「ロビーへ行く」の目的地 |
-| `emerald` | 手順3「E と報酬の案内板」 |
-| `servers` | 手順4「3つのサーバーの案内板」 |
-| `finish` | 完了・スキップしたときに移動する場所（無ければ移動しません） |
+| `finish` | 完了・スキップしたときに移動する場所 |
 
 ```
 /tutorial admin setpoint start
 ```
 
 ```
-/tutorial admin setpoint lobby
-```
-
-```
-/tutorial admin setpoint emerald
-```
-
-```
-/tutorial admin setpoint servers
-```
-
-```
 /tutorial admin setpoint finish
 ```
-
-登録状況の確認：
 
 ```
 /tutorial admin points
 ```
-
-!!! tip "案内板（看板）は普通に置いてください"
-    地点に着いた時の説明はチャットに出ます。地点のそばに看板で同じ内容を書いておくと、統合版の人にも読みやすくなります。半径は `tutorial.point-radius`（既定 3 ブロック）です。
-
-!!! note "地点が未登録のとき"
-    未登録の地点を使う手順は、説明だけ表示して自動で次へ進みます（起動ログと手順開始時に警告が出ます）。
 
 ## チュートリアルの手順を変える
 
@@ -65,13 +58,17 @@ Tutorial（v2）の導入、地点の登録、config、遊んだ回数の数え�
 
 | 項目 | 内容 |
 |---|---|
-| `type: reach` | `point` の地点に着いたら完了 |
-| `type: command` | `commands` のどれかを実行したら完了（例 `["/mgmenu"]`） |
+| `type: menu` | MiniGameMenu の一覧画面を開いて閉じたら完了 |
 | `type: play` | ミニゲームに参加して抜けたら完了（`tutorial.play-min-seconds` 秒以上） |
+| `type: info` | `done` の説明を出して自動で次へ |
+| `type: discord` | Discord と連携したら完了（`/tutorial later` で後回し可） |
+| `type: reach` | `point` の地点に着いたら完了（地点は `setpoint` で登録） |
+| `type: command` | `commands` のどれかを実行したら完了（例 `["/mgmenu"]`） |
 | `goal` | やること（チャット・タイトル・アクションバー） |
 | `done` | 完了したときに出す説明（複数行） |
 
-最後の `play` は、**1人でも遊べるゲーム**（ソロモードがあるゲーム）の看板を手順4の近くに置いておくと、人が少ない時間でも詰まりません。数え方は次の章を見てください。
+!!! info "旧版（道を歩く流れ）からの更新"
+    `config.yml` の手順が旧初期値（lobby / menu / emerald / servers / play）のままなら、起動時に新しい流れへ自動で置き換えます（`config-version` 3、更新前は `config.yml.bak`）。手順をカスタマイズしていた場合は置き換えずに警告を出します。手順が変わると、進行中の人は手順1からやり直しになります。旧版で使っていた地点（lobby / emerald / servers）は使わなくなります。
 
 ## ミニゲームを「遊んだ」の数え方
 
@@ -197,7 +194,7 @@ discord:
 | `discord.bot.link-channel-id` | 空 | 連携パネルの投稿先 |
 | `discord.vc-reward.amount` / `daily-max` | 500 / 1 | VC 報酬の額と1日の回数 |
 | `discord.vc-reward.interval-minutes` / `min-members` | 5 / 2 | 何分で1回分か／Bot 以外何人以上の VC を数えるか |
-| `discord.vc-reward.exclude-channels` / `notify-dm` | [] / true | 数えない VC／報酬時に DM
+| `discord.vc-reward.exclude-channels` | [] | 数えない VC（VC 報酬のお知らせはマイクラ内だけ。Discord の DM は送りません） |
 | `points` | — | 地点（コマンドで登録。手で書かなくてよい） |
 
 ## 管理コマンド
@@ -234,8 +231,11 @@ discord:
 ??? failure "初めて入った人なのにチュートリアルが始まらない"
     自動開始は「そのサーバーに初めて入った（`hasPlayedBefore()` が false）」人だけです。旧生活鯖から入っていた人は対象外なので、ログイン時に `/tutorial start` の案内が出ます。手動で始めるときは `/tutorial admin start <プレイヤー>`。
 
-??? failure "地点に行っても進まない"
-    `/tutorial admin points` で登録ワールドと座標を確認してください。半径は `tutorial.point-radius` です。高さも含めた距離で判定します。
+??? failure "メニューを開いても手順1が進まない"
+    メニューの画面を **閉じたとき** に進みます。MiniGameMenu が入っているか、`tutorial.menu-holder-class` が `com.henry.minigamemenu.gui.MenuHolder` になっているかを確認してください。
+
+??? failure "Discord の手順で止まってしまう"
+    コードの期限（10分）が切れたら `/tutorial link` でもう一度出せます。Discord を使っていない人は `/tutorial later` で先へ進めます。
 
 ??? failure "最後の「ミニゲームを1回遊ぶ」が終わらない"
     参加中フラグに対応していないゲーム（アスレタイマー等）は数えません。対応しているゲームで遊ぶか、そのゲームから `tutorial record` を呼んでください。`/tutorial admin tracking` で計測されているか確認できます。

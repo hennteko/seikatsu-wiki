@@ -168,6 +168,10 @@ nav:
           - minigames/aooni/index.md
           - 👤 プレイヤー向け: minigames/aooni/player.md
           - 🛠️ OP・運営向け: minigames/aooni/op.md
+      - シノビ鬼（ShinobiOni）:
+          - minigames/shinobioni/index.md
+          - 👤 プレイヤー向け: minigames/shinobioni/player.md
+          - 🛠️ OP・運営向け: minigames/shinobioni/op.md
   - 04 人狼・推理:
       - WaJinro（人狼RPG）:
           - minigames/wajinro/index.md
@@ -260,6 +264,18 @@ nav:
           - minigames/tsumibattle/index.md
           - 👤 プレイヤー向け: minigames/tsumibattle/player.md
           - 🛠️ OP・運営向け: minigames/tsumibattle/op.md
+      - ライアーズテーブル（LiarsTable）:
+          - minigames/liarstable/index.md
+          - 👤 プレイヤー向け: minigames/liarstable/player.md
+          - 🛠️ OP・運営向け: minigames/liarstable/op.md
+      - ゴッドフィールド（GodField）:
+          - minigames/godfield/index.md
+          - 👤 プレイヤー向け: minigames/godfield/player.md
+          - 🛠️ OP・運営向け: minigames/godfield/op.md
+      - ババ抜き（BabaNuki）:
+          - minigames/babanuki/index.md
+          - 👤 プレイヤー向け: minigames/babanuki/player.md
+          - 🛠️ OP・運営向け: minigames/babanuki/op.md
   - 10 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md

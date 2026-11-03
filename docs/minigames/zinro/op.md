@@ -187,7 +187,7 @@ role_distribution:
 | `/zinro shop` | 全員 | ショップを開く（試合中・生存中。看板・ショップの杖と同等） |
 | `/zinro vote [player]` | 全員 | 投票画面を開く／直接投票（昼・生存中。投票用紙と同等） |
 | `/zinro stop` | admin | ゲームを強制終了する |
-| `/zinro wand` | admin | 管理ツールを受け取る（右クリックで管理メニュー。ロビー在籍中は受け取れない） |
+| `/zinro wand` | admin | 管理ツールを受け取る（右クリックで管理メニュー。ロビー待機中も受け取れる。試合中は不可で、試合開始時に回収・ロビーから抜けると手元に戻る） |
 | `/zinro menu` | admin | 管理メニューを開く |
 | `/zinro setstartspawn` | admin | 初期スポーン地点を現在地に設定 |
 | `/zinro setlobby` | admin | ロビー地点を現在地に設定 |

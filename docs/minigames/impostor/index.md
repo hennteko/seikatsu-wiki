@@ -8,6 +8,7 @@
   <div class="quick-card"><span class="label">人数</span><span class="value">4〜15 人（偽物は AUTO で1〜3人）</span></div>
   <div class="quick-card"><span class="label">対象バージョン</span><span class="value">Paper 1.26.x（api-version 26.2）</span></div>
   <div class="quick-card"><span class="label">統合版</span><span class="value">対応（Floodgate / Geyser-Spigot）</span></div>
+  <div class="quick-card"><span class="label">Discord</span><span class="value">試合中は VC を自動ミュート（Tutorial 連携時）</span></div>
 </div>
 
 !!! note "ゲームの特徴"
@@ -19,4 +20,4 @@
 [🛠️ OP・運営向けページ](op.md){ .md-button }
 
 - **プレイヤー向け** … 遊び方、役職、タスクのやり方、キルと通報、緊急ボタンと会議・投票、サボタージュ、ベント移動、参加方法、コマンド。
-- **OP・運営向け** … 導入、マップ（開始地点・会議席・追放先・緊急ボタン・部屋・タスク・ベント・ドア・修理）の設定、看板、config（人数・役職・タスク・キル・サボタージュ・会議・色）、権限、管理コマンド。
+- **OP・運営向け** … 導入、マップ（開始地点・会議席・追放先・緊急ボタン・部屋・タスク・ベント・ドア・修理）の設定、看板、config（人数・役職・タスク・キル・サボタージュ・会議・色・Discord VC ミュート）、権限、管理コマンド。

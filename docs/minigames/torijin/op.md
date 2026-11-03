@@ -101,6 +101,10 @@
 /tori setsign rank <アリーナ> <順位>
 ```
 
+```text title="観戦看板を登録（アリーナ指定・看板を見て実行／クリックで観戦オン・オフ）"
+/tori setsign watch <アリーナ>
+```
+
 ```text title="視線先の看板の登録を解除"
 /tori setsign delete
 ```
@@ -120,7 +124,7 @@
 /tori menu
 ```
 
-管理ツールは参加中・テスト中は受け取れません。先に離脱してから実行してください。
+管理ツールはロビーで待機している間も受け取れます。挑戦中・テスト中は受け取れません。挑戦が始まると回収され、ロビー待機中に受け取った場合は、ロビーから抜けたときに自動で手元に戻ります。
 
 ## 運用コマンド
 
@@ -197,12 +201,23 @@
 | キー | 既定値 | 説明 |
 |---|---|---|
 | `max-lateral` | 20 | これ以上横にずれて着地したらファウル（コース幅の半分が小さければそちら） |
-| `flight-timeout` | 120 | 飛行の上限（秒）。引っかかって着地しないとき、この時間で現在位置を判定（0で無制限） |
+| `stuck-seconds` | 10 | 飛行中は時間で打ち切らない。はしご・つるなどに引っかかってこの秒数ほとんど動かなかったときだけ、その位置で判定する（0で判定しない） |
+| `landing-confirm-ticks` | 3 | 地面に着いた状態がこの tick 数続いたら着地とする（一瞬の誤検知を防ぐ） |
 | `lateral-warn` | 15 | 警告を出す横ずれ（表示のみ） |
 | `aim-warn` | 5 | 照準のずれを黄色で表示する角度（度） |
 | `landing-marker-seconds` | 5 | 着地点にパーティクルの柱を出す秒数（0で出さない） |
 | `default-course-length` | 5000 | 新しいアリーナのコースの長さ |
 | `default-course-width` | 50 | 新しいアリーナのコースの幅 |
+
+### 観戦（`spectate`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `spectate.enabled` | true | 観戦機能を使うか。false で観戦そのものを無効にする（観戦看板・`/tori watch` が使えなくなる） |
+| `spectate.distance` | 7 | 統合版の観戦で、飛んでいる受け担当の何マス後ろから見るか |
+
+!!! note "観戦のしくみ"
+    観戦看板（`/tori setsign watch`）または `/tori watch` で観戦をオンにした在籍者は、ペアが打ち出した瞬間に飛んでいる受け担当の視点になります。既定では全員オフで、打ち担当も自分でオンにしたときだけ観戦します。観戦の方式は `bedrock.spectator-style`（AUTO／GHOST／VANILLA）で切り替えます。
 
 ### ランキング・その他
 
@@ -221,7 +236,7 @@
 | `torijin.admin` | OP | `wand`・`menu`・`create`・`remove`・`setstartspawn`・`setlobby`・`setorigin`・`setbatter`・`setreceiver`・`setzone`・`setlength`・`setwidth`・`setminy`・`setsign`・`test`・`stop`・`resetrank`・`reload`・`lobbyfix` など管理系すべて |
 
 !!! info "権限不要で全員が使えるコマンド"
-    `/tori join`・`/tori leave`・`/tori role`・`/tori start`・`/tori status`・`/tori top` は権限チェックがなく、全プレイヤーが使えます。
+    `/tori join`・`/tori leave`・`/tori role`・`/tori start`・`/tori status`・`/tori top`・`/tori watch`（観戦の切替）・`/tori retry`（挑戦中の受け担当のやり直し）は権限チェックがなく、全プレイヤーが使えます。
 
 ## 管理コマンド
 
@@ -238,7 +253,7 @@
 | `/tori setlength [アリーナ] <マス>` | コースの長さを設定 |
 | `/tori setwidth [アリーナ] <マス>` | コースの幅を設定 |
 | `/tori setminy [アリーナ]` | コースの下限 Y を設定 |
-| `/tori setsign <join <ア>\|leave\|start <ア>\|role <ア> <uchi\|uke>\|rank <ア> <順位>\|delete>` | 看板を登録／解除 |
+| `/tori setsign <join <ア>\|leave\|start <ア>\|role <ア> <uchi\|uke>\|rank <ア> <順位>\|watch <ア>\|delete>` | 看板を登録／解除 |
 | `/tori wand` | 管理ツールを受け取る |
 | `/tori menu` | 管理メニュー（GUI）を開く |
 | `/tori test [アリーナ]` | 1人テスト（記録を残さない） |
@@ -288,7 +303,8 @@
 | `name-tag.display-name` | 鳥人間コンテスト | 「【】」に入れる正式名 |
 | `name-tag.color` | GOLD | ゲーム名の色 |
 | `name-tag.announce-join` | true | サーバー全体への参加通知 |
-| `bedrock.swing-to-use` | true | 統合版は空中タップ（腕振り）でも管理ツールを使える |
+| `bedrock.swing-to-use` | true | 統合版は空中タップ（腕振り）でも管理ツール・やり直しボタンを使える |
+| `bedrock.spectator-style` | AUTO | 観戦の方式。AUTO（統合版だけ受け担当の後ろへ移動し続ける）／GHOST（全員その方式）／VANILLA（全員、受け担当の視点に固定） |
 | `bedrock.wax-signs` | true | 登録看板を蝋引き（統合版でタップ時に編集画面を開かせない） |
 | `bedrock.name-prefix` | `.` | Floodgate 未導入時に統合版と見なす名前の接頭辞 |
 

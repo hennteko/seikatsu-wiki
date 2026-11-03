@@ -12,7 +12,7 @@
 | バージョン | `${project.version}`（ビルド時に決定） |
 | メインコマンド | `/imp`（別名 `/impostor`） |
 | api-version | 26.2 |
-| softdepend | `floodgate` / `Geyser-Spigot`（統合版対応） |
+| softdepend | `floodgate` / `Geyser-Spigot`（統合版対応）／ `Tutorial`（Discord VC ミュート用のサーバー Bot） |
 | 設定ファイル | `plugins/Impostor/config.yml` |
 | タスク定義 | `plugins/Impostor/tasks.yml` |
 | メッセージ | `plugins/Impostor/messages.yml` |
@@ -137,6 +137,10 @@
 
 管理メニューからは、数値設定（人数・役職・キル・会議・タスク数など）の増減、匿名投票・追放者の役職発表・タスクバー表示の切り替え、地点・看板の登録などをまとめて操作できます。
 
+- ロビーで待機している間も受け取れます。試合中・観戦中は受け取れません
+- 試合が始まると回収されます。ロビー待機中に受け取った場合は、ロビーから抜けたときに自動で手元に戻ります
+- 捨てると消えるので再度 /imp wand で取得してください
+
 ## config.yml 設定項目
 
 コマンドで登録する地点・看板のデータ（`locations`・`signs`）は自動保存されます。手書き不要です。先頭の `config-version` は設定ファイルの版で、**手で変えないでください**。変更は `/imp reload` で反映できます（試合中の変更は次の試合から）。
@@ -203,6 +207,35 @@
 | `chat-only-in-meeting` | true | 会議中だけ参加者のチャットを全体に出す |
 | `blocked-commands` | msg, tell ほか | 試合中の参加者が使えないコマンド |
 
+### Discord（VC ミュート）
+
+Tutorial プラグインの **サーバー Bot** を借りて、試合中の Discord ボイスチャンネルを自動でサーバーミュートします。連携は Tutorial の `/tutorial link` をそのまま使います（このプラグイン独自の連携は不要）。Tutorial や Bot が無い場合は何もしません（ゲームは通常どおり遊べます）。
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `discord.enabled` | true | Discord VC ミュートを使う |
+| `discord.voice-channels` | `[]` | ミュート対象の VC の ID 一覧（`/imp setvc add <ID>` でも登録可）。空なら何もしない |
+| `discord.resync-seconds` | 30 | 人狼RPG など他プラグインと同じ VC を使うとき、外れたミュートを掛け直す間隔（秒。0 で掛け直さない） |
+
+!!! note "ミュートの挙動"
+    試合中、**会議中以外は参加者全員をサーバーミュート**します。会議中は **生きている人だけ** ミュートを外し、幽霊・途中で抜けた人は試合が終わるまでミュートのままです。外すのは **このプラグインがミュートした人だけ** で、他の理由のミュートには触れません。試合が終わると自動で全解除します。連携していない参加者がいると、開始時に対象者名が全体へ告知されます（`discord-unlinked`）。
+
+```text title="ミュート対象の VC を登録（VC の ID は数字）"
+/imp setvc add <VCのID>
+```
+
+```text title="ミュート対象の VC を解除"
+/imp setvc remove <VCのID>
+```
+
+```text title="登録中の VC とサーバー Bot の状態を表示"
+/imp setvc list
+```
+
+```text title="このプラグインが掛けたミュートを手動で全解除（保険）"
+/imp vcunmute
+```
+
 ### 色（`colors`）
 
 最大15色。各色は `id`（内部ID）・`name`（表示名）・`rgb`（革防具の色）・`wool`（投票GUIの羊毛）を持ちます。既定は赤・青・緑・ピンク・オレンジ・黄・黒・白・紫・茶・水色・黄緑・灰・マゼンタ・青緑の15色です。
@@ -234,6 +267,8 @@
 | `/imp clearspawns <マップ>` / `/imp clearseats <マップ>` | 開始地点／会議席を全消去 |
 | `/imp check <マップ>` | 設定不足を確認 |
 | `/imp maps` | 登録マップ一覧 |
+| `/imp setvc <add\|remove\|list> [VCのID]` | Discord VC ミュートの対象チャンネルを登録／解除／一覧（引数なし=一覧・Bot 状態表示） |
+| `/imp vcunmute` | このプラグインが掛けた Discord VC ミュートを手動で全解除（保険。試合中は次の反映でまた付く） |
 | `/imp setsign <join\|leave\|start <マップ>\|delete>` | 看板を登録／解除 |
 | `/imp wand` / `/imp menu` | 管理ツール／管理メニュー |
 | `/imp stop` | 試合を強制停止 |

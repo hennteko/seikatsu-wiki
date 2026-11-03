@@ -152,7 +152,7 @@ game:
 | `/yukioni setlobby` | `yukioni.admin` | ロビー地点を設定 |
 | `/yukioni setfield 1` | `yukioni.admin` | ゲームエリアの角1を設定 |
 | `/yukioni setfield 2` | `yukioni.admin` | ゲームエリアの角2を設定 |
-| `/yukioni wand` | `yukioni.admin` | 管理ツール（設定用アイテム）を受け取る。右クリックで管理メニューを開く |
+| `/yukioni wand` | `yukioni.admin` | 管理ツール（設定用アイテム）を受け取る。右クリックで管理メニューを開く（ロビー待機中も可、試合中は不可。試合開始で回収され、ロビー待機中に受け取った場合はロビーから抜けると手元に戻る） |
 | `/yukioni menu` | `yukioni.admin` | 管理メニュー（GUI）を開く |
 | `/yukioni join [名前]` | 全員（他人指定はOP） | ロビーに参加する。名前を指定すると対象を参加させる（OP限定） |
 | `/yukioni leave [名前]` | 全員（他人指定はOP） | ロビーから退出する。名前を指定すると対象を退出させる（OP限定） |

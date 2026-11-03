@@ -13,7 +13,7 @@
 | api-version | 26.1.2 |
 | 依存プラグイン | なし |
 | 設定ファイル | `plugins/Othello/config.yml` |
-| 記録ファイル | `plugins/Othello/stats.yml`（対人戦・CPU戦の勝敗）／`plugins/Othello/solo-records.yml`（CPU段位戦） |
+| 記録ファイル | `plugins/Othello/stats.yml`（対人戦の勝敗）／`plugins/Othello/solo-records.yml`（CPU段位戦・段位ごとの勝敗） |
 | 権限ノード | `othello.admin`（既定OP） |
 
 ## 導入手順
@@ -28,7 +28,7 @@
 
 ## 設定ツール（ワンド）
 
-```text title="設定ツールを受け取る（OP限定・ロビー参加中は受け取れません）"
+```text title="設定ツールを受け取る（OP限定・対局中は受け取れません。ロビー待機中は受け取れます）"
 /othello wand
 ```
 
@@ -49,7 +49,7 @@
 設定メニューでできること（すべて即保存）：
 
 - **地点**：初期スポーン／ロビー／黒・白のスポーンを現在地に設定、**ここを盤の中心にする**（押した人の足元を真ん中に盤を設定）、盤の床を敷く、盤の枠を表示
-- **看板モード**：参加／離脱／開始（対人戦・CPU やさしい・ふつう・つよい）／ソロ（CPU段位戦）／登録解除／モード解除
+- **看板モード**：参加／離脱／開始（対人戦）／ソロ（CPU段位戦）／登録解除／モード解除
 - **数値**：手番の制限時間（5秒刻み）、開始カウントダウン、1マスのブロック数（1〜4・対局中は不可）、ロビー定員
 - **切り替え**：ソロ（CPU段位戦）の有効／無効、置けるマスのヒント、めくるアニメーション、直前の石を光らせる、時間切れの扱い（ランダム／負け）、勝ち残り、CPU戦のプレイヤーの色（ランダム→黒→白）
 - **進行**：対局の強制停止、設定の再読み込み、設定ツールの回収
@@ -112,9 +112,16 @@
 
 - 入口は **ソロ看板** と `/othello solo`。ソロで入った人は **ソロ在籍** になり、対人戦には出場しません（`/othello join` で通常在籍に戻れます）。
 - 盤面は対人戦と共用です。どちらかが対局中は、もう一方は始められません（自動では始めません）。
-- 今の CPU の開始看板・`/othello start cpu-○○` は、押した本人の **練習1局** になります。コンソール・コマンドブロックから実行した場合だけ、今までどおり待機列の先頭の人が出場します。
+- **CPU との対局はソロだけ** です（以前の「やさしい／ふつう／むずかしい」＝ `start cpu-○○` は廃止）。`/othello start cpu-○○` を実行すると `/othello solo` を案内します。開始看板は対人戦（classic）だけです。
 - ソロの対局には **ほかの在籍者が観戦** できます（ボスバーも見えます）。
-- 記録は `solo-records.yml`（データ用。ConfigUpdater の対象外）。段位戦で使った段位が今の cpu-easy / normal / hard にあたるときは、`stats.yml` の CPU 戦績にも数えます。
+- 記録は `solo-records.yml`（データ用。ConfigUpdater の対象外）。段位ごとの勝敗（段位戦・練習）もここに残ります。
+
+!!! note "以前の CPU 戦からの移行（自動・1回だけ）"
+    更新後の起動時（config の版 2 → 3）に、次のことを自動で行います。コンソールに結果が出ます。
+
+    - 以前の CPU の開始看板（`signs.start.cpu-easy` など）を **ソロ看板** に変えます（看板の位置はそのまま。表示も自動で書き換わります）
+    - `solo.legacy-modes` を config.yml から削除します
+    - `stats.yml` に残っている以前の CPU 戦の勝敗を、段位ごとの勝敗に足します（やさしい→5級、ふつう→4級、むずかしい→1級）。`stats.yml` の元のデータは消さずに残します
 
 ### 段位の調整
 
@@ -129,13 +136,16 @@
 | `solve` | 空きマスがこの数以下なら最後まで読み切る（0＝しない） |
 | `mistake` | ミス率（0.0〜1.0。その確率でランダムな手を打つ） |
 | `strong-eval` | 確定石・角の取られ方・開放度も見る評価を使う（2手以上読むときに強くなる） |
+| `think-ms` | その段位の1手の思考時間の上限（ミリ秒・最大10000）。省略・0 なら `solo.dan.max-think-ms` |
 
-既定の8段階は、となりの段位どうしで100局ずつ対局させて、**上の段位が7割前後勝つ** ように調整しています。
+既定の11段階（5級〜三段＋高難易度の四段・五段・名人）は、となりの段位どうしで対局させて（60〜100局ずつ）、**上の段位が7割前後勝つ** ように調整しています。
 
 !!! tip "調整のコツ"
     - `strong-eval: false` で偶数の手数（2・4…）を読ませると、1つ下の段位とあまり差が出ません。2手以上読む段位は `strong-eval: true` がおすすめです。
     - 思考時間は既定で1手 **最大1.5秒**（`solo.dan.max-think-ms`）。超えそうなときは読み終えた一番深い結果で打つので、深くしすぎてもサーバーは止まりません。
-    - 既定の三段（6手読み・14マス読み切り）は、1手あたり最長で約0.9秒でした（テスト環境：2コア）。
+    - 思考は非同期スレッドで行うので、深く読ませてもサーバー（メインスレッド）は止まりません。CPU の対局は盤が1つなので同時に1局だけです。
+    - 1手あたりの最長思考時間（テスト環境：2コア）：三段 約0.4秒、四段 約1.3秒（上限1.5秒）、五段 2.5秒（上限）、名人 3秒（上限。平均は約0.7秒）。
+    - 段位ごとに `think-ms` で思考時間の上限を変えられます（省略すると `solo.dan.max-think-ms`）。
 
 ```text title="段位戦の記録を消す（1人／全員。コンソールからも可）"
 /othello ranking reset <プレイヤー>
@@ -179,7 +189,7 @@
 | `glow-last-move` | true | 直前に置いた石を光らせる |
 | `queue.winner-stays` | true | 対人戦の勝者を次の対局にも続けて出す（勝ち残り） |
 | `cpu.think-ticks` | 20 | CPUが打つまでの最低待ち時間（20＝1秒） |
-| `cpu.player-color` | random | CPU戦のプレイヤーの色（`random`/`black`＝先手/`white`＝後手） |
+| `cpu.player-color` | random | CPU と対局するとき（ソロ）のプレイヤーの色（`random`/`black`＝先手/`white`＝後手） |
 
 ### ソロモード（`solo`）
 
@@ -190,12 +200,13 @@
 | `solo.broadcast-result` | true | 段位戦の結果をサーバー全体に流す（1段も突破できなかったときは流さない） |
 | `solo.ranking-size` | 10 | `/othello ranking dan` に表示する人数 |
 | `solo.dan.draw-clears` | false | true で引き分けを突破扱いにする |
-| `solo.dan.max-think-ms` | 1500 | CPU の1手の思考時間の上限（ミリ秒。CPU戦すべてに効く） |
-| `solo.dan.stages` | 8段階 | 段位のリスト（上の「段位の調整」） |
-| `solo.legacy-modes.cpu-easy／cpu-normal／cpu-hard` | kyu5／kyu4／kyu1 | 今の CPU の開始看板・`start cpu-○○` を、どの段位の練習1局にするか |
+| `solo.dan.max-think-ms` | 1500 | CPU の1手の思考時間の上限（ミリ秒）。段位に `think-ms` があればそちらを使う |
+| `solo.dan.stages` | 11段階 | 段位のリスト（上の「段位の調整」） |
 
 !!! note "既存サーバーへの反映"
     更新後の起動時に、ConfigUpdater が `solo` ブロックを config.yml に自動で追加します（今の値は上書きしません。旧ファイルは `config.yml.bak-日時` に退避）。config.yml を作り直す必要はありません。
+
+    高難易度の段位（四段・五段・名人）を足した版（`config-version: 2`）では、起動時に今の `solo.dan.stages` の **最後に、まだ無い段位だけ** を自動で足します。消したり並べ替えたりした段位・変えた値はそのままです。コンソールに「solo.dan.stages に 3 段位を追加しました（四段・五段・名人…）」と出ます。前の最上段（三段）で「制覇」だった記録は、段位が増えたので制覇ではなくなります（突破数・順位はそのまま）。
 
 ### 環境・ロビー共通インベントリ
 
@@ -204,6 +215,28 @@
 | `keep-food` | true | ロビー在籍中は満腹度を減らさない |
 | `protect-lobby` | true | ロビー在籍中はダメージを受けない |
 | `lobby-inventory.*` | ― | ロビー入退室時の所持品退避・復元（`enabled`/`gamemode`/`clear-effects`/`reset-health`/`reset-exp`/`expire-days`） |
+
+### 名前表示・メッセージ（`name-tag` / `messages`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `name-tag.enabled` | true | 参加中の名前を「【ゲーム名】名前」表示にする（頭上・Tab・チャット） |
+| `name-tag.display-name` | オセロ | 【】に入れる正式名 |
+| `name-tag.color` | GOLD | 【ゲーム名】の色（`GOLD`/`AQUA`/`GREEN`/`RED`/`YELLOW` など） |
+| `name-tag.announce-join` | true | false でサーバー全体への参加通知を出さない |
+| `messages.prefix` | `[オセロ]` | メッセージの接頭辞 |
+
+### 統合版（Geyser / Floodgate）（`bedrock`）
+
+| キー | 既定値 | 説明 |
+|---|---|---|
+| `bedrock.wax-signs` | true | 登録看板を蝋引きする（統合版でタップしても編集画面が開かない） |
+| `bedrock.swing-to-use` | true | 統合版は空中タップ（腕振り）でも盤面に石を置ける／投了の旗を使えるようにする |
+| `bedrock.stone-render` | AUTO | 石の見せ方。`AUTO`＝全員に BlockDisplay＋統合版にはブロックでも表示 / `DISPLAY`＝全員 BlockDisplay のみ（統合版では石が見えない） / `BLOCK`＝全員ブロック表示 |
+| `bedrock.black-block` | BLACK_CARPET | ブロック表示のときの黒石（見た目だけ・ワールドは変えない） |
+| `bedrock.white-block` | WHITE_CARPET | ブロック表示のときの白石 |
+| `bedrock.stone-resend-seconds` | 3 | ブロック表示の石を送り直す間隔（秒）。チャンク読み直しで消えたときの保険 |
+| `bedrock.name-prefix` | `"."` | Floodgate が入っていないときに統合版と見なす名前の接頭辞 |
 
 !!! note "自動生成される領域（手動編集不要）"
     `default-spawn` / `lobby-spawn` / `spawns`（black/white）/ `board.origin` / `signs`（看板）はコマンドで自動保存されます。設定変更は次の対局から反映されます（`/othello reload` で再読み込み）。
