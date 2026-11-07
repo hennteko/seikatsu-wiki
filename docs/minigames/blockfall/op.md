@@ -176,7 +176,7 @@
 | `config-version` | 1 | 設定ファイルの版（変更しない） |
 
 !!! info "config の自動更新"
-    プラグインを更新すると、起動時に足りない項目だけが `config.yml` に自動で追加されます（設定済みの値はそのまま。旧ファイルは `config.yml.bak-日時`）。追加した項目はコンソールに「config.yml に N 項目を追加しました」と表示されます。
+    プラグインを更新すると、起動時に足りない項目だけが `config.yml` に自動で追加されます（設定済みの値はそのまま。旧ファイルは `config.yml.bak`）。追加した項目はコンソールに「config.yml に N 項目を追加しました」と表示されます。
 
 ## 管理コマンド
 
@@ -251,7 +251,7 @@
     `seat-pitch`（上を向く角度）を大きくするか、`seat-distance` を大きくして `/bf rebuild` してください。視野（FOV）が狭い設定の人は見えにくくなります。
 
 ??? failure "ロビーに入る前の持ち物が戻らない"
-    `/bf lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/BlockFall/lobby-inventory.yml` に保存され、再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
+    `/bf lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/BlockFall/vault/<UUID>.yml`（1人1ファイル） に保存され、再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
 
 ??? failure "サーバーが落ちたあと、盤面に色が残っている"
     起動時にすべてのブースの盤面を空きマスに戻します。残っていたら `/bf rebuild <ブース>` を実行してください。
@@ -263,7 +263,7 @@
 - **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【ブロックフォール】名前」になり、離脱で元に戻ります（`name-tag.display-name` / `name-tag.color`）。プレイ中のサイドバーにも反映されます。
 - **参加の全体告知** … 参加時にサーバー全体へ通知します（`name-tag.announce-join`）。
 - **同時参加は1ゲームまで** … 他ミニゲームに参加中は参加が拒否されます（スコアボードタグ `minigame_lobby:BlockFall`）。
-- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `lobby-inventory.yml` に保存し、クラッシュ後の再ログインでも復元します。
+- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `vault/<UUID>.yml`（1人1ファイル） に保存し、クラッシュ後の再ログインでも復元します。
 - **config の自動追記（ConfigUpdater）** … 起動時に足りない項目を既定値＋コメント付きで追記します（既存の値は変えません）。
 - **統合版対応（BedrockCompat）** … 空中タップでも管理ツールを使え、登録看板は蝋引きして編集画面が開かないようにします。
 
@@ -276,7 +276,7 @@
 | `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビー入場時に体力・満腹度を全回復 |
 | `lobby-inventory.reset-exp` | true | ロビー入場時に経験値・レベルを0に |
-| `lobby-inventory.expire-days` | 30 | 未復元の退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 | `name-tag.enabled` | true | 参加中の名前表示を付ける |
 | `name-tag.display-name` | ブロックフォール | 「【】」に入れる正式名 |
 | `name-tag.color` | AQUA | ゲーム名の色 |

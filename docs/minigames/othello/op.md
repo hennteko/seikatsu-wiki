@@ -204,7 +204,7 @@
 | `solo.dan.stages` | 11段階 | 段位のリスト（上の「段位の調整」） |
 
 !!! note "既存サーバーへの反映"
-    更新後の起動時に、ConfigUpdater が `solo` ブロックを config.yml に自動で追加します（今の値は上書きしません。旧ファイルは `config.yml.bak-日時` に退避）。config.yml を作り直す必要はありません。
+    更新後の起動時に、ConfigUpdater が `solo` ブロックを config.yml に自動で追加します（今の値は上書きしません。旧ファイルは `config.yml.bak` に退避）。config.yml を作り直す必要はありません。
 
     高難易度の段位（四段・五段・名人）を足した版（`config-version: 2`）では、起動時に今の `solo.dan.stages` の **最後に、まだ無い段位だけ** を自動で足します。消したり並べ替えたりした段位・変えた値はそのままです。コンソールに「solo.dan.stages に 3 段位を追加しました（四段・五段・名人…）」と出ます。前の最上段（三段）で「制覇」だった記録は、段位が増えたので制覇ではなくなります（突破数・順位はそのまま）。
 
@@ -214,7 +214,7 @@
 |---|---|---|
 | `keep-food` | true | ロビー在籍中は満腹度を減らさない |
 | `protect-lobby` | true | ロビー在籍中はダメージを受けない |
-| `lobby-inventory.*` | ― | ロビー入退室時の所持品退避・復元（`enabled`/`gamemode`/`clear-effects`/`reset-health`/`reset-exp`/`expire-days`） |
+| `lobby-inventory.*` | ― | ロビー入退室時の所持品退避・復元（`enabled`/`gamemode`/`clear-effects`/`reset-health`/`reset-exp`） |
 
 ### 名前表示・メッセージ（`name-tag` / `messages`）
 

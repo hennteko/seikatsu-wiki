@@ -298,7 +298,7 @@
 | `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し、体力・満腹度を全回復 |
 | `lobby-inventory.reset-exp` | true | ロビー入場時に経験値・レベルを0に |
-| `lobby-inventory.expire-days` | 30 | 未復元の退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 | `name-tag.enabled` | true | 参加中の名前表示を付ける |
 | `name-tag.display-name` | 鳥人間コンテスト | 「【】」に入れる正式名 |
 | `name-tag.color` | GOLD | ゲーム名の色 |

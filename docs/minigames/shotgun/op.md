@@ -171,7 +171,7 @@
 
 ### ロビー共通インベントリ（`lobby-inventory`）
 
-ロビー入場時に所持品を退避し、退室・試合終了で復元する共通システムです。退避データは `plugins/Shotgun/lobby-inventory.yml` に保存され、再起動をまたいでも復元されます。
+ロビー入場時に所持品を退避し、退室・試合終了で復元する共通システムです。退避データは `plugins/Shotgun/vault/<UUID>.yml`（1人1ファイル） に保存され、再起動をまたいでも復元されます。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
@@ -180,7 +180,7 @@
 | `lobby-inventory.clear-effects` | true | ロビーでポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビーで体力をリセット |
 | `lobby-inventory.reset-exp` | true | ロビーで経験値をリセット |
-| `lobby-inventory.expire-days` | 30 | 退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 
 !!! note "自動生成される領域（手動編集不要）"
     `default-spawn` / `lobby-spawn` / `spectate-spawn` / `seats`（席）/ `signs`（看板）はコマンドで自動生成・自動保存されます。手動編集は不要です。値を変えたら `/shotgun reload`（試合中は不可）で反映します。

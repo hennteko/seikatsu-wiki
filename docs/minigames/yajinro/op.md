@@ -184,7 +184,7 @@
 | `lobby-inventory.clear-effects` | true | ロビーでポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビーで体力をリセット |
 | `lobby-inventory.reset-exp` | true | ロビーで経験値をリセット |
-| `lobby-inventory.expire-days` | 30 | 退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 
 ### 名前表示（`name-tag`）
 

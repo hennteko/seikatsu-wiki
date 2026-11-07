@@ -81,7 +81,7 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 | `return-item.lore` | （2行） | アイテムの説明文（lore） |
 
 !!! note "config.yml は起動時に自動で最新化されます"
-    本プラグインは起動時に共通の **ConfigUpdater** で `config.yml` を最新版へ自動更新します。旧バージョンから更新した場合も、`return-item` などの不足ブロックや新しい説明コメントが自動追記され、サーバー側で設定済みの値・看板（`signs`）・地点データ（`courses` / `default-spawn`）はそのまま保持されます。更新時は旧ファイルが `config.yml.bak-<日時>` に退避されます（最新5件まで）。手で編集したあとは `/asure reload` で再読み込みしてください。
+    本プラグインは起動時に共通の **ConfigUpdater** で `config.yml` を最新版へ自動更新します。旧バージョンから更新した場合も、`return-item` などの不足ブロックや新しい説明コメントが自動追記され、サーバー側で設定済みの値・看板（`signs`）・地点データ（`courses` / `default-spawn`）はそのまま保持されます。更新時は旧ファイルが `config.yml.bak` に退避されます（最新5件まで）。手で編集したあとは `/asure reload` で再読み込みしてください。
 
 ### ソロモード設定（`solo`）
 
@@ -127,7 +127,7 @@ AsureTimer の導入・config.yml・コース／看板のセットアップ・�
 | `lobby-inventory.clear-effects` | `true` | 開始時にポーション効果を消す |
 | `lobby-inventory.reset-health` | `true` | 開始時に最大体力を既定へ戻し、体力・満腹度を全回復する |
 | `lobby-inventory.reset-exp` | `true` | 開始時に経験値とレベルを0にする |
-| `lobby-inventory.expire-days` | 30 | 復元されないまま残った退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 | `name-tag.enabled` | `true` | 参加中の頭上・Tab・チャット名を「【ゲーム名】名前」にする |
 | `name-tag.display-name` | `アスレタイマー` | 【】に入れる正式名 |
 | `name-tag.color` | `GOLD` | 【ゲーム名】の色（`GOLD` / `AQUA` / `GREEN` など） |

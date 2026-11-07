@@ -255,7 +255,7 @@
     そのステージが試合で使用中（進行中・カウントダウン中）だと変更・削除できません。試合の終了を待つか `/mchair stop` で停止してください。
 
 ??? failure "ロビーに入る前の持ち物が戻らない"
-    `/mchair lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/MusicChair/lobby-inventory.yml` に保存され、サーバー再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
+    `/mchair lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/MusicChair/vault/<UUID>.yml`（1人1ファイル） に保存され、サーバー再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
 
 ---
 
@@ -266,8 +266,8 @@
 - **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【椅子取りゲーム】名前」になり、離脱で元に戻ります（表示名・色は config の `name-tag.display-name` / `name-tag.color`）。
 - **参加/離脱の全体告知** … 参加時にサーバー全体へ通知します（`name-tag.announce-join` で切替）。試合結果も全体へ告知されます。
 - **同時参加は1ゲームまで** … 他ミニゲームに参加中は参加が拒否されます（「他のミニゲーム ○○ に参加中です」）。サーバー共通のスコアボードタグで所有権を管理しています。
-- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `plugins/MusicChair/lobby-inventory.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します。異常で持ち物が戻らない・ロックが残った場合はOPが `/mchair lobbyfix <プレイヤー> [force]` で復旧できます。
-- **config の自動追記（ConfigUpdater）** … 起動時に `config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は旧ファイルを `config.yml.bak-日時` に退避）。地点・椅子・看板・ステージなどのデータ領域は補完対象外です。読み込めない config は `config.yml.broken.bak` に退避して初期値で起動します。
+- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `plugins/MusicChair/vault/<UUID>.yml`（1人1ファイル） に保存し、**サーバークラッシュ後の再ログインでも復元** します。異常で持ち物が戻らない・ロックが残った場合はOPが `/mchair lobbyfix <プレイヤー> [force]` で復旧できます。
+- **config の自動追記（ConfigUpdater）** … 起動時に `config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は旧ファイルを `config.yml.bak` に退避）。地点・椅子・看板・ステージなどのデータ領域は補完対象外です。読み込めない config は `config.yml.broken.bak` に退避して初期値で起動します。
 - **統合版対応（BedrockCompat）** … Floodgate / Geyser-Spigot 経由の統合版プレイヤーに対応します。空中タップ（腕振り）でも管理ツールを使え、登録看板は蝋引きして編集画面が開かないようにします。
 - **観戦（GhostSpectator）** … 脱落したプレイヤーは生存者の視点を観戦します（スニークで対象切り替え）。統合版は観戦モードが扱いづらいため、方式を自動で切り替えます（`bedrock.spectator-style`）。
 
@@ -280,7 +280,7 @@
 | `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し、体力・満腹度を全回復 |
 | `lobby-inventory.reset-exp` | false | ロビー入場時に経験値・レベルを0に |
-| `lobby-inventory.expire-days` | 30 | 未復元の退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 | `name-tag.enabled` | true | 参加中の名前表示を付ける |
 | `name-tag.display-name` | 椅子取りゲーム | 「【】」に入れる正式名 |
 | `name-tag.color` | AQUA | ゲーム名の色 |

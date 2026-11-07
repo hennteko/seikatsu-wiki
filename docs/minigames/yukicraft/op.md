@@ -12,7 +12,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | api-version | 26.1.2 |
 | メインコマンド | `/yukicraft <join\|leave\|start\|status\|solo\|ranking\|stop\|setstartspawn\|setlobby\|setspawn\|setfield\|setsign\|reload\|lobbyfix\|wand\|menu>` |
 | 依存プラグイン | なし（統合版対応のため Floodgate / Geyser-Spigot があれば自動連携する softdepend） |
-| 設定ファイル | `plugins/Yukicraft/config.yml`／ソロの記録 `plugins/Yukicraft/solo-records.yml`／ロビー退避 `plugins/Yukicraft/lobby-inventory.yml` |
+| 設定ファイル | `plugins/Yukicraft/config.yml`／ソロの記録 `plugins/Yukicraft/solo-records.yml`／ロビー退避 `plugins/Yukicraft/vault/<UUID>.yml`（1人1ファイル） |
 
 ## 導入手順
 
@@ -89,7 +89,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 - `solo.modes` の下にモードを追加すると、ソロメニューの上段に並びます（ランキングはモードごと）。
 - 通常戦の `creeper:` とは別の設定です（ソロは `solo.modes.<モード>.creeper` を使います）。
-- プラグイン更新後の初回起動で、`solo:` ブロックは既存の config.yml に **自動で追記** されます（設定済みの値は上書きしません。旧ファイルは `config.yml.bak-日時` に退避）。
+- プラグイン更新後の初回起動で、`solo:` ブロックは既存の config.yml に **自動で追記** されます（設定済みの値は上書きしません。旧ファイルは `config.yml.bak` に退避）。
 
 ### メッセージ設定（`messages`）
 
@@ -100,7 +100,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 
 ### ロビーの持ち物退避（`lobby-inventory`）
 
-ロビーに入ると、入る前の状態（インベントリ・防具・ゲームモード・体力・経験値など）を退避してインベントリを空にし、ロビーから出ると完全に元へ戻します。退避データは `lobby-inventory.yml` に保存され、サーバー再起動やクラッシュをまたいでも次回ログイン時に復元されます。
+ロビーに入ると、入る前の状態（インベントリ・防具・ゲームモード・体力・経験値など）を退避してインベントリを空にし、ロビーから出ると完全に元へ戻します。退避データは `vault/<UUID>.yml`（1人1ファイル） に保存され、サーバー再起動やクラッシュをまたいでも次回ログイン時に復元されます。
 
 | キー | 既定値 | 説明 |
 |---|---|---|
@@ -109,7 +109,7 @@ Yukicraft の導入・地点セットアップ・config・権限・管理コマ�
 | `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し、体力・満腹度を全回復する |
 | `lobby-inventory.reset-exp` | true | ロビー入場時に経験値とレベルを0にする |
-| `lobby-inventory.expire-days` | 30 | 復元されないまま残った退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 
 !!! note "持ち物が戻らないとき"
     持ち物が戻らないプレイヤーがいる場合、OP が `/yukicraft lobbyfix <プレイヤー>` で復旧できます。`force` を付けると退避データを破棄してロックだけ解除します。`/yukicraft status` の「ロビー退避(未復元)」で未復元の件数を確認できます。
@@ -160,7 +160,9 @@ Geyser / Floodgate 経由の統合版プレイヤー向けの調整です。
 
 - フィールドの角は **X・Z だけ** を記録します。高さは config の `snow-layers`・`clear-min-y`・`clear-max-y` で決まります。
 - 試合中（通常戦・ソロ挑戦中）はフィールドを変更できません。
-- 雪クラフトに参加中（ロビー在籍中）は受け取れません。持ち物が退室時の復元で上書きされるためです。
+- ロビーで待機している間も受け取れます。試合中・観戦中・ソロ挑戦中は受け取れません
+- 試合が始まると持ち物と一緒に回収されます。ロビー待機中に受け取った場合は、ロビーから抜けたときに自動で手元に戻ります
+- 捨てると消えるので再度 `/yukicraft wand` で取得してください
 
 ### 設定メニューの中身
 
@@ -294,7 +296,7 @@ Geyser / Floodgate 経由の統合版プレイヤー向けの調整です。
     `creeper.enabled` を `false` にするとクリーパーは出現しなくなります。設定後は `/yukicraft reload` を実行してください。
 
 ??? failure "ロビーの持ち物が戻らない"
-    ロビーに入る前の持ち物は `lobby-inventory.yml` に退避され、ロビー退出・ログアウト・プラグイン停止で復元されます。復元されないプレイヤーがいる場合は OP が `/yukicraft lobbyfix <プレイヤー>` を実行してください。それでも直らない場合は `/yukicraft lobbyfix <プレイヤー> force` で退避データを破棄し、ロックだけ解除できます（持ち物は戻りません）。未復元の件数は `/yukicraft status` で確認できます。
+    ロビーに入る前の持ち物は `vault/<UUID>.yml`（1人1ファイル） に退避され、ロビー退出・ログアウト・プラグイン停止で復元されます。復元されないプレイヤーがいる場合は OP が `/yukicraft lobbyfix <プレイヤー>` を実行してください。それでも直らない場合は `/yukicraft lobbyfix <プレイヤー> force` で退避データを破棄し、ロックだけ解除できます（持ち物は戻りません）。未復元の件数は `/yukicraft status` で確認できます。
 
 ---
 

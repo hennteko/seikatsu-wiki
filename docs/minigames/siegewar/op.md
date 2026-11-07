@@ -19,7 +19,7 @@
 ## 導入・更新
 
 1. `SiegeWar-1.0-SNAPSHOT.jar` を `plugins/` フォルダに入れて再起動します（更新時は古い jar を消してください）。
-2. 初回起動で `plugins/SiegeWar/config.yml` が自動生成されます。更新時は、足りない項目だけが自動で追加されます（コンソールに「config.yml に N 項目を追加しました」と出ます）。更新前のファイルは `config.yml.bak-日時` に保存されます。
+2. 初回起動で `plugins/SiegeWar/config.yml` が自動生成されます。更新時は、足りない項目だけが自動で追加されます（コンソールに「config.yml に N 項目を追加しました」と出ます）。更新前のファイルは `config.yml.bak` に保存されます。
 3. Geyser / Floodgate があれば統合版の判定に使います（無くても動きます）。
 
 !!! note "ステージは1つ"
@@ -237,7 +237,7 @@
     試合中・ステージ復元中は変更できません。試合の終了を待つか `/siege stop` で停止し、復元の完了を待ってください。
 
 ??? failure "ロビーに入る前の持ち物が戻らない"
-    `/siege lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/SiegeWar/lobby-inventory.yml` に保存され、サーバー再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
+    `/siege lobbyfix <プレイヤー>` で復旧できます。退避データは `plugins/SiegeWar/vault/<UUID>.yml`（1人1ファイル） に保存され、サーバー再起動・クラッシュをまたいでも復元されます。どうしても戻らない場合のみ `force` を付けると退避データを破棄してロックだけ解除します（最終手段）。
 
 ??? failure "統合版でコアにダメージが入らない／途中で止まる"
     統合版は掘る操作の送られ方が Java 版と違うため、**必ず実機で確認してください**。止まる場合は `core.swing-timeout-ticks` を 20 くらいに上げるか、`core.require-swing: false` にしてください（false にすると、一度掘り始めてコアを見続けている間はダメージが入り続けます）。
@@ -251,8 +251,8 @@
 - **名前表示** … 参加中はチャット名・Tabリスト名・頭上の名札が「【攻城戦】名前」になり、離脱で元に戻ります（表示名・色は config の `name-tag.display-name` / `name-tag.color`）。
 - **参加/離脱の全体告知** … 参加時にサーバー全体へ通知します（`name-tag.announce-join` で切替）。試合結果も全体へ告知されます。
 - **同時参加は1ゲームまで** … 他ミニゲームに参加中は参加が拒否されます（「他のミニゲーム ○○ に参加中です」）。サーバー共通のスコアボードタグ（`minigame_lobby:<プラグイン名>`）で所有権を管理しています。
-- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `plugins/SiegeWar/lobby-inventory.yml` に保存し、**サーバークラッシュ後の再ログインでも復元** します（試合終了時は復元せず、ロビー在籍中はずっと空のまま）。異常で持ち物が戻らない・ロックが残った場合はOPが `/siege lobbyfix <プレイヤー> [force]` で復旧できます。
-- **config の自動追記（ConfigUpdater）** … 起動時に `config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は旧ファイルを `config.yml.bak-日時` に退避）。地点・看板・範囲・コアなどのデータ領域は補完対象外です。
+- **退避データのファイル保存（LobbyInventory）** … ロビー入場時に退避した所持品を `plugins/SiegeWar/vault/<UUID>.yml`（1人1ファイル） に保存し、**サーバークラッシュ後の再ログインでも復元** します（試合終了時は復元せず、ロビー在籍中はずっと空のまま）。異常で持ち物が戻らない・ロックが残った場合はOPが `/siege lobbyfix <プレイヤー> [force]` で復旧できます。
+- **config の自動追記（ConfigUpdater）** … 起動時に `config.yml` へ不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません／更新時は旧ファイルを `config.yml.bak` に退避）。地点・看板・範囲・コアなどのデータ領域は補完対象外です。
 - **統合版対応（BedrockCompat）** … Floodgate / Geyser-Spigot 経由の統合版プレイヤーに対応します。空中タップ（腕振り）でも管理ツール・役職選択を使え、登録看板は蝋引きして編集画面が開かないようにします（Floodgate 未導入時は `bedrock.name-prefix` の接頭辞で統合版と見なします）。
 
 ### ロビー・名前表示・統合版の config
@@ -264,7 +264,7 @@
 | `lobby-inventory.clear-effects` | true | ロビー入場時にポーション効果を消す |
 | `lobby-inventory.reset-health` | true | ロビー入場時に最大体力を既定へ戻し、体力・満腹度を全回復 |
 | `lobby-inventory.reset-exp` | true | ロビー入場時に経験値・レベルを0に |
-| `lobby-inventory.expire-days` | 30 | 未復元の退避データの保持日数 |
+| `lobby-inventory.expire-days` | 30 | （使われません。2026-11-08 から、未復元の退避データは期限切れで捨てず、次のログインで必ず返します） |
 | `name-tag.enabled` | true | 参加中の名前表示を付ける |
 | `name-tag.display-name` | 攻城戦 | 「【】」に入れる正式名 |
 | `name-tag.color` | GOLD | ゲーム名の色 |
