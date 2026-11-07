@@ -232,7 +232,7 @@ RedstoneMover の導入・可動体の設定・`config.yml`・権限・管理コ
 | `debug` | false | パルスや速度をコンソールに出力（調整用） |
 
 !!! note "設定の自動追記（ConfigUpdater）"
-    起動時、`config.yml`・`messages.yml` に不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません）。更新が入った場合は旧ファイルを `config.yml.bak-日時` などに退避します。可動体データ（`movers.yml`）は別ファイルで管理されます。
+    起動時、`config.yml`・`messages.yml` に不足している項目を既定値＋コメント付きで自動追記します（既存の値は変更しません）。更新が入った場合は旧ファイルを `config.yml.bak` ・ `messages.yml.bak` に保存します。一度追記した項目を運営が消した場合は、次回から復活させません。可動体データ（`movers.yml`）は別ファイルで管理されます。
 
 !!! note "設定変更後は `/rmover reload`"
     `/rmover reload` を実行すると、運行中の可動体を停止してから `config.yml`・`messages.yml`・`movers.yml` を読み直します（`redstonemover.admin` が必要）。

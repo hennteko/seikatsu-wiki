@@ -17,7 +17,7 @@ Ranking の導入・config・ランキング看板の設置・権限・管理コ
 | カウント対象 | 採掘・釣り・設置・食事・討伐・レベル・与ダメージの7統計 |
 
 !!! info "CasinoPlugin への依存について"
-    Ranking はエメラルド報酬の支払いに、CasinoPlugin に同梱の `EmeraldAPI` ファサードを利用します。`plugin.yml` で `depend: [CasinoPlugin]` を宣言しているため、CasinoPlugin が無い・無効だと **Ranking 自体が起動しません**。CasinoPlugin が読み込まれていても EmeraldAPI が利用不可の場合は、統計カウント・ランキング表示は動作しますが、報酬の支払いだけが行われません（起動時ログに警告が出ます）。
+    Ranking はエメラルド報酬の支払いに、CasinoPlugin に同梱の `EmeraldAPI` ファサードを利用します。`plugin.yml` で `depend: [CasinoPlugin]` を宣言しているため、CasinoPlugin が無い・無効だと **Ranking 自体が起動しません**。CasinoPlugin が読み込まれていても EmeraldAPI が利用不可の場合は、統計カウント・ランキング表示は動作しますが、報酬の支払いだけが行われません（起動時ログに警告が出ます）。入金に失敗したときは報酬カウントを進めないので、次の機会にまとめて支払われます（2026-11-07 から）。
 
 ## 導入手順
 

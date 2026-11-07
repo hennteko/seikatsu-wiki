@@ -39,7 +39,7 @@
 
 ### CasinoPlugin との連携（エメラルド支払）
 
-- 支払処理は `EmeraldAPI.getBalance(uuid)` で残高を取得し、必要額を差し引いた値を `EmeraldAPI.setBalance(uuid, newBalance)` で書き戻す方式です。
+- 支払いは共通部品 `EmeraldBridge` 経由で、残高が足りるときは引き出し（`withdraw`）で行います（2026-11-07 から。残高の取得から支払いまでの間に他の入出金があっても食い違いません）。`ALLOW_NEGATIVE_BALANCE: true` で残高が足りないときだけ、残高を直接マイナスへ書き換えます。CasinoPlugin の銀行が止まっているときは「今は E の支払いができません」と出て取引しません。
 - 残高不足時の挙動は `ALLOW_NEGATIVE_BALANCE` で制御します（既定: 取引キャンセル）。
 
 ### 効果の重ね掛けとレベル

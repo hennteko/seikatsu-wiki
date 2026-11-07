@@ -52,6 +52,9 @@ debug:
 !!! tip "モジュールの ON / OFF"
     `enabled: false` にしたモジュールは onEnable が呼ばれず、コマンド・リスナーも一切登録されません。「片方だけ動かしたい」運用にも対応できます。両方 `true` が標準構成です。
 
+!!! info "設定ファイルの自動更新"
+    起動時に、サーバー上の `config.yml` と `modules/enchantplus.yml`・`modules/customenchants.yml`（各モジュールの読み込み時） を jar 内の最新版と突き合わせ、**足りない項目だけ** を既定値＋コメント付きで自動追記します（設定済みの値は変えません。追記したときは更新前を同じ場所の `.bak` に保存し、コンソールに追記した項目を出します）。一度追記した項目を運営が消した場合は、次回から復活させません（記録: `.config-update-state.yml`）。プラグインを更新しても設定ファイルを消して作り直す必要はありません（2026-11-07 から）。
+
 ## enchantplus モジュール（`modules/enchantplus.yml`）
 
 旧 `plugins/EnchantPlus/config.yml` と **完全互換** です。既存設定はそのままリネームコピーで移行できます。

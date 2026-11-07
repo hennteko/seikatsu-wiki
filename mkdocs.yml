@@ -368,6 +368,10 @@ nav:
           - utility/tutorial/index.md
           - 👤 プレイヤー向け: utility/tutorial/player.md
           - 🛠️ OP・運営向け: utility/tutorial/op.md
+      - Nickname（あだ名）:
+          - utility/nickname/index.md
+          - 👤 プレイヤー向け: utility/nickname/player.md
+          - 🛠️ OP・運営向け: utility/nickname/op.md
   - サーバー管理・外部プラグイン:
       - LuckPerms（権限管理）: utility/luckperms.md
       - Multiverse-Core: utility/multiverse-core.md

@@ -297,6 +297,9 @@ chum cohock archer shield froster jumper poisoner flyer bomber splitter stealth
 !!! note "敵の構成（参考）"
     雑魚はバニラMobを土台に難易度倍率（HP・攻撃力）を適用。オオモノ（バクダン／テッパン／タワー）は弱点制で、それぞれ頭の弱点・背後側面・最上段のみ有効。最終ボスは3種カスタムボス（HPは各 `default-hp × hpMult`）に加え `blaze_king`（業火の巨王・基礎HP4000）を抽選で出現させます。
 
+!!! info "設定ファイルの自動更新"
+    起動時に、サーバー上の `config.yml`・`zombie_boss.yml`・`skeleton_boss.yml`・`spider_boss.yml`・`difficulty.yml`・`rewards.yml`・`waves.yml` を jar 内の最新版と突き合わせ、**足りない項目だけ** を既定値＋コメント付きで自動追記します（設定済みの値は変えません。追記したときは更新前を同じ場所の `.bak` に保存し、コンソールに追記した項目を出します）。一度追記した項目を運営が消した場合は、次回から復活させません（記録: `.config-update-state.yml`）。プラグインを更新しても設定ファイルを消して作り直す必要はありません（2026-11-07 から）。`waves.yml` の `sets`（ウェーブ構成）は運営が増減するデータなので、既にあれば中身を足しません。`arenas.yml`・`records.yml` はデータなので対象外です。
+
 ## 権限ノード
 
 | 権限 | 既定 | 用途 |

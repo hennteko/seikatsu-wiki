@@ -25,8 +25,8 @@ MobBall の導入・モジュール構成・`config.yml`・capture モジュー�
 4. ボールの素材・成功率・クールダウン・メッセージなどの詳細は `modules/capture.yml` を編集する。
 5. 設定を変更したら `/mb reload` で再読み込みする（`config.yml` と `modules/capture.yml` の両方が再読込されます）。
 
-!!! note "config の自動生成について"
-    `config.yml` は `saveDefaultConfig()` で初回展開されます。`modules/capture.yml` は capture モジュール起動時に `ConfigUtil` が jar 同梱のデフォルトをコピーし、未指定キーには jar 内デフォルトをフォールバックとして設定します。そのため、既存の `modules/capture.yml` に新キーが無くても、コード側は既定値で動作します。
+!!! info "設定ファイルの自動更新"
+    起動時に、サーバー上の `config.yml` と `modules/capture.yml`（モジュールの読み込み時） を jar 内の最新版と突き合わせ、**足りない項目だけ** を既定値＋コメント付きで自動追記します（設定済みの値は変えません。追記したときは更新前を同じ場所の `.bak` に保存し、コンソールに追記した項目を出します）。一度追記した項目を運営が消した場合は、次回から復活させません（記録: `.config-update-state.yml`）。プラグインを更新しても設定ファイルを消して作り直す必要はありません（2026-11-07 から）。
 
 ## モジュール一覧
 
