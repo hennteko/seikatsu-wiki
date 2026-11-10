@@ -178,7 +178,7 @@ v2.0.0 から **複数の対戦会場（アリーナ）を登録し、切り替�
 | コマンド | 説明 |
 |---|---|
 | `/splatoon book` | チェスト型の管理GUIを開く（PvP＋サーモンラン共通） |
-| `/splatoon tool` | OP専用の管理アイテム（ブレイズロッド）を入手。右クリックで同じ管理GUIを開く。ロビー待機中も受け取れる（試合中・ステージ参加中・ソロ中は不可）。試合が始まると回収され、ロビー待機中に受け取った場合はロビーから抜けたときに自動で手元に戻る |
+| `/splatoon wand` | OP専用の管理アイテム（ブレイズロッド）を入手。右クリックで同じ管理GUIを開く。ロビー待機中も受け取れる（試合中・ステージ参加中・ソロ中は不可）。試合が始まると回収され、ロビー待機中に受け取った場合はロビーから抜けたときに自動で手元に戻る（旧名 `tool` も当面使えます） |
 | `/splatoon setarena <会場名>` | 編集/対象の会場を切替（未登録なら新規作成） |
 | `/splatoon delarena <会場名>` | 登録済みの会場を削除 |
 | `/splatoon start <会場名> <turf\|area\|hoko\|tower>` | 会場を切り替えてから指定モードで試合開始 |
@@ -298,7 +298,7 @@ OP権限（`splatoon.admin`）で **その場に立って／対象を見て** �
 | `/salmon start <ステージ>` | 全員 | ステージを開始（コマンドブロック / コンソール可） |
 | `/salmon status [ステージ]` | 全員 | 設定・進行状況を確認 |
 | `/salmon book` | `splatoon.admin` | チェスト型の管理GUIを開く（PvP＋サーモンラン共通） |
-| `/salmon tool` | `splatoon.admin` | OP専用の管理アイテムを入手（右クリックで同じ管理GUI） |
+| `/salmon wand` | `splatoon.admin` | OP専用の管理アイテムを入手（右クリックで同じ管理GUI。旧名 `tool` も当面使えます） |
 | `/salmon stop <ステージ>` | `splatoon.admin` | ステージを強制終了して `IDLE` に戻す |
 | `/salmon setlobby` / `setstartspawn` | `splatoon.admin` | 共通スポーンを設定 |
 | `/salmon setspawn <ステージ>` | `splatoon.admin` | 基地スポーンを設定 |

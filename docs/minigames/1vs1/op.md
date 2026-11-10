@@ -10,7 +10,7 @@
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | 1vs1 |
-| バージョン | 1.4 |
+| バージョン | 1.5 |
 | api-version | 26.1.2 |
 | メインコマンド | `/pvp`（エイリアス `/1v1`） |
 | プレイヤー操作 | `/pvp <join\|leave\|spectate\|lobby\|bet\|start\|status\|solo\|ranking>`（全員可）または各看板の右クリック |

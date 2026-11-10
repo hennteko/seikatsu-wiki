@@ -1,6 +1,6 @@
 <div class="audience-banner player">👤 プレイヤー向けページ — サーバーで遊ぶ全員向けの内容です。設定や導入は <a href="op.html">🛠️ OP・運営向けページ</a> をご覧ください。</div>
 
-# Nickname ― 遊び方 { .page-player #nickname-player }
+# Nickname ― 使い方 { .page-player #nickname-player }
 
 `/nick` で **あだ名** を付けると、チャット・Tab リスト・頭の上の名前があだ名になります。
 
@@ -65,3 +65,10 @@
 
 ??? question "ID に戻すのにお金はかかる？"
     かかりません。`/nick reset` は無料です。ただし、そのあとにもう一度あだ名を付けるときは 500E かかります。
+
+---
+
+このプラグインの導入・設定については OP向けページをご覧ください。
+
+[🛠️ OP・運営向けページへ](op.md){ .md-button }
+[← Nickname 概要へ](index.md){ .md-button }

@@ -9,7 +9,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | DBD |
-| バージョン | 1.11.1 |
+| バージョン | 1.12.0 |
 | api-version | 1.21 |
 | メインコマンド | `/dbd`（エイリアスなし） |
 | 依存プラグイン | なし |
@@ -22,7 +22,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 
 ## 導入手順
 
-1. ビルドした `DBD`（`dbd-1.11.1.jar`）をサーバーの `plugins/` フォルダに配置する。
+1. ビルドした `DBD`（`dbd-1.12.0.jar`）をサーバーの `plugins/` フォルダに配置する。
 2. サーバーを起動・再起動すると `plugins/DBD/config.yml` が自動生成される（初回のみ）。
 3. 後述の手順で会場（スポーン・発電機・フック・板・窓・ゲート・ハッチ・看板）を設定する。
 4. 数値を変えたい場合は `config.yml` の `settings` を編集して **サーバー再起動**（またはプラグインリロード）で反映する。
@@ -188,6 +188,7 @@ DBD の導入・会場の設定（スポーン／発電機／フック／板／�
 | `settings.gate-open-seconds` | 20 | 脱出ゲートの開放時間（秒） |
 | `settings.skillcheck-fail-penalty` | 0.10 | スキルチェック失敗時の進行度後退量（0.10＝10%） |
 | `settings.skillcheck-chance` | 0.10 | 修理中1秒ごとのスキルチェック発生率 |
+| `settings.skillcheck-bedrock-zone-multiplier` | 1.5 | 統合版のスキルチェック判定窓の倍率（1.0でJava版と同じ） |
 | `settings.wiggle-count` | 24 | 担がれた時のもがき脱出に必要なスニーク回数 |
 | `settings.pallet-break-seconds` | 2.5 | 鬼の板破壊時間（秒。パーク「野蛮な力」で短縮） |
 | `settings.vault-survivor-ticks` | 6 | 逃げの窓乗り越え時間（tick。6tick＝約0.3秒） |

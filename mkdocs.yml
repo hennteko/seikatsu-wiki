@@ -276,6 +276,22 @@ nav:
           - minigames/babanuki/index.md
           - 👤 プレイヤー向け: minigames/babanuki/player.md
           - 🛠️ OP・運営向け: minigames/babanuki/op.md
+      - ナンプレ（Sudoku）:
+          - minigames/sudoku/index.md
+          - 👤 プレイヤー向け: minigames/sudoku/player.md
+          - 🛠️ OP・運営向け: minigames/sudoku/op.md
+      - ネコマス（Nekomasu）:
+          - minigames/nekomasu/index.md
+          - 👤 プレイヤー向け: minigames/nekomasu/player.md
+          - 🛠️ OP・運営向け: minigames/nekomasu/op.md
+      - 大富豪（Daifugo）:
+          - minigames/daifugo/index.md
+          - 👤 プレイヤー向け: minigames/daifugo/player.md
+          - 🛠️ OP・運営向け: minigames/daifugo/op.md
+      - UNO（Uno）:
+          - minigames/uno/index.md
+          - 👤 プレイヤー向け: minigames/uno/player.md
+          - 🛠️ OP・運営向け: minigames/uno/op.md
   - 10 カジノ・ギャンブル:
       - ポーカー:
           - casino/poker/index.md

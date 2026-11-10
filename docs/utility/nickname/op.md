@@ -4,6 +4,22 @@
 
 あだ名（チャット・Tab・頭の上）の導入、config、表示の仕組み、権限、管理コマンドをまとめます。
 
+## 基本情報
+
+| 項目 | 値 |
+|---|---|
+| プラグイン名 | Nickname |
+| バージョン | `${project.version}`（ビルド時に決定） |
+| メインコマンド | `/nick`（別名 `/nickname`・`/あだ名`） |
+| api-version | 26.1.2 |
+| softdepend | `CasinoPlugin`（E 残高。有料の変更に使用） |
+| 設定ファイル | `plugins/Nickname/config.yml` |
+| データ | `plugins/Nickname/nicknames.yml` |
+| 権限ノード | `nickname.use`（既定全員）・`nickname.color`（全員）・`nickname.free`（OP）・`nickname.admin`（OP） |
+
+!!! note "ミニゲームではなくユーティリティ"
+    Nickname はミニゲームではなく、サーバー全体の **あだ名（表示名）** を扱うユーティリティです。有料の変更の支払いは [CasinoPlugin](../../casino/casino-plugin/index.md) の **E 残高** から引き落とします（CasinoPlugin が無い・止まっている間は有料の変更だけできません）。
+
 ## 導入手順
 
 1. `Nickname.jar` を **ミニゲームサーバー** の `plugins` に入れて起動します。
@@ -59,9 +75,9 @@
 | `chat.format` / `tab-format` | `{nick}` | チャット・Tab の名前 |
 | `chat.show-id-on-hover` | true | チャットの名前にカーソルで ID を表示（Java 版） |
 
-書き換えたら反映します。
+書き換えたら、以下で反映します。
 
-```
+```text title="config を再読み込み（頭の上の表示も付け直す）"
 /nick reload
 ```
 
@@ -69,9 +85,18 @@
 
 | コマンド | 内容 |
 |---|---|
-| `/nick set <プレイヤー> <あだ名>` | あだ名を付ける（無料・回数に数えない） |
+| `/nick set <プレイヤー> <あだ名>` | あだ名を付ける（無料・回数に数えない。オンラインのプレイヤー） |
 | `/nick clear <プレイヤー>` | あだ名を外す（本人に通知） |
 | `/nick reload` | config を再読み込み（頭の上の表示も付け直す） |
+
+## プレイヤー用コマンド
+
+| コマンド | 内容 |
+|---|---|
+| `/nick <あだ名>` | あだ名を変える（有料のときは確認してから） |
+| `/nick confirm` / `/nick cancel` | 有料の変更を確定／やめる |
+| `/nick reset` | あだ名を外して ID に戻す（無料） |
+| `/nick info` | 今のあだ名と、次の変更の費用 |
 | `/nick list` | オンラインの人のあだ名と ID（全員可） |
 
 ## 権限ノード
@@ -97,3 +122,8 @@
 
 ??? failure "有料の変更ができない"
     CasinoPlugin が起動しているか確認してください。E が足りない場合は「E が足りません」と表示されます。
+
+---
+
+[← 👤 プレイヤー向けページへ](player.md){ .md-button }
+[← Nickname 概要へ](index.md){ .md-button }

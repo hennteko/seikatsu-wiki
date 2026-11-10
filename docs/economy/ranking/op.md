@@ -9,8 +9,8 @@ Ranking の導入・config・ランキング看板の設置・権限・管理コ
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | Ranking |
-| バージョン | 1.0.0 |
-| api-version | 26.1.2 |
+| バージョン | 1.1.0 |
+| api-version | 26.2 |
 | メインコマンド | `/ranking`（エイリアス `/rank`、`/miningrank`、`/mrank`、`/digcount`） |
 | 依存プラグイン | **CasinoPlugin**（`depend` 指定。報酬支払いに EmeraldAPI を使用） |
 | 設定ファイル | `plugins/Ranking/config.yml`、`signs.yml`（看板）、`archives/`（月次アーカイブ） |
@@ -76,7 +76,8 @@ Ranking の導入・config・ランキング看板の設置・権限・管理コ
 
 | キー | 既定値 | 説明 |
 |---|---|---|
-| `signs.update-interval` | 300 | ランキング看板の自動更新間隔（秒）。推奨60～600秒。短すぎると負荷増 |
+| `signs.update-interval` | 300 | ランキング看板の自動更新間隔（秒）。推奨60～600秒。短すぎると負荷増。変更は再起動後に反映 |
+| `signs.protect` | true | 登録済み看板の保護。`true` で一般プレイヤーは看板の編集・破壊不可（`ranking.admin` 保持者が壊すと登録解除）。`false` は保護しない（従来動作） |
 
 ### 統計の有効化（`stats-enabled`）
 

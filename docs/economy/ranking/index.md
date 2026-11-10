@@ -6,7 +6,7 @@
   <div class="quick-card"><span class="label">カテゴリ</span><span class="value">📊 経済・ランキング</span></div>
   <div class="quick-card"><span class="label">主な機能</span><span class="value">統計カウント・ランキング・報酬</span></div>
   <div class="quick-card"><span class="label">統計の種類</span><span class="value">採掘・釣りなど7種</span></div>
-  <div class="quick-card"><span class="label">バージョン</span><span class="value">1.0.0</span></div>
+  <div class="quick-card"><span class="label">バージョン</span><span class="value">1.1.0</span></div>
 </div>
 
 !!! info "CasinoPlugin への依存について"

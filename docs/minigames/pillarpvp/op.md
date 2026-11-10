@@ -160,7 +160,9 @@
 | `pillar.radius` | 10 | フィールド中心から柱までの距離（ブロック） |
 | `pillar.min-gap` | 4 | 隣り合う柱の最小間隔（足りなければ自動で半径を広げる） |
 | `pillar.build-height-limit` | 15 | 柱の頂上から何ブロック上まで置けるか（`/pillar setheight`） |
-| `pillar.fall-line-offset` | 0 | 落下ラインの調整。足の高さが「下端Y + 1 + この値」より下で脱落 |
+| `pillar.ground-elimination` | false | true で床（フィールド下端の1つ下）に着いた時点で脱落（以前の動き）。false は床に落ちても続行し落下ダメージで脱落（管理メニューの「地面で即脱落」でも切替可） |
+| `pillar.void-depth` | 3 | `ground-elimination: false` のとき、下端より何ブロック下まで落ちたら脱落にするか（奈落判定） |
+| `pillar.fall-line-offset` | 0 | `ground-elimination: true` のときの落下ラインの調整。足の高さが「下端Y + 1 + この値」より下で脱落 |
 | `pillar.clear-blocks-per-tick` | 20000 | フィールドを空気へ戻すとき1tickで処理するブロック数（重ければ下げる） |
 
 ### 戦闘・キル判定（`combat`）
@@ -169,6 +171,8 @@
 |---|---|---|
 | `combat.kill-credit-seconds` | 10 | 脱落時、この秒数以内に最後に攻撃した参加者のキルにする |
 | `combat.allow-item-drop` | true | true で試合中に配られたアイテムを捨てられる（捨てたアイテムは生存している参加者だけが拾える。観戦者・一般プレイヤー・ホッパーは拾えず試合後に消える）。管理メニューでも切替可 |
+| `combat.fall-damage` | true | 試合中の落下ダメージ（ワールドの fallDamage ルールが OFF でも効く。管理メニューの「落下ダメージ」でも切替可） |
+| `combat.fall-damage-multiplier` | 1.0 | 落下ダメージの倍率（1.0 = バニラと同じ） |
 | `combat.no-hunger` | false | true で試合中は満腹度が減らない |
 
 ### ソロモード（`solo`）

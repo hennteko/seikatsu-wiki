@@ -14,16 +14,16 @@
 | 項目 | 値 |
 |---|---|
 | プラグイン名 | TerrainTools |
-| バージョン | 1.0.0 |
+| バージョン | 1.1.0 |
 | 種別 | 自作プラグイン（統合・へんりー作） |
 | メインクラス | `jp.henry.terraintools.TerrainTools` |
 | 構成モジュール | `bedrock` ／ `seiti` ／ `cave` ／ `spawn` の 4 モジュール |
-| API バージョン | 26.1.2（Paper 1.26.x 想定） |
+| API バージョン | 26.2（Paper 1.26.x 想定） |
 | 統合管理コマンド | `/terraintools`（エイリアス `/tt`） |
 | 既存コマンド | `/bedrockreplacer`（`/br`, `/bedrock`）／ `/sa`（`/seiti`）／ `/caveerase`（`/ce`）／ `/spawn` |
 | 依存 | なし（`softdepend: CasinoPlugin` ― cave モジュールのコスト機能で利用） |
 | 設定ファイル | `plugins/TerrainTools/config.yml` ／ `plugins/TerrainTools/modules/*.yml` |
-| 生成 jar | `target/TerrainTools-1.0.0.jar` |
+| 生成 jar | `target/TerrainTools-1.1.0.jar` |
 
 ## 導入手順
 
@@ -32,7 +32,7 @@
     cd "C:\Users\hennt\IdeaProjects\【1.26.2】\【1.26.2】生活鯖WIKI\【1.26.2】TerrainTools\TerrainTools"
     mvn clean package
     ```
-2. `target/TerrainTools-1.0.0.jar` を `plugins/` フォルダに配置する。
+2. `target/TerrainTools-1.1.0.jar` を `plugins/` フォルダに配置する。
 3. サーバーを起動すると、`plugins/TerrainTools/config.yml` と `plugins/TerrainTools/modules/{bedrock,seiti,cave,spawn}.yml` が自動展開される（`ConfigUtil` の自動展開・デフォルト fallback）。
 4. 必要に応じて各モジュールの設定を編集し、`/tt reload` で再読み込みする。
 5. 既存ノード（`bedrockreplacer.*` / `seitiassist.*` / `caveeraser.*`）は **plugin.yml にそのまま残存** しているため、LuckPerms 等の権限設定は無修正で動作する。
@@ -173,6 +173,7 @@ debug:
 | `detection` | `min-water-blocks` | `1` | 洞窟と判定する最小水ブロック数 |
 | `cost` | `enabled` | `true` | コスト機能の有効/無効（要 CasinoPlugin） |
 | `cost` | `per-block` | `0.1` | 1 ブロックあたりのエメラルド料金 |
+| `cost` | `volume-discount` | `1000:0.05`〜`50000:0.20` | 大型洞窟の体積割引（体積: 割引率。1000ブロック以上で5%〜50000以上で20%引き） |
 | `materials.allowed-fills` | ― | `STONE`, `COBBLESTONE`, `ANDESITE`, `DIORITE`, `GRANITE`, `DEEPSLATE`, `TUFF` | 埋立に指定できる素材 |
 | `chunk-fill` | `max-radius` | `5` | `chunkfill` のチャンク半径上限 |
 | `chunk-fill` | `protected-blocks` | チェスト等の一覧 | 埋立時に変換しないブロック群 |
@@ -311,7 +312,7 @@ TerrainTools 本体の管理用コマンドです。`terraintools.admin` 権限�
 
 ### 2. TerrainTools-1.0.0.jar を配置
 
-ビルドした `target/TerrainTools-1.0.0.jar` を `plugins/` に置きます。
+ビルドした `target/TerrainTools-1.1.0.jar` を `plugins/` に置きます。
 
 ### 3. 既存 config の引き継ぎ（任意）
 

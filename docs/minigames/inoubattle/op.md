@@ -151,8 +151,12 @@
 
 `false` にした異能は次の試合の抽選プールから除外されます（進行中の試合には影響しません）。`/inou setability <能力名> <on|off>` でも切り替えられます。
 
-!!! info "v1で有効（実装済み）の異能"
-    既定で有効なのは **疾走（sprint）／隠密（stealth）／速射（rapidfire）／探知（detect）／鑑定（appraise）／追跡（track）／強靭（toughness）** の7種です。その他の異能（跳躍・鉤縄・狙撃・無敵・障壁・背水・捕食・閃光・縮身・巨体・変化・複製・反響・魔眼 など）は **未実装（次回以降）** で、config 上は `false` になっています。実装が進んだら `true` にして有効化できます。
+!!! info "実装済みの異能（22種）"
+    **疾走（sprint）／隠密（stealth）／跳躍（leap）／脱出（escape）／転移（teleport）／速射（rapidfire）／狙撃（snipe）／跳弾（ricochet）／爆弾（bomb）／探知（detect）／鑑定（appraise）／追跡（track）／強靭（toughness）／無敵（invincible）／障壁（barrier）／背水（lastwind）／変化（transform）／魔眼（evileye）／複製（mirage）／閃光（flash）／縮身（shrink）／巨体（giant）** が既定で有効です。
+    残りの異能（浮遊・分身・登攀・鉤縄・風船・操弾・必殺・連射・大盾・捕食・反響）は **未実装** で、`true` にしても抽選されません。
+
+!!! note "旧版からの更新"
+    15種を追加した版より前の config.yml（`ability-settings.leap` が無いもの）で起動すると、旧版で `false`（未実装）だった上記15種を **自動で `true`** にします（1回だけ。コンソールに「新しく実装した異能 N 種を…有効にしました」と出ます）。外したい異能は、そのあと `/inou setability <能力名> off` で切り替えてください。
 
 ### 異能ごとの調整（`ability-settings`）
 
@@ -161,6 +165,38 @@
 | `ability-settings.stealth.sneak-seconds` | 5 | 隠密：しゃがみ続けて透明化するまでの秒数 |
 | `ability-settings.stealth.duration-seconds` | 8 | 隠密：透明が続く秒数（撃つ・攻撃を受けるとその前でも解ける） |
 | `ability-settings.stealth.cooldown-seconds` | 20 | 隠密：透明が解けてから再使用できるまでの秒数 |
+| `ability-settings.track.sneak-seconds` | 5 | 追跡：しゃがみ続けて一番近い敵を追跡するまでの秒数 |
+| `ability-settings.track.sneak-range` | 100 | 追跡：しゃがみで探す範囲（m） |
+| `ability-settings.track.sneak-cooldown-seconds` | 30 | 追跡：しゃがみで選んだあとのクールダウン（秒） |
+| `ability-settings.track.far-distance` | 32 | 追跡：この距離以上離れているとスピードII（それ以外はスピードI） |
+| `ability-settings.track.notify-target` | true | 追跡：追跡された相手に知らせる（名前は出さない） |
+| `ability-settings.leap.charge-seconds` | 2.0 | 跳躍：チャージが空から満タンになる秒数（地面にいる間にたまる） |
+| `ability-settings.leap.min-power` / `max-power` | 0.45 / 1.1 | 跳躍：ダブルジャンプの上向きの強さ（チャージ0／満タン） |
+| `ability-settings.escape.launch-power` | 2.2 | 脱出：打ち上がる強さ |
+| `ability-settings.escape.cooldown-seconds` | 20 | 脱出：次に使えるまでの秒数 |
+| `ability-settings.teleport.cooldown-seconds` | 10 | 転移：テレポート後の待ち秒数 |
+| `ability-settings.teleport.blind-radius` / `blind-seconds` | 6 / 3 | 転移：テレポート先で盲目にする範囲(m)・秒数 |
+| `ability-settings.snipe.range` / `min-distance` | 160 / 36 | 狙撃：届く距離(m)・ダメージになる最低距離(m) |
+| `ability-settings.ricochet.bounces` / `sneak-bounces` | 1 / 5 | 跳弾：跳ね返る回数（通常／しゃがみ撃ち） |
+| `ability-settings.ricochet.splash-radius` / `splash-damage-hearts` | 2 / 0.5 | 跳弾：跳ね返った矢の範囲ダメージ（半径・ハート） |
+| `ability-settings.bomb.max-bombs` / `fuse-seconds` | 3 / 10 | 爆弾：同時に置ける数・自動爆発までの秒数 |
+| `ability-settings.bomb.radius` / `knockback` / `damage-hearts` | 3.5 / 1.4 / 0.5 | 爆弾：爆風の半径・吹き飛ばす強さ・ダメージ（ハート） |
+| `ability-settings.invincible.max-seconds` / `regen-per-second` / `hold-seconds` | 10 / 0.5 / 1.0 | 無敵：最大秒数・1秒あたりの回復・発動の長押し秒数 |
+| `ability-settings.barrier.reach` / `radius` / `duration-seconds` / `cooldown-seconds` | 30 / 3 / 12 / 10 | 障壁：届く距離・ドーム半径・消えるまで・クールダウン（秒） |
+| `ability-settings.lastwind.duration-seconds` | 10 | 背水：背水の陣の秒数 |
+| `ability-settings.transform.interval-seconds` | 60 | 変化：別の異能に変わる間隔（秒・最短5） |
+| `ability-settings.evileye.range` / `view-angle` / `slow-level` | 40 / 25 / 2 | 魔眼：見える距離・視界の角度・移動速度低下のレベル |
+| `ability-settings.evileye.hold-seconds` / `cooldown-seconds` | 1.0 / 20 | 魔眼：石化の長押し秒数・石化後のクールダウン |
+| `ability-settings.evileye.petrify-ratio` / `petrify-min-seconds` / `petrify-max-seconds` | 0.5 / 1 / 5 | 魔眼：石化秒数＝見ていた秒数×ratio（min〜max） |
+| `ability-settings.mirage.duration-seconds` / `target-cooldown-seconds` | 60 / 30 | 複製：使える秒数・同じ相手から再複製までの秒数 |
+| `ability-settings.flash.cooldown-seconds` / `radius` / `blind-seconds` / `view-angle` | 12 / 24 / 3 / 60 | 閃光：クールダウン・炸裂が届く範囲・視界を奪う秒数・「見た」とみなす角度 |
+| `ability-settings.shrink.base-scale` / `small-scale` / `small-seconds` | 0.8 / 0.55 / 6 | 縮身：ふだんの大きさ・被弾時の大きさ・その秒数 |
+| `ability-settings.shrink.speed-level` / `damage-multiplier` | 2 / 0.5 | 縮身：小さい間の移動速度レベル・与ダメージ倍率 |
+| `ability-settings.giant.hold-seconds` / `duration-seconds` / `cooldown-seconds` / `scale` | 1.5 / 15 / 20 / 1.6 | 巨体：長押し秒数・巨大化の秒数・クールダウン・大きさ |
+| `ability-settings.giant.base-bonus-hearts` / `max-bonus-hearts` / `nearby-radius` | 1 / 3 / 16 | 巨体：追加体力＝基本＋近くの敵の人数（最大）・数える範囲(m) |
+
+!!! warning "障壁のドームについて"
+    障壁は **空気のマスにだけ** ガラスを置き、消えるときは「まだガラスのまま」のマスだけ空気に戻します（地形は壊しません）。試合終了・`/inou stop`・プラグイン停止でも必ず消えます。人・Mob がいるマスには置きません。
 
 ### ランダムイベント
 
@@ -331,7 +367,7 @@ Geyser / Floodgate 経由の統合版（Bedrock）プレイヤー向けの設定
     `/inou status` を確認してください。フィールド範囲（管理メニューの角1/2）とロビーが設定され、ロビーに最低人数以上いる必要があります。未設定でもフォールバックしますが警告が出ます。
 
 ??? failure "特定の異能が配られない"
-    その異能が `abilities` で `false`（未実装含む）になっていないか、`/inou abilitylist` で確認してください。v1で実装済みなのは7種のみです。
+    その異能が `abilities` で `false`（未実装含む）になっていないか、`/inou abilitylist` で確認してください。実装済みは22種です（「異能の有効/無効」を参照）。
 
 ??? failure "試合後に残留物がある・異常終了した"
     `/inou reset` を実行してください。障壁などの設置物・WorldBorderを含めて完全消去し、IDLEへ戻します。
